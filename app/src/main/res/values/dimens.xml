@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="radius4">4dp</dimen>
+    <dimen name="radius6">6dp</dimen>
+    <dimen name="radius8">8dp</dimen>
+    <dimen name="radius10">10dp</dimen>
+    <dimen name="radius16">16dp</dimen>
+    <dimen name="radius20">20dp</dimen>
+</resources>
