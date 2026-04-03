@@ -10,6 +10,8 @@ import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.databinding.FragmentMainBinding
 import com.example.green_agriculture.pages.agricultural.AgriculturalFragment
 import com.example.green_agriculture.pages.home.HomeFragment
+import com.example.green_agriculture.pages.main.components.BottomNavigationItem
+import com.example.green_agriculture.pages.main.components.ViewPagerAdapter
 import com.example.green_agriculture.pages.mine.MineFragment
 import com.example.green_agriculture.pages.release.ReleaseFragment
 import com.example.green_agriculture.pages.service.ServiceFragment
@@ -31,13 +33,14 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override fun initData() {
         super.initData()
+        binding.fragment = this
         binding.viewModel = viewModel
         parameters = MainFragmentArgs.fromBundle(requireArguments())
     }
 
     override fun initView() {
         super.onEventBinding()
-        binding.viewPager.adapter = BottomNavigationAdapter(this, tabList)
+        binding.viewPager.adapter = ViewPagerAdapter(this, tabList)
         //binding.viewPager.setCurrentItem(parameters.tabIndex, false)
     }
 

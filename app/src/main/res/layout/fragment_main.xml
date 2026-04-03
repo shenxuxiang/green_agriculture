@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="fragment"
+            type="com.example.green_agriculture.pages.main.MainFragment" />
+
+        <variable
             name="viewModel"
             type="com.example.green_agriculture.pages.main.MainViewModel" />
     </data>

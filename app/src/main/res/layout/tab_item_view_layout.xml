@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.example.green_agriculture.components.IconView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:iconColor="#ff9900"
+        app:iconName="&#xe64c;"
+        app:iconSize="22dp" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="3dp" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lineHeight="14sp"
+        android:text="首页"
+        android:textColor="@color/black4"
+        android:textSize="14sp" />
+</merge>
