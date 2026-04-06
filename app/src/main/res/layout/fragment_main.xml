@@ -14,53 +14,49 @@
             type="com.example.green_agriculture.pages.main.MainViewModel" />
     </data>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="top|start"
-        android:orientation="vertical"
-        tools:context=".pages.main.MainFragment">
+        android:layout_height="match_parent">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/view_pager"
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal" />
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/background_img_variant" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="#D9D9D9"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:gravity="top|start"
+            android:orientation="vertical"
+            tools:context=".pages.main.MainFragment">
+            <!-- 分页 -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" />
 
-            <LinearLayout
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+            <!-- 底部导航栏 添加 MaterialCardView 是为了添加一个 Elevation，没有其他作用  -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="49dp"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
-                <com.example.green_agriculture.components.IconView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:iconColor="#ff9900"
-                    app:iconName="&#xe64c;"
-                    app:iconSize="22dp" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="3dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:lineHeight="14sp"
-                    android:text="首页"
-                    android:textColor="@color/black4"
-                    android:textSize="14sp" />
-            </LinearLayout>
+                <com.example.green_agriculture.pages.main.components.TabNavigation
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#F7F8F8"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp"
+                    app:index="@{viewModel.tabIndex}"
+                    app:onChanged="@{fragment.onTabClick}"
+                    app:options="@{viewModel.tabList}" />
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-
-    </LinearLayout>
+    </FrameLayout>
 </layout>

@@ -1,5 +1,6 @@
 package com.example.green_agriculture.pages.main
 
+import androidx.databinding.ObservableField
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -8,13 +9,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.green_agriculture.R
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.databinding.FragmentMainBinding
-import com.example.green_agriculture.pages.agricultural.AgriculturalFragment
-import com.example.green_agriculture.pages.home.HomeFragment
-import com.example.green_agriculture.pages.main.components.BottomNavigationItem
 import com.example.green_agriculture.pages.main.components.ViewPagerAdapter
-import com.example.green_agriculture.pages.mine.MineFragment
-import com.example.green_agriculture.pages.release.ReleaseFragment
-import com.example.green_agriculture.pages.service.ServiceFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -22,26 +17,16 @@ import kotlinx.coroutines.launch
 class MainFragment : BaseFragment<FragmentMainBinding>() {
     override val layoutID = R.layout.fragment_main
     private val viewModel by viewModels<MainViewModel>()
-    private val tabList = listOf(
-        BottomNavigationItem(label = "首页", fragment = HomeFragment()),
-        BottomNavigationItem(label = "服务", fragment = ServiceFragment()),
-        BottomNavigationItem(label = "发布", fragment = ReleaseFragment()),
-        BottomNavigationItem(label = "农技", fragment = AgriculturalFragment()),
-        BottomNavigationItem(label = "我的", fragment = MineFragment()),
-    )
-    private lateinit var parameters: MainFragmentArgs
 
     override fun initData() {
         super.initData()
         binding.fragment = this
         binding.viewModel = viewModel
-        parameters = MainFragmentArgs.fromBundle(requireArguments())
     }
 
     override fun initView() {
         super.onEventBinding()
-        binding.viewPager.adapter = ViewPagerAdapter(this, tabList)
-        //binding.viewPager.setCurrentItem(parameters.tabIndex, false)
+        binding.viewPager.adapter = ViewPagerAdapter(this, viewModel.viewPagerList)
     }
 
     override fun onDataObserve() {
@@ -71,4 +56,9 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             }
         })
     }
+
+    val onTabClick = ObservableField<(Int) -> Unit> {
+        viewModel.updateTabIndex(it)
+    }
+
 }

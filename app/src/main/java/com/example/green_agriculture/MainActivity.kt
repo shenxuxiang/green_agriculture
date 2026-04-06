@@ -8,6 +8,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.example.green_agriculture.pages.main.MainViewModel
+import com.example.green_agriculture.toolkit.CalculateUtils
 import com.example.green_agriculture.toolkit.Navigator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,19 +27,11 @@ class MainActivity : AppCompatActivity() {
             it.isAppearanceLightStatusBars = true
         }
 
-
         // 初始化 Navigator
         val nav = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
         Navigator.initialize(nav as NavHostFragment)
 
         val rootView = findViewById<CoordinatorLayout>(R.id.root_view)
-        rootView.setPadding(0, 0, 0, navigationBarHeight.toInt())
+        rootView.setPadding(0, 0, 0, CalculateUtils.navigationBarHeight.toInt())
     }
-
-    val navigationBarHeight: Float
-        get() {
-            val resID = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-
-            return resources.getDimension(resID)
-        }
 }

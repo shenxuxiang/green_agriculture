@@ -9,7 +9,7 @@ import dagger.hilt.android.HiltAndroidApp
 class GAApplication : Application() {
     companion object {
         @SuppressLint("staticFieldLeak")
-        private lateinit var context: Context
+        lateinit var context: Context
     }
 
     override fun onCreate() {
