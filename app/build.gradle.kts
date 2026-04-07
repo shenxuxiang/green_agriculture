@@ -50,14 +50,20 @@ android {
 }
 
 dependencies {
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.9.7") {
         exclude(group = "xmlpull", module = "xmlpull")
     }
-    implementation("androidx.viewpager2:viewpager2:1.1.0")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.github.bumptech.glide:glide:5.0.5")
-    ksp("com.google.dagger:hilt-compiler:2.57.1")
+    
+    // Hilt 与 Navigation 集成
+    implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
     implementation("com.google.dagger:hilt-android:2.57.1")
+    implementation("androidx.hilt:hilt-navigation:1.3.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    ksp("com.google.dagger:hilt-compiler:2.57.1")
+
+    implementation("com.github.bumptech.glide:glide:5.0.5")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

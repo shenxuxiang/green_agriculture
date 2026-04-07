@@ -2,20 +2,16 @@ package com.example.green_agriculture
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
-import com.example.green_agriculture.pages.main.MainViewModel
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.example.green_agriculture.toolkit.Navigator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val mainViewModel by viewModels<MainViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

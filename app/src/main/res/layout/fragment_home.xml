@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="outerViewPager"
+            type="androidx.viewpager2.widget.ViewPager2" />
+
+        <variable
             name="viewModel"
             type="com.example.green_agriculture.pages.home.HomeViewModel" />
     </data>
@@ -15,18 +19,12 @@
         android:layout_height="match_parent"
         tools:context=".pages.home.HomeFragment">
 
-        <com.example.green_agriculture.components.NestedScrollableHost
+        <com.example.green_agriculture.components.SwiperView
             android:layout_width="match_parent"
-            android:layout_height="154dp">
-
-            <com.example.green_agriculture.components.SwiperView
-                android:layout_width="match_parent"
-                android:layout_height="154dp"
-                app:index="@{viewModel.bannerIndex}"
-                app:options="@{viewModel.bannerList}" />
-
-        </com.example.green_agriculture.components.NestedScrollableHost>
-
+            android:layout_height="154dp"
+            app:index="@{viewModel.bannerIndex}"
+            app:options="@{viewModel.bannerList}"
+            app:outer_view_pager="@{outerViewPager}" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

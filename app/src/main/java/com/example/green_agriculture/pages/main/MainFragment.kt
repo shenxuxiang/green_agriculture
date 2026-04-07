@@ -1,7 +1,7 @@
 package com.example.green_agriculture.pages.main
 
 import androidx.databinding.ObservableField
-import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainFragment : BaseFragment<FragmentMainBinding>() {
     override val layoutID = R.layout.fragment_main
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by hiltNavGraphViewModels<MainViewModel>(R.id.nav_graph)
 
     override fun initData() {
         super.initData()
@@ -26,10 +26,11 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override fun initView() {
         super.onEventBinding()
-        binding.viewPager.adapter = ViewPagerAdapter(this, viewModel.uiState.value.viewPagerList)
-        viewModel.updateUIState { copy(viewPager2 = binding.viewPager) }
-
-        // binding.viewPager.isUserInputEnabled = false
+        binding.viewPager.apply {
+            adapter = ViewPagerAdapter(this@MainFragment, viewModel.uiState.value.viewPagerList)
+            offscreenPageLimit = adapter!!.itemCount
+            viewModel.updateUIState { copy(viewPager2 = this@apply) }
+        }
     }
 
     override fun onDataObserve() {
