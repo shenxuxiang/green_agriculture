@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.example.green_agriculture.pages.home.HomeViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
         tools:context=".pages.home.HomeFragment">
 
-        <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hello World Home"
-            android:textColor="@color/black3"
-            android:textSize="20sp" />
+        <com.example.green_agriculture.components.NestedScrollableHost
+            android:layout_width="match_parent"
+            android:layout_height="154dp">
 
-    </LinearLayout>
+            <com.example.green_agriculture.components.SwiperView
+                android:layout_width="match_parent"
+                android:layout_height="154dp"
+                app:index="@{viewModel.bannerIndex}"
+                app:options="@{viewModel.bannerList}" />
+
+        </com.example.green_agriculture.components.NestedScrollableHost>
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

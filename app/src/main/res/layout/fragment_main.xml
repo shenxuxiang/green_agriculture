@@ -53,9 +53,9 @@
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingHorizontal="12dp"
-                    app:index="@{viewModel.tabIndex}"
+                    app:index="@{viewModel.uiState.tabIndex}"
                     app:onChanged="@{fragment.onTabClick}"
-                    app:options="@{viewModel.tabList}" />
+                    app:options="@{viewModel.uiState.tabList}" />
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </FrameLayout>

@@ -26,19 +26,25 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     override fun initView() {
         super.onEventBinding()
-        binding.viewPager.adapter = ViewPagerAdapter(this, viewModel.viewPagerList)
+        binding.viewPager.adapter = ViewPagerAdapter(this, viewModel.uiState.value.viewPagerList)
+        viewModel.updateUIState { copy(viewPager2 = binding.viewPager) }
+
+        // binding.viewPager.isUserInputEnabled = false
     }
 
     override fun onDataObserve() {
         super.onDataObserve()
 
         lifecycleScope.launch {
+            var oldTabIndex = viewModel.uiState.value.tabIndex
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-
                 // 监听 tabIndex 数据状态，及时更新 BottomNavigation
-                viewModel.tabIndex.collect {
-                    if (it != binding.viewPager.currentItem) {
-                        binding.viewPager.setCurrentItem(it, false)
+                viewModel.uiState.collect {
+                    if (oldTabIndex != it.tabIndex) {
+                        oldTabIndex = it.tabIndex
+                        if (it.tabIndex != binding.viewPager.currentItem) {
+                            binding.viewPager.setCurrentItem(it.tabIndex, false)
+                        }
                     }
                 }
             }
@@ -52,13 +58,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                viewModel.updateTabIndex(position)
+                viewModel.updateUIState {
+                    copy(tabIndex = position)
+                }
             }
         })
     }
 
     val onTabClick = ObservableField<(Int) -> Unit> {
-        viewModel.updateTabIndex(it)
+        viewModel.updateUIState {
+            copy(tabIndex = it)
+        }
     }
-
 }
