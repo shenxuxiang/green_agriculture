@@ -2,22 +2,22 @@ package com.example.green_agriculture.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.ViewGroup
+import android.view.View
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import androidx.core.view.isNotEmpty
 import androidx.databinding.BindingAdapter
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.green_agriculture.R
-import com.example.green_agriculture.databinding.SwiperViewItemLayoutBinding
+import com.example.green_agriculture.adapter.SwiperViewAdapter
+import com.example.green_agriculture.toolkit.CalculateUtils
 
 data class SwiperViewItemOption(val url: String)
 
@@ -27,9 +27,20 @@ class SwiperView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
+    private val indicator: LinearLayout
     private val viewPager: ViewPager2
     private val adapter = SwiperViewAdapter()
 
+    /**
+     * 指针的颜色，indicatorPrimaryColor 表示高亮时的颜色
+     */
+    private val indicatorPrimaryColor = context.getColor(R.color.primary)
+    private val indicatorColor = Color.parseColor("#A0FFFFFF")
+
+    /**
+     * index 的安全范围
+     */
+    private var indexSafeRange = IntRange(1, 1)
     var options: List<SwiperViewItemOption> = emptyList()
         set(value) {
             if (value == field) return
@@ -45,17 +56,22 @@ class SwiperView @JvmOverloads constructor(
                 }
             } else value
 
+            indexSafeRange = IntRange(1, newList.size - 2)
+
             adapter.submitList(newList)
+            initIndicator()
         }
 
-    var index: Int = 0
+    var indicatorIndex: Int = 0
         set(value) {
-            Log.d("GA_APP", "=====================set index value: $value, $field")
-            if (field == value) return
-            field = value
+            if (field != value) {
+                updateIndicator(value, field)
+                field = value
+            }
 
-            if (viewPager.currentItem == value) return
-            viewPager.setCurrentItem(value, true)
+            if (viewPager.currentItem != value + 1) {
+                viewPager.setCurrentItem(value + 1, true)
+            }
         }
 
     /**
@@ -70,12 +86,104 @@ class SwiperView @JvmOverloads constructor(
 
     init {
         LayoutInflater.from(context).inflate(R.layout.swiper_view_layout, this, true).apply {
+            indicator = findViewById<LinearLayout>(R.id.indicator)
             viewPager = findViewById<ViewPager2>(R.id.view_pager)
             viewPager.offscreenPageLimit = 3
             viewPager.adapter = adapter
         }
     }
 
+    /**
+     * 初始化 SwiperView 指针样式
+     */
+    private fun initIndicator() {
+        if (indicator.isNotEmpty()) indicator.removeAllViews()
+        options.forEachIndexed { index, _ ->
+            val view = View(context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    CalculateUtils.dpToPx(if (index == indicatorIndex) 16 else 6).toInt(),
+                    CalculateUtils.dpToPx(6).toInt(),
+                ).apply {
+                    setMargins(
+                        CalculateUtils.dpToPx(6).toInt(),
+                        0,
+                        CalculateUtils.dpToPx(6).toInt(),
+                        0,
+                    )
+                }
+                background = GradientDrawable().apply {
+                    cornerRadius = CalculateUtils.dpToPx(3)
+                    setColor(if (index == indicatorIndex) indicatorPrimaryColor else indicatorColor)
+                }
+            }
+
+            indicator.addView(view)
+        }
+    }
+
+    /**
+     * 更新指针的样式
+     */
+    private fun updateIndicator(newIndex: Int, oldIndex: Int) {
+        val oldView = indicator.getChildAt(oldIndex)
+        val newView = indicator.getChildAt(newIndex)
+
+        // 保存 LayoutParams
+        val oldParams = oldView.layoutParams
+        val newParams = newView.layoutParams
+
+        // 修改宽度
+        oldParams.width = CalculateUtils.dpToPx(6).toInt()
+        newParams.width = CalculateUtils.dpToPx(16).toInt()
+
+        // 重新设置 LayoutParams
+        oldView.layoutParams = oldParams
+        newView.layoutParams = newParams
+
+        // 修改背景色
+        oldView.background = GradientDrawable().apply {
+            cornerRadius = CalculateUtils.dpToPx(3)
+            setColor(indicatorColor)
+        }
+
+        newView.background = GradientDrawable().apply {
+            cornerRadius = CalculateUtils.dpToPx(3)
+            setColor(indicatorPrimaryColor)
+        }
+    }
+
+    private fun updateIndicatorWithFraction(newIndex: Int, oldIndex: Int, fraction: Float) {
+        val oldView = indicator.getChildAt(oldIndex)
+        val newView = indicator.getChildAt(newIndex)
+
+        // 保存 LayoutParams
+        val oldParams = oldView.layoutParams
+        val newParams = newView.layoutParams
+
+        // 修改宽度
+        oldParams.width = CalculateUtils.dpToPx(6 + 10 * (1 - fraction)).toInt()
+        newParams.width = CalculateUtils.dpToPx(6 + 10 * fraction).toInt()
+
+        // 重新设置 LayoutParams
+        oldView.layoutParams = oldParams
+        newView.layoutParams = newParams
+
+        // 修改背景色
+        oldView.background = GradientDrawable().apply {
+            cornerRadius = CalculateUtils.dpToPx(3)
+            setColor(indicatorColor)
+        }
+
+        newView.background = GradientDrawable().apply {
+            cornerRadius = CalculateUtils.dpToPx(3)
+            setColor(indicatorPrimaryColor)
+        }
+    }
+
+
+    /**
+     * 监听滑动手势
+     */
     private val handleScroll = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
@@ -84,22 +192,42 @@ class SwiperView @JvmOverloads constructor(
         override fun onPageScrolled(
             position: Int,
             positionOffset: Float,
-            positionOffsetPixels: Int
+            positionOffsetPixels: Int,
         ) {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+            Log.d("GA_APP", "position: $position, positionOffset: $positionOffset")
+            //if (position !in indexSafeRange || positionOffset == 0f) return
+
+            val index = position - 1
+            Log.d("GA_APP", "indicatorIndex: $indicatorIndex")
+            if (index == indicatorIndex) {
+                // 往左边拖拽，此时 positionOffset 从 1 -> 0 逐渐减小
+                val newIndex = (indicatorIndex + 1).takeIf { it < indexSafeRange.last } ?: 0
+                val oldIndex = indicatorIndex
+                updateIndicatorWithFraction(newIndex, oldIndex, positionOffset)
+            } else {
+                // 往右边拖拽，此时 positionOffset 从 0 -> 1 逐渐增大
+                val newIndex = (indicatorIndex - 1).takeIf { it >= 0 } ?: (indexSafeRange.last - 1)
+                val oldIndex = indicatorIndex
+
+                updateIndicatorWithFraction(newIndex, oldIndex, 1 - positionOffset)
+            }
         }
 
         override fun onPageScrollStateChanged(state: Int) {
             super.onPageScrollStateChanged(state)
 
             if (state == SCROLL_STATE_IDLE) {
-                val itemCount = adapter.itemCount
-                val currentItem = viewPager.currentItem
-     
-                if (currentItem == 0) {
-                    viewPager.setCurrentItem(itemCount - 2, false)
-                } else if (currentItem == itemCount - 1) {
-                    viewPager.setCurrentItem(1, false)
+                val idx = viewPager.currentItem
+
+                if (idx < indexSafeRange.first) {
+                    viewPager.setCurrentItem(indexSafeRange.last, false)
+                    indicatorIndex = indexSafeRange.last - 1
+                } else if (idx > indexSafeRange.last) {
+                    viewPager.setCurrentItem(indexSafeRange.first, false)
+                    indicatorIndex = indexSafeRange.first - 1
+                } else {
+                    indicatorIndex = idx - 1
                 }
             }
         }
@@ -138,7 +266,7 @@ class SwiperView @JvmOverloads constructor(
         @BindingAdapter("options", "index")
         fun setOptionsAttr(view: SwiperView, options: List<SwiperViewItemOption>, index: Int) {
             view.options = options
-            view.index = index + 1
+            view.indicatorIndex = index
         }
 
 //        @JvmStatic
@@ -155,52 +283,4 @@ class SwiperView @JvmOverloads constructor(
     }
 }
 
-private class SwiperViewAdapter() :
-    ListAdapter<SwiperViewItemOption, SwiperViewAdapter.SwiperItemViewHolder>(DiffCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwiperItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.swiper_view_item_layout,
-            parent,
-            false
-        )
 
-        val binding = SwiperViewItemLayoutBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-
-
-        return SwiperItemViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: SwiperItemViewHolder, position: Int) {
-        val option = getItem(position)
-        Glide.with(holder.itemView.context)
-            .load(option.url)
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .into(holder.image)
-    }
-
-    class DiffCallback : DiffUtil.ItemCallback<SwiperViewItemOption>() {
-        override fun areItemsTheSame(
-            oldItem: SwiperViewItemOption,
-            newItem: SwiperViewItemOption,
-        ): Boolean {
-            return oldItem.url == newItem.url
-        }
-
-        override fun areContentsTheSame(
-            oldItem: SwiperViewItemOption,
-            newItem: SwiperViewItemOption,
-        ): Boolean {
-            return oldItem == newItem
-        }
-
-    }
-
-    class SwiperItemViewHolder(binding: SwiperViewItemLayoutBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        val image = binding.image
-    }
-}
