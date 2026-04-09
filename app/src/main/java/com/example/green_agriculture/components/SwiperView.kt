@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -18,10 +19,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_DRAGGING
+import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
 import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.SwiperViewAdapter
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.google.android.material.animation.AnimationUtils.lerp
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -87,6 +90,7 @@ class SwiperView @JvmOverloads constructor(
             initIndicator()
         }
 
+    // 当前指针索引
     var indicatorIndex: Int = 0
         set(value) {
             if (field == value) return
@@ -95,6 +99,7 @@ class SwiperView @JvmOverloads constructor(
             updateIndicatorWithFraction(value, -1, 1f)
         }
 
+    // 间隔时间
     var intervalTimeout: Long = 5000
         set(value) {
             if (field == value) return
@@ -224,6 +229,7 @@ class SwiperView @JvmOverloads constructor(
         ) {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
             val safePosition = getSafePosition(position)
+            Log.d("GA_APP", "position: $position, positionOffset: $positionOffset")
             /**
              * positionOffset == 0 说明当前 ViewPager2 动画执行结束，界面切换已完成；
              * 并且，当 positionOffset == 0 时，需要判断当前 ViewPager2 是否处于 positionSafeRange 范围内；
@@ -255,59 +261,59 @@ class SwiperView @JvmOverloads constructor(
                     updateIndicatorWithFraction(nextIndex, currentIndex, 1 - positionOffset)
                 }
             }
-
         }
 
         override fun onPageScrollStateChanged(state: Int) {
             super.onPageScrollStateChanged(state)
-            if (state == SCROLL_STATE_DRAGGING) {
-                currentPosition = viewPager.currentItem
+            Log.d("GA_APP", "state: $state")
+            when (state) {
+                SCROLL_STATE_DRAGGING -> {
+                    intervalJob?.cancel()
+                    currentPosition = viewPager.currentItem
+                }
+
+                SCROLL_STATE_IDLE -> {
+                    startIntervalJob()
+                }
+
+                else -> {}
             }
-//            if (state == SCROLL_STATE_IDLE) {
-//                val idx = viewPager.currentItem
-//
-//                if (idx < indexSafeRange.first) {
-//                    viewPager.setCurrentItem(indexSafeRange.last, false)
-//                    indicatorIndex = indexSafeRange.last - 1
-//                } else if (idx > indexSafeRange.last) {
-//                    viewPager.setCurrentItem(indexSafeRange.first, false)
-//                    indicatorIndex = indexSafeRange.first - 1
-//                } else {
-//                    indicatorIndex = idx - 1
-//                }
-//            }
         }
     }
+    private var intervalJob: Job? = null
 
-    private val intervalFlow = flow {
-        while (true) {
-            delay(intervalTimeout)
-            emit(true)
+    // 开始间隔任务
+    fun startIntervalJob() {
+        findViewTreeLifecycleOwner()?.let {
+            if (intervalJob?.isCancelled ?: true)
+                intervalJob = it.lifecycleScope.launch {
+                    it.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        flow {
+                            while (true) {
+                                delay(intervalTimeout)
+                                emit(true)
+                            }
+                        }.collect {
+                            if (options.size > 1) viewPager.setCurrentItem(
+                                getSafePosition(viewPager.currentItem + 1),
+                                false
+                            )
+                        }
+                    }
+                }
         }
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewPager.registerOnPageChangeCallback(handleScroll)
-        findViewTreeLifecycleOwner()?.let {
-            it.lifecycleScope.launch {
-                it.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    flow {
-                        while (true) {
-                            delay(intervalTimeout)
-                            emit(true)
-                        }
-                    }.collect {
-
-                    }
-                }
-            }
-        }
+        startIntervalJob()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         viewPager.unregisterOnPageChangeCallback(handleScroll)
+        intervalJob?.cancel()
     }
 
     /**
@@ -347,8 +353,6 @@ class SwiperView @JvmOverloads constructor(
         fun setOuterViewPagerAttr(view: SwiperView, outerViewPager: ViewPager2) {
             view.outerViewPager2 = outerViewPager
         }
-
-
     }
 }
 
