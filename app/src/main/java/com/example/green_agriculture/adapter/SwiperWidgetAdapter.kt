@@ -8,20 +8,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.green_agriculture.R
-import com.example.green_agriculture.components.SwiperViewItemOption
+import com.example.green_agriculture.components.SwiperWidgetOptionItem
 import com.example.green_agriculture.databinding.SwiperViewItemLayoutBinding
 
-private class DiffItemCallback : DiffUtil.ItemCallback<SwiperViewItemOption>() {
+private class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetOptionItem>() {
     override fun areItemsTheSame(
-        oldItem: SwiperViewItemOption,
-        newItem: SwiperViewItemOption,
+        oldItem: SwiperWidgetOptionItem,
+        newItem: SwiperWidgetOptionItem,
     ): Boolean {
         return oldItem.url == newItem.url
     }
 
     override fun areContentsTheSame(
-        oldItem: SwiperViewItemOption,
-        newItem: SwiperViewItemOption,
+        oldItem: SwiperWidgetOptionItem,
+        newItem: SwiperWidgetOptionItem,
     ): Boolean {
         return oldItem == newItem
     }
@@ -30,8 +30,8 @@ private class DiffItemCallback : DiffUtil.ItemCallback<SwiperViewItemOption>() {
 /**
  * SwiperView 的适配器
  */
-class SwiperViewAdapter() :
-    ListAdapter<SwiperViewItemOption, SwiperViewAdapter.SwiperItemViewHolder>(DiffItemCallback()) {
+class SwiperWidgetAdapter() :
+    ListAdapter<SwiperWidgetOptionItem, SwiperWidgetAdapter.SwiperItemViewHolder>(DiffItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwiperItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
             R.layout.swiper_view_item_layout,
@@ -56,7 +56,6 @@ class SwiperViewAdapter() :
             .transition(DrawableTransitionOptions.withCrossFade())
             .into(holder.image)
     }
-
 
     class SwiperItemViewHolder(binding: SwiperViewItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {

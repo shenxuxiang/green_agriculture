@@ -28,10 +28,11 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.example.green_agriculture.components.SwiperView
+                <com.example.green_agriculture.components.SwiperWidget
                     android:layout_width="match_parent"
                     android:layout_height="170dp"
                     app:index="@={viewModel.bannerIndex}"
+                    app:interval="@{3000}"
                     app:options="@{viewModel.bannerList}"
                     app:outer_view_pager="@{outerViewPager}" />
 

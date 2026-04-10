@@ -25,7 +25,7 @@ import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_DRAGGING
 import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
 import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING
 import com.example.green_agriculture.R
-import com.example.green_agriculture.adapter.SwiperViewAdapter
+import com.example.green_agriculture.adapter.SwiperWidgetAdapter
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.google.android.material.animation.AnimationUtils.lerp
 import kotlinx.coroutines.Job
@@ -33,17 +33,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-data class SwiperViewItemOption(val url: String)
+data class SwiperWidgetOptionItem(val url: String)
 
 @SuppressLint("ClickableViewAccessibility")
-class SwiperView @JvmOverloads constructor(
+class SwiperWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet?,
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private val indicator: LinearLayout
     private val viewPager: ViewPager2
-    private val adapter = SwiperViewAdapter()
+    private val adapter = SwiperWidgetAdapter()
 
     var onIndexChangedListener: InverseBindingListener? = null
 
@@ -65,7 +65,7 @@ class SwiperView @JvmOverloads constructor(
      * 同理 D （index = 4）的位置时，用户向左拖拽完成后，也应该立即跳转到 index = 1 位置；
      * 综合上述，其实有一个安全范围（这里是1-4）是不需要执行上述操作的；
      */
-    private var positionSafeRange = IntRange(1, 1)
+    private var positionSafeRange = IntRange.EMPTY
 
     /**
      * SwiperView 的配置项列表，要实现展示 [A, B, C, D] 并可循环播放；
@@ -73,11 +73,12 @@ class SwiperView @JvmOverloads constructor(
      * 处在 A （index = 1）的位置时，用户向右拖拽完成后，立即调用 setCurrentItem(positionSafeRange.last, false)，虽然展示的还是 D，但实际索引却是 4；
      * 同理 D （index = 4）的位置时，用户向左拖拽完成后，立即调用 setCurrentItem(positionSafeRange.first, false)，虽然展示的还是 A，但实际索引却是 1；
      */
-    var options: List<SwiperViewItemOption> = emptyList()
+    var options: List<SwiperWidgetOptionItem> = emptyList()
         set(value) {
             if (value == field) return
             field = value
 
+            val isLoopable = value.size > 1
             val newList = if (value.size > 1) {
                 List(value.size + 2) {
                     when (it) {
@@ -88,11 +89,14 @@ class SwiperView @JvmOverloads constructor(
                 }
             } else value
 
-            positionSafeRange = IntRange(1, newList.size - 2)
+            positionSafeRange = if (isLoopable) IntRange(1, newList.size - 2) else IntRange.EMPTY
 
             adapter.submitList(newList)
-            viewPager.isUserInputEnabled = newList.size > 1
-            viewPager.setCurrentItem(indicatorIndex + 1, false)
+            viewPager.isUserInputEnabled = isLoopable
+            viewPager.setCurrentItem(
+                if (isLoopable) indicatorIndex + 1 else 0,
+                false
+            )
 
             initIndicator()
         }
@@ -119,6 +123,12 @@ class SwiperView @JvmOverloads constructor(
             field = value.coerceAtLeast(3000)
         }
 
+    // 用户取消对应的协程作用域
+    private var intervalJob: Job? = null
+
+    // 间隔动画
+    private var intervalAnimator: ValueAnimator? = null
+
     /**
      * 外部 ViewPager2
      * 当用户在 SwiperView 上滑动时，取消 outerViewPager 的 isUserInputEnabled 的行为
@@ -128,6 +138,12 @@ class SwiperView @JvmOverloads constructor(
             if (field == value) return
             field = value
         }
+
+    /**
+     * 缓存指针指示器的所有 View、GradientDrawable
+     * 缓存的目的在于：修改样式时不需要重复的创建 LayoutParams、以及 GradientDrawable
+     */
+    private val indicatorHolders = ArrayList<IndicatorViewHolder>()
 
     init {
         LayoutInflater.from(context).inflate(R.layout.swiper_view_layout, this, true).apply {
@@ -142,25 +158,32 @@ class SwiperView @JvmOverloads constructor(
      * 初始化 SwiperView 指针样式
      */
     private fun initIndicator() {
+        indicatorHolders.clear()
         if (indicator.isNotEmpty()) indicator.removeAllViews()
+        if (options.size <= 1) return
+
         options.forEachIndexed { index, _ ->
+            val width = if (index == indicatorIndex) indicatorHighlightWidth else indicatorWidth
+            val color = if (index == indicatorIndex) indicatorHighlightColor else indicatorColor
+
+            val drawable = GradientDrawable().apply {
+                setColor(color)
+                cornerRadius = indicatorCornerRadius
+            }
+
             val view = View(context).apply {
                 val height = indicatorWidth
-                val width = if (index == indicatorIndex) indicatorHighlightWidth else indicatorWidth
-                val color = if (index == indicatorIndex) indicatorHighlightColor else indicatorColor
                 // 设置布局参数
                 layoutParams = LinearLayout.LayoutParams(width, height).apply {
                     setMargins(indicatorGap, 0, indicatorGap, 0)
                 }
 
                 // 设置圆角、颜色
-                background = GradientDrawable().apply {
-                    setColor(color)
-                    cornerRadius = indicatorCornerRadius
-                }
+                background = drawable
             }
 
             indicator.addView(view)
+            indicatorHolders.add(IndicatorViewHolder(view, drawable))
         }
     }
 
@@ -170,27 +193,24 @@ class SwiperView @JvmOverloads constructor(
      * fraction - 样式过渡的比例：0-普通，1-高亮
      */
     private fun updateIndicatorItem(index: Int, fraction: Float) {
-        indicator.getChildAt(index)?.let { view ->
+        indicatorHolders.getOrNull(index)?.let { holder ->
             // 保存 LayoutParams
-            val newParams = view.layoutParams
-
+            val lp = holder.view.layoutParams
+            val width = lerp(indicatorWidth, indicatorHighlightWidth, fraction)
             // 修改宽度
-            newParams.width = lerp(indicatorWidth, indicatorHighlightWidth, fraction)
+            if (width != lp.width) lp.width = width
 
-            // 重新设置 LayoutParams
-            view.layoutParams = newParams
+            /**
+             * 重新设置 LayoutParams
+             * View.setLayoutParams(value) 内部始终都会调用 requestLayout()；
+             * 所以只要赋值了，UI 就会更新。
+             */
+            holder.view.layoutParams = lp
 
+            val color =
+                ArgbEvaluator().evaluate(fraction, indicatorColor, indicatorHighlightColor) as Int
             // 修改背景色
-            view.background = GradientDrawable().apply {
-                cornerRadius = indicatorCornerRadius
-                setColor(
-                    ArgbEvaluator().evaluate(
-                        fraction,
-                        indicatorColor,
-                        indicatorHighlightColor
-                    ) as Int
-                )
-            }
+            holder.drawable.setColor(color)
         }
     }
 
@@ -203,17 +223,9 @@ class SwiperView @JvmOverloads constructor(
     private fun updateIndicatorWithFraction(nextIndex: Int, currentIndex: Int, fraction: Float) {
         options.forEachIndexed { i, _ ->
             when (i) {
-                nextIndex -> {
-                    updateIndicatorItem(i, fraction)
-                }
-
-                currentIndex -> {
-                    updateIndicatorItem(i, 1 - fraction)
-                }
-
-                else -> {
-                    updateIndicatorItem(i, 0f)
-                }
+                nextIndex -> updateIndicatorItem(i, fraction)
+                currentIndex -> updateIndicatorItem(i, 1 - fraction)
+                else -> updateIndicatorItem(i, 0f)
             }
         }
     }
@@ -223,6 +235,8 @@ class SwiperView @JvmOverloads constructor(
      * 如果 position 不在 positionSafeRange 范围内，则自动转换到一个安全的索引位置
      */
     private fun getSafePosition(position: Int): Int {
+        if (options.size <= 1) return 0
+
         return if (position > positionSafeRange.last) {
             positionSafeRange.first
         } else if (position < positionSafeRange.first) {
@@ -231,7 +245,6 @@ class SwiperView @JvmOverloads constructor(
             position
         }
     }
-
 
     /**
      * currentPositionSnapShot 在用户拖拽开始时，记录当前 position 的一个快照
@@ -254,6 +267,8 @@ class SwiperView @JvmOverloads constructor(
             positionOffsetPixels: Int,
         ) {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+
+            if (options.size <= 1) return
 
             val safePosition = getSafePosition(position)
             /**
@@ -295,7 +310,7 @@ class SwiperView @JvmOverloads constructor(
             super.onPageScrollStateChanged(state)
             when (state) {
                 SCROLL_STATE_DRAGGING -> { // 用户开始拖拽
-                    intervalJob?.cancel()
+                    cancelIntervalJob()
                     isUserDragging = true
                     currentPositionSnapShot = viewPager.currentItem
                 }
@@ -310,9 +325,6 @@ class SwiperView @JvmOverloads constructor(
             }
         }
     }
-
-    // 用户取消对应的协程作用域
-    private var intervalJob: Job? = null
 
     // 开始间隔任务
     fun startIntervalJob() {
@@ -329,27 +341,37 @@ class SwiperView @JvmOverloads constructor(
                             if (options.size > 1) {
                                 val position = viewPager.currentItem
                                 val nextPosition = viewPager.currentItem + 1
+                                // 执行 ViewPager2 跳转
                                 viewPager.setCurrentItem(nextPosition, true)
 
-                                val animator = ValueAnimator.ofFloat(0f, 1f).apply {
-                                    duration = 300
-                                    interpolator = FastOutSlowInInterpolator()
-                                }
                                 val currentIndex = getSafePosition(position) - 1
                                 val nextIndex = getSafePosition(position + 1) - 1
-                                animator.addUpdateListener {
-                                    updateIndicatorWithFraction(
-                                        nextIndex,
-                                        currentIndex,
-                                        animator.animatedValue as Float
-                                    )
+                                // 执行 Indicator 动画
+                                intervalAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+                                    duration = 300
+                                    interpolator = FastOutSlowInInterpolator()
+                                    addUpdateListener {
+                                        updateIndicatorWithFraction(
+                                            nextIndex,
+                                            currentIndex,
+                                            animatedValue as Float
+                                        )
+                                    }
+                                    start()
                                 }
-                                animator.start()
                             }
                         }
                     }
                 }
         }
+    }
+
+    // 取消间隔任务
+    private fun cancelIntervalJob() {
+        intervalJob?.cancel()
+        intervalJob = null
+        intervalAnimator?.cancel()
+        intervalAnimator = null
     }
 
     override fun onAttachedToWindow() {
@@ -361,7 +383,7 @@ class SwiperView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         viewPager.unregisterOnPageChangeCallback(handleScroll)
-        intervalJob?.cancel()
+        cancelIntervalJob()
     }
 
     /**
@@ -385,35 +407,35 @@ class SwiperView @JvmOverloads constructor(
     companion object {
         @JvmStatic
         @BindingAdapter("options", "index")
-        fun setOptionsAttr(view: SwiperView, options: List<SwiperViewItemOption>, index: Int) {
+        fun setOptionsAttr(view: SwiperWidget, options: List<SwiperWidgetOptionItem>, index: Int) {
             view.options = options
             view.indicatorIndex = index
         }
 
-//        @JvmStatic
-//        @BindingAdapter("index")
-//        fun setIndexAttr(view: SwiperView, index: Int) {
-//            view.index = index + 1
-//        }
+        @JvmStatic
+        @BindingAdapter("interval")
+        fun setIntervalAttr(view: SwiperWidget, interval: Long) {
+            view.intervalTimeout = interval
+        }
 
         @JvmStatic
         @BindingAdapter("outer_view_pager")
-        fun setOuterViewPagerAttr(view: SwiperView, outerViewPager: ViewPager2) {
+        fun setOuterViewPagerAttr(view: SwiperWidget, outerViewPager: ViewPager2) {
             view.outerViewPager2 = outerViewPager
         }
 
         @JvmStatic
         @InverseBindingAdapter(attribute = "index", event = "indexAttrChanged")
-        fun getIndexAttr(view: SwiperView): Int {
+        fun getIndexAttr(view: SwiperWidget): Int {
             return view.indicatorIndex
         }
 
         @JvmStatic
         @BindingAdapter("indexAttrChanged")
-        fun setIndexAttrChanged(view: SwiperView, listener: InverseBindingListener) {
+        fun setIndexAttrChanged(view: SwiperWidget, listener: InverseBindingListener) {
             view.onIndexChangedListener = listener
         }
     }
 }
 
-
+private data class IndicatorViewHolder(val view: View, val drawable: GradientDrawable)
