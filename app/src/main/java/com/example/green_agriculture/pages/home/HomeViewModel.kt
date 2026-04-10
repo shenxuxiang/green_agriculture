@@ -20,6 +20,10 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 
     val bannerList = _bannerList.asStateFlow()
 
-    private val _bannerIndex = MutableStateFlow(0)
-    val bannerIndex = _bannerIndex.asStateFlow()
+    val bannerIndex = MutableStateFlow(0)
+    // val bannerIndex = _bannerIndex.asStateFlow()
+
+    fun increment() {
+        bannerIndex.value++
+    }
 }

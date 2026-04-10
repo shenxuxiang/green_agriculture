@@ -1,11 +1,11 @@
 package com.example.green_agriculture.components
 
 import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -13,6 +13,9 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.isNotEmpty
 import androidx.databinding.BindingAdapter
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +23,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_DRAGGING
 import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
+import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING
 import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.SwiperViewAdapter
 import com.example.green_agriculture.toolkit.CalculateUtils
@@ -40,6 +44,8 @@ class SwiperView @JvmOverloads constructor(
     private val indicator: LinearLayout
     private val viewPager: ViewPager2
     private val adapter = SwiperViewAdapter()
+
+    var onIndexChangedListener: InverseBindingListener? = null
 
     /**
      * 定义指针的颜色、大小、圆角半径、间隙
@@ -85,6 +91,7 @@ class SwiperView @JvmOverloads constructor(
             positionSafeRange = IntRange(1, newList.size - 2)
 
             adapter.submitList(newList)
+            viewPager.isUserInputEnabled = newList.size > 1
             viewPager.setCurrentItem(indicatorIndex + 1, false)
 
             initIndicator()
@@ -95,15 +102,21 @@ class SwiperView @JvmOverloads constructor(
         set(value) {
             if (field == value) return
             field = value
-
+            // 通知 DataBinding，index 改变了
+            onIndexChangedListener?.onChange()
             updateIndicatorWithFraction(value, -1, 1f)
+
+            // 如果当前 ViewPager2 的 position 与 Next Indicator Index 不匹配，那么就同步更新。
+            if (getSafePosition(viewPager.currentItem) != value + 1) {
+                viewPager.setCurrentItem(value + 1, false)
+            }
         }
 
     // 间隔时间
     var intervalTimeout: Long = 5000
         set(value) {
             if (field == value) return
-            field = value
+            field = value.coerceAtLeast(3000)
         }
 
     /**
@@ -205,6 +218,10 @@ class SwiperView @JvmOverloads constructor(
         }
     }
 
+    /**
+     * 计算正确的位置索引
+     * 如果 position 不在 positionSafeRange 范围内，则自动转换到一个安全的索引位置
+     */
     private fun getSafePosition(position: Int): Int {
         return if (position > positionSafeRange.last) {
             positionSafeRange.first
@@ -216,10 +233,19 @@ class SwiperView @JvmOverloads constructor(
     }
 
 
-    private var currentPosition = 0;
+    /**
+     * currentPositionSnapShot 在用户拖拽开始时，记录当前 position 的一个快照
+     * currentPositionSnapShot 用于 onPageScrolled 事件中，与参数 position 对比，从而得出是向左还是向右拖拽。
+     * isUserDragging 在用户拖拽开始时，设置为 true，表示此次行为是用户拖拽行为
+     */
+    private var currentPositionSnapShot = 0
+    private var isUserDragging = false
 
     /**
-     * 监听滑动手势
+     * 监听用户拖拽行为
+     * 注意，用户是通过 viewPager2.setCurrentItem(positon, smoothScroll) 触发的页面跳转，也会触发
+     * 当 smoothScroll == true，页面自动滑动的同时，会不断的触发 onPageScrolled，参数 positionOffset 会不停的变化
+     * 当 smoothScroll == false，页面是瞬间完成跳转的，此时只会在完成时触发 onPageScrolled，并且参数 positionOffset == 0
      */
     private val handleScroll = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageScrolled(
@@ -228,8 +254,8 @@ class SwiperView @JvmOverloads constructor(
             positionOffsetPixels: Int,
         ) {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+
             val safePosition = getSafePosition(position)
-            Log.d("GA_APP", "position: $position, positionOffset: $positionOffset")
             /**
              * positionOffset == 0 说明当前 ViewPager2 动画执行结束，界面切换已完成；
              * 并且，当 positionOffset == 0 时，需要判断当前 ViewPager2 是否处于 positionSafeRange 范围内；
@@ -245,41 +271,47 @@ class SwiperView @JvmOverloads constructor(
 
                 indicatorIndex = safePosition - 1
             } else {
+                if (!isUserDragging) return
                 /**
-                 * position + positionOffset > currentPosition 说明用户在往左拖拽，
-                 * 往左边拖拽时， positionOffset 从 0 -> 1 逐渐增大，并且 position == currentPosition
-                 * 往右边拖拽时， positionOffset 从 1 -> 0 逐渐减小，并且 position == currentPosition - 1
+                 * position + positionOffset > currentPositionSnapShot 说明用户在往左拖拽，
+                 * 往左边拖拽时， positionOffset 从 0 -> 1 逐渐增大，并且 position == currentPositionSnapShot
+                 * 往右边拖拽时， positionOffset 从 1 -> 0 逐渐减小，并且 position == currentPositionSnapShot - 1
                  */
-                if (position + positionOffset > currentPosition) {
+                if (position + positionOffset > currentPositionSnapShot) {
                     val nextIndex = getSafePosition(position + 1) - 1
-                    val currentIndex = currentPosition - 1
+                    val currentIndex = currentPositionSnapShot - 1
                     updateIndicatorWithFraction(nextIndex, currentIndex, positionOffset)
                 } else {
                     val nextIndex = getSafePosition(position) - 1
-                    val currentIndex = currentPosition - 1
+                    val currentIndex = currentPositionSnapShot - 1
 
                     updateIndicatorWithFraction(nextIndex, currentIndex, 1 - positionOffset)
                 }
             }
         }
 
+        // 滑动状态变更，一个完整的事件流程，只会触发一次。
         override fun onPageScrollStateChanged(state: Int) {
             super.onPageScrollStateChanged(state)
-            Log.d("GA_APP", "state: $state")
             when (state) {
-                SCROLL_STATE_DRAGGING -> {
+                SCROLL_STATE_DRAGGING -> { // 用户开始拖拽
                     intervalJob?.cancel()
-                    currentPosition = viewPager.currentItem
+                    isUserDragging = true
+                    currentPositionSnapShot = viewPager.currentItem
                 }
 
-                SCROLL_STATE_IDLE -> {
+                SCROLL_STATE_IDLE -> { // 拖拽、并且惯性滚动结束，此时页面处于禁止状态
                     startIntervalJob()
+                    isUserDragging = false
                 }
 
-                else -> {}
+                SCROLL_STATE_SETTLING -> { // 拖拽结束（用户释放了手指）
+                }
             }
         }
     }
+
+    // 用户取消对应的协程作用域
     private var intervalJob: Job? = null
 
     // 开始间隔任务
@@ -294,10 +326,26 @@ class SwiperView @JvmOverloads constructor(
                                 emit(true)
                             }
                         }.collect {
-                            if (options.size > 1) viewPager.setCurrentItem(
-                                getSafePosition(viewPager.currentItem + 1),
-                                false
-                            )
+                            if (options.size > 1) {
+                                val position = viewPager.currentItem
+                                val nextPosition = viewPager.currentItem + 1
+                                viewPager.setCurrentItem(nextPosition, true)
+
+                                val animator = ValueAnimator.ofFloat(0f, 1f).apply {
+                                    duration = 300
+                                    interpolator = FastOutSlowInInterpolator()
+                                }
+                                val currentIndex = getSafePosition(position) - 1
+                                val nextIndex = getSafePosition(position + 1) - 1
+                                animator.addUpdateListener {
+                                    updateIndicatorWithFraction(
+                                        nextIndex,
+                                        currentIndex,
+                                        animator.animatedValue as Float
+                                    )
+                                }
+                                animator.start()
+                            }
                         }
                     }
                 }
@@ -352,6 +400,18 @@ class SwiperView @JvmOverloads constructor(
         @BindingAdapter("outer_view_pager")
         fun setOuterViewPagerAttr(view: SwiperView, outerViewPager: ViewPager2) {
             view.outerViewPager2 = outerViewPager
+        }
+
+        @JvmStatic
+        @InverseBindingAdapter(attribute = "index", event = "indexAttrChanged")
+        fun getIndexAttr(view: SwiperView): Int {
+            return view.indicatorIndex
+        }
+
+        @JvmStatic
+        @BindingAdapter("indexAttrChanged")
+        fun setIndexAttrChanged(view: SwiperView, listener: InverseBindingListener) {
+            view.onIndexChangedListener = listener
         }
     }
 }
