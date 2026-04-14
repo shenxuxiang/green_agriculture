@@ -407,20 +407,20 @@ class SwiperWidget @JvmOverloads constructor(
     companion object {
         @JvmStatic
         @BindingAdapter("options", "index")
-        fun setOptionsAttr(view: SwiperWidget, options: List<SwiperWidgetOptionItem>, index: Int) {
+        fun bindOptions(view: SwiperWidget, options: List<SwiperWidgetOptionItem>, index: Int) {
             view.options = options
             view.indicatorIndex = index
         }
 
         @JvmStatic
         @BindingAdapter("interval")
-        fun setIntervalAttr(view: SwiperWidget, interval: Long) {
+        fun bindInterval(view: SwiperWidget, interval: Long) {
             view.intervalTimeout = interval
         }
 
         @JvmStatic
         @BindingAdapter("outer_view_pager")
-        fun setOuterViewPagerAttr(view: SwiperWidget, outerViewPager: ViewPager2) {
+        fun bindOuterViewPager(view: SwiperWidget, outerViewPager: ViewPager2) {
             view.outerViewPager2 = outerViewPager
         }
 
@@ -432,7 +432,7 @@ class SwiperWidget @JvmOverloads constructor(
 
         @JvmStatic
         @BindingAdapter("indexAttrChanged")
-        fun setIndexAttrChanged(view: SwiperWidget, listener: InverseBindingListener) {
+        fun bindIndexAttrChanged(view: SwiperWidget, listener: InverseBindingListener) {
             view.onIndexChangedListener = listener
         }
     }

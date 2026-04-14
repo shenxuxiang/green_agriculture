@@ -46,6 +46,7 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
 }
 
@@ -54,7 +55,7 @@ dependencies {
     implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.9.7") {
         exclude(group = "xmlpull", module = "xmlpull")
     }
-    
+
     // Hilt 与 Navigation 集成
     implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
     implementation("com.google.dagger:hilt-android:2.57.1")

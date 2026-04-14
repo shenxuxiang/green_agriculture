@@ -5,6 +5,7 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.example.green_agriculture.R
 import com.example.green_agriculture.base.BaseFragment
+import com.example.green_agriculture.components.AlertWidget
 import com.example.green_agriculture.databinding.FragmentHomeBinding
 import com.example.green_agriculture.pages.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,5 +25,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun initView() {
         super.initView()
+    }
+
+    override fun onEventBinding() {
+        super.onEventBinding()
+        binding.button.setOnClickListener {
+            AlertWidget.show(this@HomeFragment.parentFragmentManager)
+        }
     }
 }
