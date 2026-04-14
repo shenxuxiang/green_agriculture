@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="AlertWidgetAnimation">
+        <item name="android:windowEnterAnimation">@anim/alert_widget_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/alert_widget_exit_anim</item>
+    </style>
 </resources>

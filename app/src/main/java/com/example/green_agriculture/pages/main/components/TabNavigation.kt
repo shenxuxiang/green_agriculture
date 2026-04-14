@@ -64,7 +64,7 @@ class TabNavigation @JvmOverloads constructor(
                         context.getString(if (isSelected) option.selectedIcon else option.icon)
                     val anim = AnimationUtils.loadAnimation(
                         context,
-                        if (isSelected) R.anim.tab_item_scale_in_anim else R.anim.tab_item_scale_out_anim
+                        if (isSelected) R.anim.navigation_item_scale_in_anim else R.anim.navigation_item_scale_out_anim
                     )
 
                     // 开始动画

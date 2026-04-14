@@ -30,7 +30,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun onEventBinding() {
         super.onEventBinding()
         binding.button.setOnClickListener {
-            AlertWidget.show(this@HomeFragment.parentFragmentManager)
+            AlertWidget.show(
+                childFragmentManager,
+                title = "你好！真的要删除内容吗？"
+            )
         }
     }
 }

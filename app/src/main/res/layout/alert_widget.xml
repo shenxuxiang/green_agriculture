@@ -1,45 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:backgroundTint="#fff"
-    android:orientation="vertical"
-    android:paddingHorizontal="18dp"
-    android:paddingVertical="20dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="请您阅读并同意《用户协议》和《隐私协议》" />
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="cancelText"
+            type="String" />
+
+        <variable
+            name="confirmText"
+            type="String" />
+
+        <variable
+            name="showCancel"
+            type="Boolean" />
+
+        <variable
+            name="showConfirm"
+            type="Boolean" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:orientation="vertical"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="20dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="120dp"
-            android:layout_height="36dp"
-            android:layout_marginHorizontal="8dp"
-            android:backgroundTint="#fff"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="取消"
-            app:cornerRadius="18dp"
-            app:strokeColor="@color/black6"
-            app:strokeWidth="1dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{title}"
+            android:textColor="@color/black3"
+            android:textSize="16sp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="120dp"
-            android:layout_height="36dp"
-            android:layout_marginHorizontal="8dp"
-            android:backgroundTint="@color/primary"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="确认"
-            app:cornerRadius="18dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancel_button"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="120dp"
+                android:layout_height="36dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#fff"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@{cancelText}"
+                android:textColor="@color/black4"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                android:visibility="@{showCancel ? View.VISIBLE : View.GONE}"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/black6"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/confirm_button"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="120dp"
+                android:layout_height="36dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="@color/primary"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@{confirmText}"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                android:visibility="@{showConfirm ? View.VISIBLE : View.GONE}"
+                app:cornerRadius="18dp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</layout>
