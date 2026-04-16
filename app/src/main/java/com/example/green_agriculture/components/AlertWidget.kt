@@ -1,55 +1,81 @@
 package com.example.green_agriculture.components
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import com.example.green_agriculture.R
 import com.example.green_agriculture.databinding.AlertWidgetBinding
 import com.example.green_agriculture.toolkit.CalculateUtils
+import com.example.green_agriculture.toolkit.CommonUtils
+import com.example.green_agriculture.toolkit.VibratorUtils
 
 class AlertWidget : DialogFragment() {
     private lateinit var binding: AlertWidgetBinding
+
+    // 定义 Alert 在垂直方向的位置，0-1，0.5 表示垂直居中
     var ratio = 0.4f
-    var marginHorizontalDp = 30
+
+    // 定义 Alert 与屏幕两侧的之间的间距
+    var margin = 30
+
+    // 是否展示确认按钮
     var showConfirm = true
+
+    // 是否展示取消按钮
     var showCancel = true
+
+    // 取消按钮的文本
     var cancelText = "取消"
+
+    // 确认按钮的文本
     var confirmText = "确认"
+
+    // Alert 弹框展示的内容
     var title = ""
 
+    // 点击 Alert 外部关闭弹框
+    var isCanceledOnTouchOutsideFlag = true
+
+    // 点击物理返回键关闭弹框
+    var isCancelableFlag = true
+
+    // 是否启用触觉反馈
+    var hapticFeedbackEnabled = true
+
+    // 添加点击确认按钮的回调事件
     var onConfirmListener: (() -> Unit)? = null
 
+    // 添加点击取消按钮的回调事件
     var onCancelListener: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        // 不推荐设置 DialogFragment 的 isCancelable，它会禁止系统返回键关闭 Dialog、以及禁止点击外部关闭 Dialog
-        // isCancelable = false
-        val spaceHorizontal = CalculateUtils.dpToPx(marginHorizontalDp, requireContext()).toInt()
-        binding = AlertWidgetBinding.inflate(LayoutInflater.from(requireContext()))
+        val context = requireContext()
+        binding = AlertWidgetBinding.inflate(LayoutInflater.from(context))
 
-        val dialog = AlertDialog.Builder(requireContext(), R.style.AlertWidgetDialogTheme).create()
+        val screenHeight = context.resources.displayMetrics.heightPixels
+        val viewSpacing = CalculateUtils.dpToPx(margin, context).toInt()
+        val dialog = AlertDialog.Builder(context, R.style.AlertWidgetDialogTheme).create()
+
         dialog.setView(
             binding.root,
-            spaceHorizontal,
+            viewSpacing,
             0,
-            spaceHorizontal,
+            viewSpacing,
             0,
         )
 
-        val displayMetrics = requireContext().resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-        val screenWidth = displayMetrics.widthPixels
+        // 禁止物理返回键关闭弹框
+        dialog.setCancelable(isCancelableFlag)
 
-        // 同时禁止返回键关闭（可选）
-        // dialog.setCancelable(false)
-        // 禁止点击外部关闭
-        dialog.setCanceledOnTouchOutside(false)
+        // 点击外部关闭弹框
+        dialog.setCanceledOnTouchOutside(isCanceledOnTouchOutsideFlag)
 
         dialog.window?.apply {
             val distY = screenHeight - alertContentH - CalculateUtils.statusBarHeight
@@ -57,14 +83,10 @@ class AlertWidget : DialogFragment() {
             // 最后，还需要调用 setAttributes()，该方法内部回调用 requestLayout() 方法刷新 UI 界面
             attributes.y = (distY * ratio).toInt()
 
+            setDimAmount(0.5f)
             setGravity(Gravity.TOP)
             setAttributes(attributes)
-            // 设置 Dialog 背景遮罩层的透明度
-            setDimAmount(0.5f)
-
-            // 设置 Dialog Window 的内容背景（即对话框内部布局背后的背景）
             setWindowAnimations(R.style.AlertWidgetAnimation)
-            // setBackgroundDrawableResource(android.R.color.transparent)
         }
 
         onInitView()
@@ -90,11 +112,13 @@ class AlertWidget : DialogFragment() {
 
     private fun onEventBinding() {
         binding.cancelButton.setOnClickListener {
+            if (hapticFeedbackEnabled) VibratorUtils.oneShot()
             onCancelListener?.invoke()
             dismiss()
         }
 
         binding.confirmButton.setOnClickListener {
+            if (hapticFeedbackEnabled) VibratorUtils.oneShot()
             onConfirmListener?.invoke()
             dismiss()
         }
@@ -114,23 +138,23 @@ class AlertWidget : DialogFragment() {
 
     companion object {
         private const val TAG = "alert_widget_###"
-        fun createInstance(): AlertWidget {
-            return AlertWidget()
-        }
 
         /**
-         * title       - 标题
-         * fraction    - Alert 在垂直方向上的位置，0.5-居中，0-顶部对齐、1-底部对齐
-         * marginDp    - Alert 距离屏幕的外边距（水平方向），单位 Dp
-         * showCancel  - 是否展示取消按钮，默认 true
-         * showConfirm - 是否展示确认按钮，默认 true
-         * cancelText  - 取消按钮展示文本
-         * confirmText - 确认按钮展示文本
-         * onCancel    - 取消监听
-         * onConfirm   - 确认监听
+         * @param title                    标题
+         * @param fraction                 Alert 在垂直方向上的位置，0.5-居中，0-顶部对齐、1-底部对齐
+         * @param marginDp                 Alert 距离屏幕的外边距（水平方向），单位 Dp
+         * @param showCancel               是否展示取消按钮，默认 true
+         * @param showConfirm              是否展示确认按钮，默认 true
+         * @param cancelText               取消按钮展示文本
+         * @param confirmText              确认按钮展示文本
+         * @param onCancel                 取消监听
+         * @param onConfirm                确认监听
+         * @param isCancelable             点击物理返回键关闭弹框
+         * @param isCanceledOnTouchOutside 点击 Alert 外部关闭弹框
+         * @param hapticFeedbackEnabled    是否启用触觉反馈
          */
         fun show(
-            fragmentManager: FragmentManager,
+            context: Context,
             title: String,
             marginDp: Int = 30,
             fraction: Float = 0.4f,
@@ -140,20 +164,31 @@ class AlertWidget : DialogFragment() {
             showConfirm: Boolean = true,
             onCancel: (() -> Unit)? = null,
             onConfirm: (() -> Unit)? = null,
+            isCancelable: Boolean = true,
+            isCanceledOnTouchOutside: Boolean = true,
+            hapticFeedbackEnabled: Boolean = true,
         ) {
-            createInstance().apply {
-                this.title = title
-                this.cancelText = cancelText
-                this.confirmText = confirmText
-                this.showCancel = showCancel
-                this.showConfirm = showConfirm
+            CommonUtils.getActivity(context)?.let {
+                val ac = it as AppCompatActivity
+                val fragmentManager = ac.supportFragmentManager
 
-                ratio = fraction
-                onCancelListener = onCancel
-                onConfirmListener = onConfirm
-                marginHorizontalDp = marginDp
+                AlertWidget().apply {
+                    this.title = title
+                    this.cancelText = cancelText
+                    this.confirmText = confirmText
+                    this.showCancel = showCancel
+                    this.showConfirm = showConfirm
+                    this.hapticFeedbackEnabled = hapticFeedbackEnabled
+                    
+                    ratio = fraction
+                    margin = marginDp
+                    onCancelListener = onCancel
+                    onConfirmListener = onConfirm
+                    isCancelableFlag = isCancelable
+                    isCanceledOnTouchOutsideFlag = isCanceledOnTouchOutside
 
-                show(fragmentManager, TAG)
+                    show(fragmentManager, TAG)
+                }
             }
         }
     }

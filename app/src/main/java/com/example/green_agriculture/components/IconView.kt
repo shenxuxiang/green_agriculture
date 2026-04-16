@@ -66,19 +66,19 @@ class IconView @JvmOverloads constructor(
     companion object {
         @JvmStatic
         @BindingAdapter("iconName")
-        fun setIconNameAttr(view: IconView, iconName: String) {
+        fun bindIconName(view: IconView, iconName: String) {
             view.iconName = iconName
         }
 
         @JvmStatic
         @BindingAdapter("iconColor")
-        fun setIconColorAttr(view: IconView, iconColor: Int) {
+        fun bindIconColor(view: IconView, iconColor: Int) {
             view.iconColor = iconColor
         }
 
         @JvmStatic
         @BindingAdapter("iconSize")
-        fun setIconSizeAttr(view: IconView, iconSize: Float) {
+        fun bindIconSize(view: IconView, iconSize: Float) {
             view.iconSize = iconSize
         }
     }

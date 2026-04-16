@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import android.widget.Space
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
-import com.example.green_agriculture.toolkit.VibrateUtils
+import com.example.green_agriculture.toolkit.VibratorUtils
 
 data class TabNavigationItemOption(
     val icon: Int,
@@ -78,7 +78,7 @@ class TabNavigation @JvmOverloads constructor(
      */
     private fun createTabItemView(
         option: TabNavigationItemOption,
-        isSelected: Boolean
+        isSelected: Boolean,
     ): TabNavigationItem {
         return TabNavigationItem(context).apply {
             title = option.label
@@ -88,7 +88,7 @@ class TabNavigation @JvmOverloads constructor(
             // 绑定点击事件
             setOnClickListener {
                 onTabItemClick(option)
-                VibrateUtils.oneShot()
+                VibratorUtils.oneShot()
             }
         }
     }

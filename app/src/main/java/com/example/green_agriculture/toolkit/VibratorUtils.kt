@@ -9,7 +9,7 @@ import com.example.green_agriculture.GAApplication
 /**
  * 振动工具
  */
-object VibrateUtils {
+object VibratorUtils {
     private val vibrator: Vibrator
 
     init {

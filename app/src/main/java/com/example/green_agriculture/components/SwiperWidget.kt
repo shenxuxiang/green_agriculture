@@ -9,13 +9,13 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.isNotEmpty
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -61,9 +61,9 @@ class SwiperWidget @JvmOverloads constructor(
      * index 的安全范围
      * SwiperView 的配置项列表，要实现展示 [A, B, C, D] 并可循环播放；
      * 则实际的 ViewPager2 的子项配置应该为 [D, A, B, C, D, A]；ViewPager2 的默认展示项为 A（索引为 1）
-     * 处在 A （index = 1）的位置时，用户向右拖拽完成后来到了 D（index = 0），为了下一次还能够向右拖拽，应该立即跳转到 index = 4 位置，此时展示的还是 D，对于用户是无感的；
-     * 同理 D （index = 4）的位置时，用户向左拖拽完成后，也应该立即跳转到 index = 1 位置；
-     * 综合上述，其实有一个安全范围（这里是1-4）是不需要执行上述操作的；
+     * 当 ViewPager2 处于 A （index = 1）的位置时，用户向右拖拽完成后来到了 D（index = 0），为了下一次还能够向右拖拽，应该立即跳转到 index = 4 位置，此时展示的还是 D，对于用户是无感的；
+     * 同理，当 ViewPager2 处于 D （index = 4）的位置时，用户向左拖拽完成后，也应该立即跳转到 index = 1 位置；这样在下次操作时，仍能够向左拖拽；
+     * 综合上述，当 ViewPager2 处于 1-4 时是不需要执行上述操作的；那么这就是【安全范围】；
      */
     private var positionSafeRange = IntRange.EMPTY
 
@@ -106,8 +106,10 @@ class SwiperWidget @JvmOverloads constructor(
         set(value) {
             if (field == value) return
             field = value
-            // 通知 DataBinding，index 改变了
+            // 通知 DataBinding，indicatorIndex 改变了
             onIndexChangedListener?.onChange()
+
+            // 此时，只需要将 nextIndex 设置为被选中的样式，其余的都是普通样式，所以 currentIndex 设置为 -1 即可。
             updateIndicatorWithFraction(value, -1, 1f)
 
             // 如果当前 ViewPager2 的 position 与 Next Indicator Index 不匹配，那么就同步更新。
@@ -149,13 +151,13 @@ class SwiperWidget @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.swiper_view_layout, this, true).apply {
             indicator = findViewById<LinearLayout>(R.id.indicator)
             viewPager = findViewById<ViewPager2>(R.id.view_pager)
-            viewPager.offscreenPageLimit = 3
+            viewPager.offscreenPageLimit = 2
             viewPager.adapter = adapter
         }
     }
 
     /**
-     * 初始化 SwiperView 指针样式
+     * 初始化 SwiperView 指示器样式
      */
     private fun initIndicator() {
         indicatorHolders.clear()
@@ -163,6 +165,7 @@ class SwiperWidget @JvmOverloads constructor(
         if (options.size <= 1) return
 
         options.forEachIndexed { index, _ ->
+            val height = indicatorWidth
             val width = if (index == indicatorIndex) indicatorHighlightWidth else indicatorWidth
             val color = if (index == indicatorIndex) indicatorHighlightColor else indicatorColor
 
@@ -172,7 +175,6 @@ class SwiperWidget @JvmOverloads constructor(
             }
 
             val view = View(context).apply {
-                val height = indicatorWidth
                 // 设置布局参数
                 layoutParams = LinearLayout.LayoutParams(width, height).apply {
                     setMargins(indicatorGap, 0, indicatorGap, 0)
@@ -181,7 +183,6 @@ class SwiperWidget @JvmOverloads constructor(
                 // 设置圆角、颜色
                 background = drawable
             }
-
             indicator.addView(view)
             indicatorHolders.add(IndicatorViewHolder(view, drawable))
         }
@@ -198,14 +199,16 @@ class SwiperWidget @JvmOverloads constructor(
             val lp = holder.view.layoutParams
             val width = lerp(indicatorWidth, indicatorHighlightWidth, fraction)
             // 修改宽度
-            if (width != lp.width) lp.width = width
+            if (width != lp.width) {
+                lp.width = width
 
-            /**
-             * 重新设置 LayoutParams
-             * View.setLayoutParams(value) 内部始终都会调用 requestLayout()；
-             * 所以只要赋值了，UI 就会更新。
-             */
-            holder.view.layoutParams = lp
+                /**
+                 * 重新设置 LayoutParams
+                 * View.setLayoutParams(value) 内部始终都会调用 requestLayout()；
+                 * 所以只要赋值了，UI 就会更新。
+                 */
+                holder.view.layoutParams = lp
+            }
 
             val color =
                 ArgbEvaluator().evaluate(fraction, indicatorColor, indicatorHighlightColor) as Int
@@ -328,8 +331,8 @@ class SwiperWidget @JvmOverloads constructor(
 
     // 开始间隔任务
     fun startIntervalJob() {
-        findViewTreeLifecycleOwner()?.let {
-            if (intervalJob?.isCancelled ?: true)
+        if (intervalJob?.isCancelled ?: true) {
+            findViewTreeLifecycleOwner()?.let {
                 intervalJob = it.lifecycleScope.launch {
                     it.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         flow {
@@ -340,7 +343,7 @@ class SwiperWidget @JvmOverloads constructor(
                         }.collect {
                             if (options.size > 1) {
                                 val position = viewPager.currentItem
-                                val nextPosition = viewPager.currentItem + 1
+                                val nextPosition = position + 1
                                 // 执行 ViewPager2 跳转
                                 viewPager.setCurrentItem(nextPosition, true)
 
@@ -349,7 +352,7 @@ class SwiperWidget @JvmOverloads constructor(
                                 // 执行 Indicator 动画
                                 intervalAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
                                     duration = 300
-                                    interpolator = FastOutSlowInInterpolator()
+                                    interpolator = LinearInterpolator()
                                     addUpdateListener {
                                         updateIndicatorWithFraction(
                                             nextIndex,
@@ -363,6 +366,7 @@ class SwiperWidget @JvmOverloads constructor(
                         }
                     }
                 }
+            }
         }
     }
 

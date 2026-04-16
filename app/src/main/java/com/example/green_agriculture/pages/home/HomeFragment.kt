@@ -31,9 +31,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.onEventBinding()
         binding.button.setOnClickListener {
             AlertWidget.show(
-                childFragmentManager,
+                this@HomeFragment.requireContext(),
                 title = "你好！真的要删除内容吗？",
-                marginDp = 30,
+                hapticFeedbackEnabled = false
             )
         }
     }
