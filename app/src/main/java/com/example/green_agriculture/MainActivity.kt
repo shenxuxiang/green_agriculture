@@ -33,4 +33,8 @@ class MainActivity : AppCompatActivity() {
         val rootView = findViewById<CoordinatorLayout>(R.id.root_view)
         rootView.setPadding(0, 0, 0, CalculateUtils.navigationBarHeight.toInt())
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }

@@ -10,4 +10,6 @@
     <string name="icon_agriculture">&#xe615;</string>
     <string name="icon_fill_mine">&#xe61b;</string>
     <string name="icon_mine">&#xe618;</string>
+    <string name="icon_success">&#xe628;</string>
+    <string name="icon_warn">&#xe62b;</string>
 </resources>

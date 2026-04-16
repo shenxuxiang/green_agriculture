@@ -36,8 +36,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 title = "你好！真的要删除内容吗？",
                 hapticFeedbackEnabled = false,
                 onConfirm = {
-                    Toast.show("xxx")
-                    Toast.show("yyy")
+                    Toast.show("系统异常，请联系管理员，接口出现异常，请立即修复")
+                    Toast.show("系统异常，请联系管理员 2")
                 }
             )
         }
