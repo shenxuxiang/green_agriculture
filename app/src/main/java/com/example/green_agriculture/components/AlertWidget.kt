@@ -10,6 +10,8 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.green_agriculture.R
 import com.example.green_agriculture.databinding.AlertWidgetBinding
 import com.example.green_agriculture.toolkit.CalculateUtils
@@ -154,6 +156,54 @@ class AlertWidget : DialogFragment() {
          * @param hapticFeedbackEnabled    是否启用触觉反馈
          */
         fun show(
+            fragmentManager: FragmentManager,
+            title: String,
+            marginDp: Int = 30,
+            fraction: Float = 0.4f,
+            cancelText: String = "取消",
+            confirmText: String = "确认",
+            showCancel: Boolean = true,
+            showConfirm: Boolean = true,
+            onCancel: (() -> Unit)? = null,
+            onConfirm: (() -> Unit)? = null,
+            isCancelable: Boolean = true,
+            isCanceledOnTouchOutside: Boolean = true,
+            hapticFeedbackEnabled: Boolean = true,
+        ) {
+            AlertWidget().apply {
+                this.title = title
+                this.cancelText = cancelText
+                this.confirmText = confirmText
+                this.showCancel = showCancel
+                this.showConfirm = showConfirm
+                this.hapticFeedbackEnabled = hapticFeedbackEnabled
+
+                ratio = fraction
+                margin = marginDp
+                onCancelListener = onCancel
+                onConfirmListener = onConfirm
+                isCancelableFlag = isCancelable
+                isCanceledOnTouchOutsideFlag = isCanceledOnTouchOutside
+
+                show(fragmentManager, TAG)
+            }
+        }
+
+        /**
+         * @param title                    标题
+         * @param fraction                 Alert 在垂直方向上的位置，0.5-居中，0-顶部对齐、1-底部对齐
+         * @param marginDp                 Alert 距离屏幕的外边距（水平方向），单位 Dp
+         * @param showCancel               是否展示取消按钮，默认 true
+         * @param showConfirm              是否展示确认按钮，默认 true
+         * @param cancelText               取消按钮展示文本
+         * @param confirmText              确认按钮展示文本
+         * @param onCancel                 取消监听
+         * @param onConfirm                确认监听
+         * @param isCancelable             点击物理返回键关闭弹框
+         * @param isCanceledOnTouchOutside 点击 Alert 外部关闭弹框
+         * @param hapticFeedbackEnabled    是否启用触觉反馈
+         */
+        fun show(
             context: Context,
             title: String,
             marginDp: Int = 30,
@@ -172,24 +222,70 @@ class AlertWidget : DialogFragment() {
                 val ac = it as AppCompatActivity
                 val fragmentManager = ac.supportFragmentManager
 
-                AlertWidget().apply {
-                    this.title = title
-                    this.cancelText = cancelText
-                    this.confirmText = confirmText
-                    this.showCancel = showCancel
-                    this.showConfirm = showConfirm
-                    this.hapticFeedbackEnabled = hapticFeedbackEnabled
-                    
-                    ratio = fraction
-                    margin = marginDp
-                    onCancelListener = onCancel
-                    onConfirmListener = onConfirm
-                    isCancelableFlag = isCancelable
-                    isCanceledOnTouchOutsideFlag = isCanceledOnTouchOutside
-
-                    show(fragmentManager, TAG)
-                }
+                show(
+                    fragmentManager,
+                    title,
+                    marginDp,
+                    fraction,
+                    cancelText,
+                    confirmText,
+                    showCancel,
+                    showConfirm,
+                    onCancel,
+                    onConfirm,
+                    isCancelable,
+                    isCanceledOnTouchOutside,
+                    hapticFeedbackEnabled,
+                )
             }
+        }
+
+        /**
+         * @param title                    标题
+         * @param fraction                 Alert 在垂直方向上的位置，0.5-居中，0-顶部对齐、1-底部对齐
+         * @param marginDp                 Alert 距离屏幕的外边距（水平方向），单位 Dp
+         * @param showCancel               是否展示取消按钮，默认 true
+         * @param showConfirm              是否展示确认按钮，默认 true
+         * @param cancelText               取消按钮展示文本
+         * @param confirmText              确认按钮展示文本
+         * @param onCancel                 取消监听
+         * @param onConfirm                确认监听
+         * @param isCancelable             点击物理返回键关闭弹框
+         * @param isCanceledOnTouchOutside 点击 Alert 外部关闭弹框
+         * @param hapticFeedbackEnabled    是否启用触觉反馈
+         */
+        fun show(
+            fragment: Fragment,
+            title: String,
+            marginDp: Int = 30,
+            fraction: Float = 0.4f,
+            cancelText: String = "取消",
+            confirmText: String = "确认",
+            showCancel: Boolean = true,
+            showConfirm: Boolean = true,
+            onCancel: (() -> Unit)? = null,
+            onConfirm: (() -> Unit)? = null,
+            isCancelable: Boolean = true,
+            isCanceledOnTouchOutside: Boolean = true,
+            hapticFeedbackEnabled: Boolean = true,
+        ) {
+            val fragmentManager = fragment.childFragmentManager
+
+            show(
+                fragmentManager,
+                title,
+                marginDp,
+                fraction,
+                cancelText,
+                confirmText,
+                showCancel,
+                showConfirm,
+                onCancel,
+                onConfirm,
+                isCancelable,
+                isCanceledOnTouchOutside,
+                hapticFeedbackEnabled,
+            )
         }
     }
 }

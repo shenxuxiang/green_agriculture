@@ -11,7 +11,7 @@ import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
 import com.example.green_agriculture.toolkit.CalculateUtils
 
-class IconView @JvmOverloads constructor(
+class IconWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -66,19 +66,19 @@ class IconView @JvmOverloads constructor(
     companion object {
         @JvmStatic
         @BindingAdapter("iconName")
-        fun bindIconName(view: IconView, iconName: String) {
+        fun bindIconName(view: IconWidget, iconName: String) {
             view.iconName = iconName
         }
 
         @JvmStatic
         @BindingAdapter("iconColor")
-        fun bindIconColor(view: IconView, iconColor: Int) {
+        fun bindIconColor(view: IconWidget, iconColor: Int) {
             view.iconColor = iconColor
         }
 
         @JvmStatic
         @BindingAdapter("iconSize")
-        fun bindIconSize(view: IconView, iconSize: Float) {
+        fun bindIconSize(view: IconWidget, iconSize: Float) {
             view.iconSize = iconSize
         }
     }

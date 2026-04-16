@@ -8,6 +8,7 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.example.green_agriculture.toolkit.Navigator
+import com.example.green_agriculture.toolkit.Toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,6 +16,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Toast.initialize(this)
 
         window.navigationBarColor = Color.BLACK
         window.statusBarColor = Color.TRANSPARENT

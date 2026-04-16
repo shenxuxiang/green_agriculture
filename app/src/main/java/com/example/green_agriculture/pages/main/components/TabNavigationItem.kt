@@ -9,14 +9,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.example.green_agriculture.R
-import com.example.green_agriculture.components.IconView
+import com.example.green_agriculture.components.IconWidget
 
 class TabNavigationItem @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : LinearLayout(context, attrs, defStyleAttr) {
-    private val tabIcon: IconView
+    private val tabIcon: IconWidget
     private val tabName: TextView
     var tabSelected: Boolean = false
         set(value: Boolean) {

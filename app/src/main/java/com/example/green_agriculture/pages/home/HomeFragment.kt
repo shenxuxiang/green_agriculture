@@ -8,6 +8,7 @@ import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.components.AlertWidget
 import com.example.green_agriculture.databinding.FragmentHomeBinding
 import com.example.green_agriculture.pages.main.MainViewModel
+import com.example.green_agriculture.toolkit.Toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,9 +32,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.onEventBinding()
         binding.button.setOnClickListener {
             AlertWidget.show(
-                this@HomeFragment.requireContext(),
+                this@HomeFragment,
                 title = "你好！真的要删除内容吗？",
-                hapticFeedbackEnabled = false
+                hapticFeedbackEnabled = false,
+                onConfirm = {
+                    Toast.show("xxx")
+                    Toast.show("yyy")
+                }
             )
         }
     }
