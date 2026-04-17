@@ -51,6 +51,10 @@ android {
 }
 
 dependencies {
+    // retrofit2
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.9.7") {
         exclude(group = "xmlpull", module = "xmlpull")
