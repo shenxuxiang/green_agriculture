@@ -33,11 +33,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         binding.button.setOnClickListener {
             AlertWidget.show(
                 this@HomeFragment,
-                title = "你好！真的要删除内容吗？",
+                title = "你好！真的要删除内容吗？系统异常，请联系管理员，接口出现异常，请立即修复",
                 hapticFeedbackEnabled = false,
                 onConfirm = {
                     Toast.show("系统异常，请联系管理员，接口出现异常，请立即修复")
-                    Toast.show("系统异常，请联系管理员 2")
+                    Toast.showSuccess("操作成功，即将跳转至首页")
+                    Toast.showWarn("系统异常，请联系管理员")
                 }
             )
         }

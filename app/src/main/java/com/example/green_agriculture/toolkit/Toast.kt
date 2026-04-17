@@ -1,7 +1,5 @@
 package com.example.green_agriculture.toolkit
 
-import android.app.Activity
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.green_agriculture.components.ToastWidget
@@ -16,14 +14,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 object Toast {
-    private const val FRACTION = 0.4f
     private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     private val channel = Channel<ToastEvent>(10, BufferOverflow.SUSPEND)
 
-
     fun initialize(activity: AppCompatActivity) {
         activity.apply {
+            // 协程作用域和 Activity 的生命周期绑定在一起，在 Activity 销毁时此协程作用域会自动销毁。
             lifecycleScope.launch(Dispatchers.Default) {
                 for (result in channel) {
                     val view = async(Dispatchers.Main) {
@@ -32,13 +29,21 @@ object Toast {
 
                     delay(result.duration)
 
-                    withContext(Dispatchers.Main) { removeToast(view, activity) }
+                    withContext(Dispatchers.Main) {
+                        ToastWidget.hide(activity, view)
+                    }
                     delay(500)
                 }
             }
         }
     }
 
+    /**
+     * 展示 Toast
+     * @param message  提示文本
+     * @param duration Toast 展示的时间
+     * @param type     icon 类型
+     */
     fun show(message: String, duration: Long = 2000, type: String = "none") {
         coroutineScope.launch {
             channel.send(ToastEvent(message, duration, type))
@@ -49,14 +54,8 @@ object Toast {
         show(message, duration, "success")
     }
 
-    fun showSuccessWarn(message: String, duration: Long = 2000) {
+    fun showWarn(message: String, duration: Long = 2000) {
         show(message, duration, "warn")
-    }
-
-    private fun removeToast(view: ToastWidget, activity: Activity) {
-        if (activity.isDestroyed) return
-
-        (activity.window.decorView as ViewGroup).removeView(view)
     }
 }
 

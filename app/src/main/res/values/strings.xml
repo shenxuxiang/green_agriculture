@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">绿农</string>
+
+    
+    <!--  IconWidget 字体  -->
     <string name="icon_fill_home">&#xe61c;</string>
     <string name="icon_home">&#xe61a;</string>
     <string name="icon_fill_service">&#xe61d;</string>
@@ -10,6 +13,6 @@
     <string name="icon_agriculture">&#xe615;</string>
     <string name="icon_fill_mine">&#xe61b;</string>
     <string name="icon_mine">&#xe618;</string>
-    <string name="icon_success">&#xe628;</string>
+    <string name="icon_success">&#xe62d;</string>
     <string name="icon_warn">&#xe62b;</string>
 </resources>

@@ -6,6 +6,7 @@
         android:id="@+id/prefix_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="6dp"
         app:iconColor="@color/primary"
         app:iconName="@string/icon_success"
         app:iconSize="22dp" />

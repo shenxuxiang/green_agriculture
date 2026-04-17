@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--  AlertWidget 组件动画定义  -->
     <style name="AlertWidgetAnimation">
         <item name="android:windowEnterAnimation">@anim/alert_widget_enter_anim</item>
         <item name="android:windowExitAnimation">@anim/alert_widget_exit_anim</item>
     </style>
 
+    <!--  AlertWidget 自定义主题样式  -->
     <style name="AlertWidgetDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:windowMinWidthMajor">100%</item>
         <item name="android:windowMinWidthMinor">100%</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
