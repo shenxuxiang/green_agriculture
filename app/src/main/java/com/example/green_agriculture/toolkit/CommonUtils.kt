@@ -18,4 +18,13 @@ object CommonUtils {
         return null
     }
 
+    fun networkImageUrl(url: String): String {
+        if (Regex("""^https?://""").matches(url)) return url
+
+        return if (url.startsWith("/")) {
+            "${AppEnv.baseURL}$url"
+        } else {
+            "${AppEnv.baseURL}/$url"
+        }
+    }
 }

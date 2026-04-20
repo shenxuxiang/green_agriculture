@@ -34,7 +34,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "BASE_URL",
-                value = """"http://192.168.5.17:30062""""
+                value = """"http://60.169.69.3:40056""""
             )
         }
 

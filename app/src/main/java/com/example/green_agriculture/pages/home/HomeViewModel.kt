@@ -1,10 +1,14 @@
 package com.example.green_agriculture.pages.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.green_agriculture.components.SwiperWidgetOptionItem
+import com.example.green_agriculture.toolkit.CommonUtils
+import com.example.green_agriculture.toolkit.LogUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,10 +32,12 @@ class HomeViewModel @Inject constructor(repository: Repository) : ViewModel() {
     }
 
     init {
-//        viewModelScope.launch {
-//            _bannerList.value = repository.queryBannerList().map {
-//                SwiperWidgetOptionItem(url = it)
-//            }
-//        }
+        viewModelScope.launch {
+            _bannerList.value = repository.queryBannerList().map { url ->
+                LogUtils.d(CommonUtils.networkImageUrl(url))
+                
+                SwiperWidgetOptionItem(url = CommonUtils.networkImageUrl(url))
+            }
+        }
     }
 }
