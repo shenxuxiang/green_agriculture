@@ -8,6 +8,8 @@ plugins {
 
     // 新增：kapt 用于 DataBinding，DataBinding 目前尚未迁移至 KSP
     kotlin("kapt")
+
+    // 支持 Safe-Args
     id("androidx.navigation.safeargs")
 }
 
@@ -28,11 +30,25 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = """"http://192.168.5.17:30062""""
+            )
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+            )
+
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = """"http://60.169.69.3:30066""""
             )
         }
     }
@@ -51,22 +67,27 @@ android {
 }
 
 dependencies {
-    // retrofit2
+    // retrofit2 + gson
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
-
+    // viewPager2
     implementation("androidx.viewpager2:viewpager2:1.1.0")
+    // 导航支持 Safe-Args
     implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.9.7") {
         exclude(group = "xmlpull", module = "xmlpull")
     }
 
-    // Hilt 与 Navigation 集成
+    // Hilt + Navigation 集成，支持 hiltNavGraphViewModels()
     implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
-    implementation("com.google.dagger:hilt-android:2.57.1")
     implementation("androidx.hilt:hilt-navigation:1.3.0")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    // Hilt 依赖
+    implementation("com.google.dagger:hilt-android:2.57.1")
     ksp("com.google.dagger:hilt-compiler:2.57.1")
 
+    // Kotlin 反射 API
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    // Glide
     implementation("com.github.bumptech.glide:glide:5.0.5")
 
     implementation(libs.androidx.core.ktx)

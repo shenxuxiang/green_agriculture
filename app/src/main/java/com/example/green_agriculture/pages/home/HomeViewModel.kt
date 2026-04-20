@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(repository: Repository) : ViewModel() {
     private val _bannerList = MutableStateFlow(
         listOf(
             SwiperWidgetOptionItem(url = "https://ww4.sinaimg.cn/mw690/001MabKgly1hvj8dymyywj63402c01ky02.jpg"),
@@ -25,5 +25,13 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 
     fun increment() {
         bannerIndex.value++
+    }
+
+    init {
+//        viewModelScope.launch {
+//            _bannerList.value = repository.queryBannerList().map {
+//                SwiperWidgetOptionItem(url = it)
+//            }
+//        }
     }
 }
