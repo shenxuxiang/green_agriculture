@@ -57,6 +57,30 @@
                     android:layout_width="0dp"
                     android:layout_height="20dp" />
 
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="3">
+
+                    <!-- 占据第1行第1列，跨2列 -->
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_columnSpan="2"
+                        android:layout_columnWeight="2"
+                        android:layout_gravity="fill"
+                        android:background="#ff9900" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_columnSpan="1"
+                        android:layout_columnWeight="1"
+                        android:layout_gravity="fill"
+                        android:background="#ff7700" />
+
+                </GridLayout>
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button"
                     style="@style/Widget.MaterialComponents.Button.UnelevatedButton"

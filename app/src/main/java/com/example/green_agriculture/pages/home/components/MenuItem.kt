@@ -53,17 +53,16 @@ class MenuItem @JvmOverloads constructor(
 
     init {
         // 创建父容器布局参数
-        val params = GridLayout.LayoutParams().apply {
+        layoutParams = GridLayout.LayoutParams().apply {
+            width = 0
+            height = LayoutParams.WRAP_CONTENT
             columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
         }
 
-        params.width = 0
-        params.height = LayoutParams.WRAP_CONTENT
-
-        layoutParams = params
+        clipChildren = false
+        clipToPadding = false
         orientation = VERTICAL
         gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-
         createImage()
         createTextView()
     }
@@ -91,8 +90,8 @@ class MenuItem @JvmOverloads constructor(
                 }
 
             maxLines = 1
-
-            setTextColor(R.color.black4)
+            ellipsize = null
+            setTextColor(context.getColor(R.color.black4))
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         }
 

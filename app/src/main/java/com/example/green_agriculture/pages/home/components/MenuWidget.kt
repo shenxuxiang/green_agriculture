@@ -21,11 +21,12 @@ class MenuWidget @JvmOverloads constructor(
 
             field = value
             removeAllViews()
+
             value.forEachIndexed { index, option ->
                 val menu = MenuItem(context)
                 menu.title = option.title
                 menu.image = option.resId
-                if (index > columnCount) menu.marginTop = 20
+                if (index >= columnCount) menu.marginTop = 24
 
                 addView(menu)
             }
