@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.green_agriculture.R
 import com.example.green_agriculture.components.SwiperWidgetOptionItem
-import com.example.green_agriculture.databinding.SwiperViewItemLayoutBinding
+import com.example.green_agriculture.databinding.LayoutSwiperViewItemBinding
 
 private class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetOptionItem>() {
     override fun areItemsTheSame(
@@ -34,17 +34,16 @@ class SwiperWidgetAdapter() :
     ListAdapter<SwiperWidgetOptionItem, SwiperWidgetAdapter.SwiperItemViewHolder>(DiffItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwiperItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.swiper_view_item_layout,
+            R.layout.layout_swiper_view_item,
             parent,
             false
         )
 
-        val binding = SwiperViewItemLayoutBinding.inflate(
+        val binding = LayoutSwiperViewItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-
 
         return SwiperItemViewHolder(binding)
     }
@@ -57,7 +56,7 @@ class SwiperWidgetAdapter() :
             .into(holder.image)
     }
 
-    class SwiperItemViewHolder(binding: SwiperViewItemLayoutBinding) :
+    class SwiperItemViewHolder(binding: LayoutSwiperViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val image = binding.image
     }

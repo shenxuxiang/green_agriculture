@@ -65,7 +65,7 @@ class ToastWidget @JvmOverloads constructor(
         }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.toast_widget, this, true).apply {
+        LayoutInflater.from(context).inflate(R.layout.layout_toast_widget, this, true).apply {
             messageView = findViewById(R.id.message)
             prefixIcon = findViewById(R.id.prefix_icon)
 

@@ -22,9 +22,9 @@ object CommonUtils {
         if (Regex("""^https?://""").matches(url)) return url
 
         return if (url.startsWith("/")) {
-            "${AppEnv.baseURL}$url"
+            "${AppEnv.BASE_URL}$url"
         } else {
-            "${AppEnv.baseURL}/$url"
+            "${AppEnv.BASE_URL}/$url"
         }
     }
 }

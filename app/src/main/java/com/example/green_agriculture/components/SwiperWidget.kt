@@ -148,7 +148,7 @@ class SwiperWidget @JvmOverloads constructor(
     private val indicatorHolders = ArrayList<IndicatorViewHolder>()
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.swiper_view_layout, this, true).apply {
+        LayoutInflater.from(context).inflate(R.layout.layout_swiper_view, this, true).apply {
             indicator = findViewById<LinearLayout>(R.id.indicator)
             viewPager = findViewById<ViewPager2>(R.id.view_pager)
             viewPager.offscreenPageLimit = 2

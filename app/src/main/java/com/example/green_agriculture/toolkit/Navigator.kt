@@ -63,4 +63,8 @@ object Navigator {
 
         return navController.popBackStack(destinationId, inclusive, saveState)
     }
+
+    fun canPop(): Boolean {
+        return navController.previousBackStackEntry != null
+    }
 }

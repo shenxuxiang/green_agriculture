@@ -13,13 +13,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.green_agriculture.R
-import com.example.green_agriculture.databinding.AlertWidgetBinding
+import com.example.green_agriculture.databinding.LayoutAlertWidgetBinding
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.example.green_agriculture.toolkit.CommonUtils
 import com.example.green_agriculture.toolkit.VibratorUtils
 
 class AlertWidget : DialogFragment() {
-    private lateinit var binding: AlertWidgetBinding
+    private lateinit var binding: LayoutAlertWidgetBinding
 
     // 定义 Alert 在垂直方向的位置，0-1，0.5 表示垂直居中
     var ratio = 0.4f
@@ -59,7 +59,7 @@ class AlertWidget : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
-        binding = AlertWidgetBinding.inflate(LayoutInflater.from(context))
+        binding = LayoutAlertWidgetBinding.inflate(LayoutInflater.from(context))
 
         val screenHeight = context.resources.displayMetrics.heightPixels
         val viewSpacing = CalculateUtils.dpToPx(margin, context).toInt()

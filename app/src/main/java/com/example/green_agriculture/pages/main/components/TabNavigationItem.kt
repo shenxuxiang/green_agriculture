@@ -61,10 +61,11 @@ class TabNavigationItem @JvmOverloads constructor(
         }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.tab_navigation_item, this, true).apply {
-            tabIcon = findViewById(R.id.tabIcon)
-            tabName = findViewById(R.id.tabName)
-        }
+        LayoutInflater.from(context).inflate(R.layout.layout_tab_navigation_item, this, true)
+            .apply {
+                tabIcon = findViewById(R.id.tabIcon)
+                tabName = findViewById(R.id.tabName)
+            }
 
         orientation = VERTICAL
         gravity = Gravity.CENTER
