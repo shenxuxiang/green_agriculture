@@ -16,7 +16,7 @@ class ModuleTitleWidget @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
     lateinit var titleView: TextView
 
-    lateinit var loadMoreView: LinearLayout
+    lateinit var moreView: LinearLayout
 
     var title: String = ""
         set(value) {
@@ -27,11 +27,20 @@ class ModuleTitleWidget @JvmOverloads constructor(
             titleView.text = value
         }
 
+    var hasMore: Boolean = true
+        set(value) {
+            if (field == value) return
+
+            field = value
+
+            moreView.visibility = if (value) VISIBLE else GONE
+        }
+
     init {
         orientation = HORIZONTAL
         gravity = Gravity.START or Gravity.CENTER_VERTICAL
         createTitleView()
-        createLoadMoreView()
+        createMoreView()
     }
 
     private fun createTitleView() {
@@ -40,24 +49,22 @@ class ModuleTitleWidget @JvmOverloads constructor(
                 weight = 1f
             }
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            setTextColor(R.color.black3)
+            setTextColor(context.getColor(R.color.black3))
         }
         addView(titleView)
     }
 
-    private fun createLoadMoreView() {
-        loadMoreView = LinearLayout(context).apply {
-            layoutParams =
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.CENTER
-                }
+    private fun createMoreView() {
+        moreView = LinearLayout(context).apply {
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            gravity = Gravity.CENTER_VERTICAL
             orientation = HORIZONTAL
         }
 
         val loadMoreText = TextView(context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-            setTextColor(R.color.black4)
+            setTextColor(context.getColor(R.color.black4))
             text = "更多"
         }
 
@@ -68,13 +75,13 @@ class ModuleTitleWidget @JvmOverloads constructor(
                 16f,
                 context.resources.displayMetrics
             )
-            iconColor = context.getColor(R.color.primary)
+            iconColor = context.getColor(R.color.black4)
             iconName = context.getString(R.string.icon_forward)
         }
 
-        loadMoreView.addView(loadMoreText)
-        loadMoreView.addView(forwardIcon)
-        addView(loadMoreView)
+        moreView.addView(loadMoreText)
+        moreView.addView(forwardIcon)
+        addView(moreView)
     }
 
     companion object {
@@ -82,6 +89,12 @@ class ModuleTitleWidget @JvmOverloads constructor(
         @BindingAdapter("title")
         fun bindTitle(view: ModuleTitleWidget, title: String) {
             view.title = title
+        }
+
+        @JvmStatic
+        @BindingAdapter("hasMore")
+        fun bindHasMore(view: ModuleTitleWidget, hasMore: Boolean) {
+            view.hasMore = hasMore
         }
     }
 }

@@ -54,6 +54,7 @@
                     app:menuOptions="@{viewModel.uiState.menuOptions}" />
 
                 <com.example.green_agriculture.components.ModuleTitleWidget
+                    hasMore="@{false}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="12dp"
