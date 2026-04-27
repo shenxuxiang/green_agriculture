@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.isNotEmpty
@@ -26,14 +25,13 @@ import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE
 import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING
 import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.SwiperWidgetAdapter
+import com.example.green_agriculture.entity.SwiperWidgetItemOption
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.google.android.material.animation.AnimationUtils.lerp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-
-data class SwiperWidgetOptionItem(val url: String)
 
 @SuppressLint("ClickableViewAccessibility")
 class SwiperWidget @JvmOverloads constructor(
@@ -73,13 +71,13 @@ class SwiperWidget @JvmOverloads constructor(
      * 处在 A （index = 1）的位置时，用户向右拖拽完成后，立即调用 setCurrentItem(positionSafeRange.last, false)，虽然展示的还是 D，但实际索引却是 4；
      * 同理 D （index = 4）的位置时，用户向左拖拽完成后，立即调用 setCurrentItem(positionSafeRange.first, false)，虽然展示的还是 A，但实际索引却是 1；
      */
-    var options: List<SwiperWidgetOptionItem> = emptyList()
+    var options: List<SwiperWidgetItemOption> = emptyList()
         set(value) {
             if (value == field) return
             field = value
 
             val isLoopable = value.size > 1
-            val newList = if (value.size > 1) {
+            val newList = if (isLoopable) {
                 List(value.size + 2) {
                     when (it) {
                         0 -> value[value.size - 1]
@@ -212,8 +210,12 @@ class SwiperWidget @JvmOverloads constructor(
 
             val color =
                 ArgbEvaluator().evaluate(fraction, indicatorColor, indicatorHighlightColor) as Int
+
             // 修改背景色
-            holder.drawable.setColor(color)
+            // drawable.color 返回的是一个 ColorStateList?，需要通过 defaultColor 返回 ColorInt
+            if (color != holder.drawable.color?.defaultColor) {
+                holder.drawable.setColor(color)
+            }
         }
     }
 
@@ -221,7 +223,7 @@ class SwiperWidget @JvmOverloads constructor(
      * 更新所有 Indicator 的样式；
      * nextIndex    - 表示即将过渡的目标 IndicatorItem
      * currentIndex - 当前展示高亮的 IndicatorItem
-     * fraction     - 过渡比例
+     * fraction     - 过渡比例，1-表示选中高亮的状态
      */
     private fun updateIndicatorWithFraction(nextIndex: Int, currentIndex: Int, fraction: Float) {
         options.forEachIndexed { i, _ ->
@@ -273,7 +275,6 @@ class SwiperWidget @JvmOverloads constructor(
 
             if (options.size <= 1) return
 
-            val safePosition = getSafePosition(position)
             /**
              * positionOffset == 0 说明当前 ViewPager2 动画执行结束，界面切换已完成；
              * 并且，当 positionOffset == 0 时，需要判断当前 ViewPager2 是否处于 positionSafeRange 范围内；
@@ -287,11 +288,11 @@ class SwiperWidget @JvmOverloads constructor(
                     viewPager.setCurrentItem(positionSafeRange.last, false)
                 }
 
-                indicatorIndex = safePosition - 1
+                indicatorIndex = getSafePosition(position) - 1
             } else {
                 if (!isUserDragging) return
                 /**
-                 * position + positionOffset > currentPositionSnapShot 说明用户在往左拖拽，
+                 * position + positionOffset > currentPositionSnapShot 说明用户在往左拖拽，否则就是向右托拽
                  * 往左边拖拽时， positionOffset 从 0 -> 1 逐渐增大，并且 position == currentPositionSnapShot
                  * 往右边拖拽时， positionOffset 从 1 -> 0 逐渐减小，并且 position == currentPositionSnapShot - 1
                  */
@@ -351,8 +352,8 @@ class SwiperWidget @JvmOverloads constructor(
                                 val nextIndex = getSafePosition(position + 1) - 1
                                 // 执行 Indicator 动画
                                 intervalAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-                                    duration = 300
-                                    interpolator = LinearInterpolator()
+                                    duration = 200
+                                    // interpolator = LinearInterpolator()
                                     addUpdateListener {
                                         updateIndicatorWithFraction(
                                             nextIndex,
@@ -411,7 +412,7 @@ class SwiperWidget @JvmOverloads constructor(
     companion object {
         @JvmStatic
         @BindingAdapter("options", "index")
-        fun bindOptions(view: SwiperWidget, options: List<SwiperWidgetOptionItem>, index: Int) {
+        fun bindOptions(view: SwiperWidget, options: List<SwiperWidgetItemOption>, index: Int) {
             view.options = options
             view.indicatorIndex = index
         }

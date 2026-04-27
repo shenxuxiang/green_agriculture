@@ -96,6 +96,7 @@ class ToastWidget @JvmOverloads constructor(
             toast.icon = icon
             toast.message = message
 
+            // 因为 Toast 直接插入到 Activity 窗口的 DecorView 中的，所有布局参数必须使用 FrameLayout.LayoutParams
             // 设置 Toast 在容器中的尺寸、位置信息
             toast.layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,

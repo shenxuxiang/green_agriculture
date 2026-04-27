@@ -1,8 +1,8 @@
 package com.example.green_agriculture.pages.home
 
 import com.example.green_agriculture.R
-import com.example.green_agriculture.components.SwiperWidgetOptionItem
 import com.example.green_agriculture.entity.MenuItemOption
+import com.example.green_agriculture.entity.SwiperWidgetItemOption
 
 val options = listOf(
     MenuItemOption(resId = R.mipmap.home_1, title = "测量宝"),
@@ -20,7 +20,7 @@ val options = listOf(
 )
 
 data class UiState(
-    val swiperList: List<SwiperWidgetOptionItem> = emptyList(),
+    val swiperList: List<SwiperWidgetItemOption> = emptyList(),
     val logo: Int = R.mipmap.logo,
     val menuOptions: List<MenuItemOption> = options,
 )

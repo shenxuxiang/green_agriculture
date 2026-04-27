@@ -15,6 +15,7 @@ object LocalStorage {
     inline fun <reified T> getItem(key: String, defValue: T): T? {
         return when (T::class) {
             Int::class -> prefs.getInt(key, defValue as Int) as T
+            Long::class -> prefs.getLong(key, defValue as Long) as T
             Float::class -> prefs.getFloat(key, defValue as Float) as T
             String::class -> prefs.getString(key, defValue as String) as T
             Boolean::class -> prefs.getBoolean(key, defValue as Boolean) as T

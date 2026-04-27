@@ -2,8 +2,6 @@ package com.example.green_agriculture.pages.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.green_agriculture.components.SwiperWidgetOptionItem
-import com.example.green_agriculture.toolkit.CommonUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,10 +19,7 @@ class HomeViewModel @Inject constructor(repository: Repository) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            val swiperList = repository.queryBannerList().map {
-                SwiperWidgetOptionItem(url = CommonUtils.networkImageUrl(it))
-            }
-
+            val swiperList = repository.queryBannerList()
             updateUIState {
                 copy(swiperList = swiperList)
             }

@@ -8,20 +8,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.green_agriculture.R
-import com.example.green_agriculture.components.SwiperWidgetOptionItem
 import com.example.green_agriculture.databinding.LayoutSwiperViewItemBinding
+import com.example.green_agriculture.entity.SwiperWidgetItemOption
+import com.example.green_agriculture.toolkit.CommonUtils
 
-private class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetOptionItem>() {
+private class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetItemOption>() {
     override fun areItemsTheSame(
-        oldItem: SwiperWidgetOptionItem,
-        newItem: SwiperWidgetOptionItem,
+        oldItem: SwiperWidgetItemOption,
+        newItem: SwiperWidgetItemOption,
     ): Boolean {
         return oldItem.url == newItem.url
     }
 
     override fun areContentsTheSame(
-        oldItem: SwiperWidgetOptionItem,
-        newItem: SwiperWidgetOptionItem,
+        oldItem: SwiperWidgetItemOption,
+        newItem: SwiperWidgetItemOption,
     ): Boolean {
         return oldItem == newItem
     }
@@ -31,7 +32,7 @@ private class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetOptionItem>()
  * SwiperView 的适配器
  */
 class SwiperWidgetAdapter() :
-    ListAdapter<SwiperWidgetOptionItem, SwiperWidgetAdapter.SwiperItemViewHolder>(DiffItemCallback()) {
+    ListAdapter<SwiperWidgetItemOption, SwiperWidgetAdapter.SwiperItemViewHolder>(DiffItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwiperItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
             R.layout.layout_swiper_view_item,
@@ -51,7 +52,7 @@ class SwiperWidgetAdapter() :
     override fun onBindViewHolder(holder: SwiperItemViewHolder, position: Int) {
         val option = getItem(position)
         Glide.with(holder.itemView.context)
-            .load(option.url)
+            .load(CommonUtils.networkImageUrl(option.url))
             .transition(DrawableTransitionOptions.withCrossFade())
             .into(holder.image)
     }

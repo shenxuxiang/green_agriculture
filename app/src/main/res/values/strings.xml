@@ -14,4 +14,5 @@
     <string name="icon_warn">&#xe62b;</string>
     <string name="icon_back">&#xe63c;</string>
     <string name="icon_search">&#xe603;</string>
+    <string name="icon_forward">&#xe605;</string>
 </resources>

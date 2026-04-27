@@ -18,14 +18,14 @@ class IconWidget @JvmOverloads constructor(
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
     var iconName: String = ""
-        set(value: String) {
+        set(value) {
             if (value == field) return
             field = value
             text = iconName
         }
 
     var iconSize: Float = CalculateUtils.dpToPx(16)
-        set(value: Float) {
+        set(value) {
             if (value == field) return
             field = value
             setTextSize(TypedValue.COMPLEX_UNIT_PX, value)
@@ -33,7 +33,7 @@ class IconWidget @JvmOverloads constructor(
 
     @ColorInt
     var iconColor: Int = context.getColor(R.color.black3)
-        set(value: Int) {
+        set(value) {
             if (value == field) return
             field = value
             setTextColor(value)

@@ -46,6 +46,8 @@ class ToolbarWidget @JvmOverloads constructor(
         }
 
     init {
+        // 清除阴影，一般使用 elevation = 0f 就可以了，但是这里的 Toolbar 的背景色是透明的，
+        // 所以还需要设置 stateListAnimator = null，清除 background 下方所有的的阴影
         elevation = 0f
         stateListAnimator = null
         setBackgroundColor(Color.TRANSPARENT)
