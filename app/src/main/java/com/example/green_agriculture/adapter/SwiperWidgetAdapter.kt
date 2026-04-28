@@ -7,26 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.example.green_agriculture.R
 import com.example.green_agriculture.databinding.LayoutSwiperViewItemBinding
 import com.example.green_agriculture.entity.SwiperWidgetItemOption
 import com.example.green_agriculture.toolkit.CommonUtils
-
-private class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetItemOption>() {
-    override fun areItemsTheSame(
-        oldItem: SwiperWidgetItemOption,
-        newItem: SwiperWidgetItemOption,
-    ): Boolean {
-        return oldItem.url == newItem.url
-    }
-
-    override fun areContentsTheSame(
-        oldItem: SwiperWidgetItemOption,
-        newItem: SwiperWidgetItemOption,
-    ): Boolean {
-        return oldItem == newItem
-    }
-}
 
 /**
  * SwiperView 的适配器
@@ -34,12 +17,6 @@ private class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetItemOption>()
 class SwiperWidgetAdapter() :
     ListAdapter<SwiperWidgetItemOption, SwiperWidgetAdapter.SwiperItemViewHolder>(DiffItemCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwiperItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.layout_swiper_view_item,
-            parent,
-            false
-        )
-
         val binding = LayoutSwiperViewItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -60,5 +37,21 @@ class SwiperWidgetAdapter() :
     class SwiperItemViewHolder(binding: LayoutSwiperViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val image = binding.image
+    }
+
+    class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetItemOption>() {
+        override fun areItemsTheSame(
+            oldItem: SwiperWidgetItemOption,
+            newItem: SwiperWidgetItemOption,
+        ): Boolean {
+            return oldItem.url == newItem.url
+        }
+
+        override fun areContentsTheSame(
+            oldItem: SwiperWidgetItemOption,
+            newItem: SwiperWidgetItemOption,
+        ): Boolean {
+            return oldItem == newItem
+        }
     }
 }

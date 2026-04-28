@@ -21,7 +21,14 @@ class HomeViewModel @Inject constructor(repository: Repository) : ViewModel() {
         viewModelScope.launch {
             val swiperList = repository.queryBannerList()
             updateUIState {
-                copy(swiperList = swiperList)
+                copy(swiperList = swiperList ?: emptyList())
+            }
+        }
+
+        viewModelScope.launch {
+            val policyInformationList = repository.queryPolicyInformationList()
+            updateUIState {
+                copy(policyInformationList = policyInformationList ?: emptyList())
             }
         }
     }

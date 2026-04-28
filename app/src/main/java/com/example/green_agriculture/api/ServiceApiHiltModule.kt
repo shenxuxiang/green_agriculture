@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ServiceApiModule {
+object ServiceApiHiltModule {
     @Provides
     @Singleton
     fun provideHomeServiceApi() = HttpRequest.create<HomeServiceApi>()

@@ -27,7 +27,7 @@ class ModuleTitleWidget @JvmOverloads constructor(
             titleView.text = value
         }
 
-    var hasMore: Boolean = true
+    var showMore: Boolean = true
         set(value) {
             if (field == value) return
 
@@ -92,9 +92,9 @@ class ModuleTitleWidget @JvmOverloads constructor(
         }
 
         @JvmStatic
-        @BindingAdapter("hasMore")
-        fun bindHasMore(view: ModuleTitleWidget, hasMore: Boolean) {
-            view.hasMore = hasMore
+        @BindingAdapter("showMore")
+        fun bindHasMore(view: ModuleTitleWidget, showMore: Boolean) {
+            view.showMore = showMore
         }
     }
 }

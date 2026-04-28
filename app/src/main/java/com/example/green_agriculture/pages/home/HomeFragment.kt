@@ -1,15 +1,21 @@
 package com.example.green_agriculture.pages.home
 
-import android.util.Log
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.green_agriculture.R
+import com.example.green_agriculture.adapter.PolicyInformationListAdepter
+import com.example.green_agriculture.adapter.PolicyInformationListItemDecoration
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.components.AlertWidget
 import com.example.green_agriculture.databinding.FragmentHomeBinding
 import com.example.green_agriculture.pages.main.MainViewModel
 import com.example.green_agriculture.toolkit.Toast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
@@ -17,15 +23,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     val viewModel by viewModels<HomeViewModel>()
     val mainViewModel by hiltNavGraphViewModels<MainViewModel>(R.id.nav_graph)
 
+    val policyInformationAdapter = PolicyInformationListAdepter()
+
     override fun initData() {
         super.initData()
         binding.outerViewPager = mainViewModel.uiState.value.viewPager2
-        Log.d("GA_APP", "outerViewPager:${binding.outerViewPager}")
         binding.viewModel = viewModel
     }
 
     override fun initView() {
         super.initView()
+        initRecyclerView()
     }
 
     override fun onEventBinding() {
@@ -41,6 +49,32 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     Toast.showWarn("系统异常，请联系管理员")
                 }
             )
+        }
+    }
+
+    override fun onDataObserve() {
+        super.onDataObserve()
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                var prevValue = viewModel.uiState.value.policyInformationList
+
+                viewModel.uiState.collect {
+                    if (it.policyInformationList != prevValue) {
+                        policyInformationAdapter.submitList(it.policyInformationList)
+                        prevValue = it.policyInformationList
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initRecyclerView() {
+        binding.policyInformationRecyclerView.apply {
+            adapter = policyInformationAdapter
+            addItemDecoration(PolicyInformationListItemDecoration())
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
     }
 }
