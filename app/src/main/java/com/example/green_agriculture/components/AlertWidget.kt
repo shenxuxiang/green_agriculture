@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.green_agriculture.R
 import com.example.green_agriculture.databinding.LayoutAlertWidgetBinding
+import com.example.green_agriculture.extend.dp
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.example.green_agriculture.toolkit.CommonUtils
 import com.example.green_agriculture.toolkit.VibratorUtils
@@ -25,7 +26,7 @@ class AlertWidget : DialogFragment() {
     var ratio = 0.4f
 
     // 定义 Alert 与屏幕两侧的之间的间距
-    var margin = 30
+    var horizontalSpacing = 30.dp.toInt()
 
     // 是否展示确认按钮
     var showConfirm = true
@@ -62,14 +63,13 @@ class AlertWidget : DialogFragment() {
         binding = LayoutAlertWidgetBinding.inflate(LayoutInflater.from(context))
 
         val screenHeight = context.resources.displayMetrics.heightPixels
-        val viewSpacing = CalculateUtils.dpToPx(margin, context).toInt()
         val dialog = AlertDialog.Builder(context, R.style.AlertWidgetDialogTheme).create()
 
         dialog.setView(
             binding.root,
-            viewSpacing,
+            horizontalSpacing,
             0,
-            viewSpacing,
+            horizontalSpacing,
             0,
         )
 
@@ -144,7 +144,7 @@ class AlertWidget : DialogFragment() {
         /**
          * @param title                    标题
          * @param fraction                 Alert 在垂直方向上的位置，0.5-居中，0-顶部对齐、1-底部对齐
-         * @param marginDp                 Alert 距离屏幕的外边距（水平方向），单位 Dp
+         * @param horizontalSpacing        Alert 距离屏幕的外边距（水平方向），单位 Dp
          * @param showCancel               是否展示取消按钮，默认 true
          * @param showConfirm              是否展示确认按钮，默认 true
          * @param cancelText               取消按钮展示文本
@@ -158,7 +158,7 @@ class AlertWidget : DialogFragment() {
         fun show(
             fragmentManager: FragmentManager,
             title: String,
-            marginDp: Int = 30,
+            horizontalSpacing: Int = 30.dp.toInt(),
             fraction: Float = 0.4f,
             cancelText: String = "取消",
             confirmText: String = "确认",
@@ -176,10 +176,10 @@ class AlertWidget : DialogFragment() {
                 this.confirmText = confirmText
                 this.showCancel = showCancel
                 this.showConfirm = showConfirm
+                this.horizontalSpacing = horizontalSpacing
                 this.hapticFeedbackEnabled = hapticFeedbackEnabled
 
                 ratio = fraction
-                margin = marginDp
                 onCancelListener = onCancel
                 onConfirmListener = onConfirm
                 isCancelableFlag = isCancelable
@@ -192,7 +192,7 @@ class AlertWidget : DialogFragment() {
         /**
          * @param title                    标题
          * @param fraction                 Alert 在垂直方向上的位置，0.5-居中，0-顶部对齐、1-底部对齐
-         * @param marginDp                 Alert 距离屏幕的外边距（水平方向），单位 Dp
+         * @param horizontalSpacing        Alert 距离屏幕的外边距（水平方向），单位 Dp
          * @param showCancel               是否展示取消按钮，默认 true
          * @param showConfirm              是否展示确认按钮，默认 true
          * @param cancelText               取消按钮展示文本
@@ -206,7 +206,7 @@ class AlertWidget : DialogFragment() {
         fun show(
             context: Context,
             title: String,
-            marginDp: Int = 30,
+            horizontalSpacing: Int = 30.dp.toInt(),
             fraction: Float = 0.4f,
             cancelText: String = "取消",
             confirmText: String = "确认",
@@ -225,7 +225,7 @@ class AlertWidget : DialogFragment() {
                 show(
                     fragmentManager,
                     title,
-                    marginDp,
+                    horizontalSpacing,
                     fraction,
                     cancelText,
                     confirmText,
@@ -243,7 +243,7 @@ class AlertWidget : DialogFragment() {
         /**
          * @param title                    标题
          * @param fraction                 Alert 在垂直方向上的位置，0.5-居中，0-顶部对齐、1-底部对齐
-         * @param marginDp                 Alert 距离屏幕的外边距（水平方向），单位 Dp
+         * @param horizontalSpacing        Alert 距离屏幕的外边距（水平方向），单位 Dp
          * @param showCancel               是否展示取消按钮，默认 true
          * @param showConfirm              是否展示确认按钮，默认 true
          * @param cancelText               取消按钮展示文本
@@ -257,7 +257,7 @@ class AlertWidget : DialogFragment() {
         fun show(
             fragment: Fragment,
             title: String,
-            marginDp: Int = 30,
+            horizontalSpacing: Int = 30,
             fraction: Float = 0.4f,
             cancelText: String = "取消",
             confirmText: String = "确认",
@@ -274,7 +274,7 @@ class AlertWidget : DialogFragment() {
             show(
                 fragmentManager,
                 title,
-                marginDp,
+                horizontalSpacing,
                 fraction,
                 cancelText,
                 confirmText,

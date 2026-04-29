@@ -25,62 +25,62 @@
             android:layout_height="wrap_content"
             app:title="@{`首页`}" />
 
-        <androidx.core.widget.NestedScrollView
+        <com.scwang.smart.refresh.layout.SmartRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <LinearLayout
+            <com.example.green_agriculture.components.RefreshHeaderWidget
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="60dp" />
 
-                <com.example.green_agriculture.components.SwiperWidget
-                    android:layout_width="match_parent"
-                    android:layout_height="170dp"
-                    app:index="@{0}"
-                    app:interval="@{3000}"
-                    app:options="@{viewModel.uiState.swiperList}"
-                    app:outer_view_pager="@{outerViewPager}" />
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <com.example.green_agriculture.pages.home.components.MenuWidget
-                    android:id="@+id/menuBox"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="12dp"
-                    android:layout_marginTop="10dp"
-                    android:columnCount="4"
-                    android:paddingVertical="20dp"
-                    app:menuOptions="@{viewModel.uiState.menuOptions}" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                <com.example.green_agriculture.components.ModuleTitleWidget
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="12dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="12dp"
-                    app:title="@{`农业咨询`}" />
+                    <com.example.green_agriculture.components.SwiperWidget
+                        android:layout_width="match_parent"
+                        android:layout_height="170dp"
+                        app:index="@{0}"
+                        app:interval="@{3000}"
+                        app:options="@{viewModel.uiState.swiperList}"
+                        app:outer_view_pager="@{outerViewPager}" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/policy_information_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    <com.example.green_agriculture.pages.home.components.MenuWidget
+                        android:id="@+id/menuBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:layout_marginTop="10dp"
+                        android:columnCount="4"
+                        android:paddingVertical="20dp"
+                        app:menuOptions="@{viewModel.uiState.menuOptions}" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button"
-                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginHorizontal="30dp"
-                    android:backgroundTint="@color/primary"
-                    android:hapticFeedbackEnabled="true"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="Show Toast"
-                    app:cornerRadius="20dp" />
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                    <com.example.green_agriculture.components.ModuleTitleWidget
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="12dp"
+                        app:title="@{`农业咨询`}" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/policy_information_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:orientation="vertical" />
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </com.scwang.smart.refresh.layout.SmartRefreshLayout>
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

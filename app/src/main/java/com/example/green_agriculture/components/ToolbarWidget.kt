@@ -11,10 +11,10 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
+import com.example.green_agriculture.extend.dp
 import com.example.green_agriculture.toolkit.CalculateUtils
 import com.example.green_agriculture.toolkit.Navigator
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.internal.ViewUtils.dpToPx
 
 class ToolbarWidget @JvmOverloads constructor(
     context: Context,
@@ -41,7 +41,7 @@ class ToolbarWidget @JvmOverloads constructor(
             if (value == field) return
             field = value
             val toolbarXLP = toolbarX.layoutParams as Toolbar.LayoutParams
-            toolbarXLP.height = dpToPx(context, value).toInt()
+            toolbarXLP.height = value.dp.toInt()
             toolbarX.layoutParams = toolbarXLP
         }
 

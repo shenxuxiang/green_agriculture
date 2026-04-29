@@ -9,7 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.withStyledAttributes
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
-import com.example.green_agriculture.toolkit.CalculateUtils
+import com.example.green_agriculture.extend.sp
 
 class IconWidget @JvmOverloads constructor(
     context: Context,
@@ -24,7 +24,7 @@ class IconWidget @JvmOverloads constructor(
             text = iconName
         }
 
-    var iconSize: Float = CalculateUtils.dpToPx(16)
+    var iconSize: Float = 16.sp
         set(value) {
             if (value == field) return
             field = value

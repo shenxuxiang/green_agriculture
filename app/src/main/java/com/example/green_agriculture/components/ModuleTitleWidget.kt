@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
+import com.example.green_agriculture.extend.sp
 
 class ModuleTitleWidget @JvmOverloads constructor(
     context: Context,
@@ -70,11 +71,7 @@ class ModuleTitleWidget @JvmOverloads constructor(
 
         val forwardIcon = IconWidget(context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            iconSize = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                16f,
-                context.resources.displayMetrics
-            )
+            iconSize = 16.sp
             iconColor = context.getColor(R.color.black4)
             iconName = context.getString(R.string.icon_forward)
         }
@@ -93,7 +90,7 @@ class ModuleTitleWidget @JvmOverloads constructor(
 
         @JvmStatic
         @BindingAdapter("showMore")
-        fun bindHasMore(view: ModuleTitleWidget, showMore: Boolean) {
+        fun bindShowMore(view: ModuleTitleWidget, showMore: Boolean) {
             view.showMore = showMore
         }
     }

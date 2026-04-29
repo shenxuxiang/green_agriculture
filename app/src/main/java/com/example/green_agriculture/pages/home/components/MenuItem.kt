@@ -10,7 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.green_agriculture.R
-import com.example.green_agriculture.toolkit.CalculateUtils
+import com.example.green_agriculture.extend.dp
 
 class MenuItem @JvmOverloads constructor(
     context: Context,
@@ -46,7 +46,7 @@ class MenuItem @JvmOverloads constructor(
             field = value
 
             val lp = layoutParams as GridLayout.LayoutParams
-            lp.topMargin = CalculateUtils.dpToPx(value).toInt()
+            lp.topMargin = value.dp.toInt()
 
             layoutParams = lp
         }
@@ -70,11 +70,9 @@ class MenuItem @JvmOverloads constructor(
     private fun createImage() {
         imageView = ImageView(context).apply {
             layoutParams = LayoutParams(
-                CalculateUtils.dpToPx(32).toInt(),
-                CalculateUtils.dpToPx(32).toInt(),
-            ).apply {
-                bottomMargin = CalculateUtils.dpToPx(10).toInt()
-            }
+                32.dp.toInt(),
+                32.dp.toInt(),
+            ).apply { bottomMargin = 10.dp.toInt() }
 
             scaleType = ImageView.ScaleType.CENTER_CROP
         }

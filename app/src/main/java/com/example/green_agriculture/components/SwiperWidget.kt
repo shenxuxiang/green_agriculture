@@ -26,7 +26,7 @@ import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING
 import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.SwiperWidgetAdapter
 import com.example.green_agriculture.entity.SwiperWidgetItemOption
-import com.example.green_agriculture.toolkit.CalculateUtils
+import com.example.green_agriculture.extend.dp
 import com.google.android.material.animation.AnimationUtils.lerp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -50,10 +50,10 @@ class SwiperWidget @JvmOverloads constructor(
      */
     private val indicatorColor = 0xBBFFFFFF.toInt()
     private val indicatorHighlightColor = context.getColor(R.color.primary)
-    private val indicatorCornerRadius = CalculateUtils.dpToPx(dp = 3, context)
-    private val indicatorWidth = CalculateUtils.dpToPx(dp = 6, context).toInt()
-    private val indicatorHighlightWidth = CalculateUtils.dpToPx(dp = 16, context).toInt()
-    private val indicatorGap = CalculateUtils.dpToPx(dp = 6, context).toInt()
+    private val indicatorCornerRadius = 3.dp
+    private val indicatorWidth = 6.dp.toInt()
+    private val indicatorHighlightWidth = 16.dp.toInt()
+    private val indicatorGap = 6.dp.toInt()
 
     /**
      * index 的安全范围

@@ -13,7 +13,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.green_agriculture.R
-import com.example.green_agriculture.toolkit.CalculateUtils
+import com.example.green_agriculture.extend.dp
 
 class ToastWidget @JvmOverloads constructor(
     context: Context,
@@ -30,9 +30,9 @@ class ToastWidget @JvmOverloads constructor(
      * message  - Toast 提示文本
      * icon     - Toast icon类型，目前只有 success、warn 两种类型，其他一概不展示
      */
-    val paddingX = CalculateUtils.dpToPx(12, context).toInt()
-    val paddingY = CalculateUtils.dpToPx(16, context).toInt()
-    val corner = CalculateUtils.dpToPx(8, context)
+    val paddingX = 12.dp.toInt()
+    val paddingY = 16.dp.toInt()
+    val corner = 8.dp
     var message: String = ""
         set(value) {
             if (value == field) return
