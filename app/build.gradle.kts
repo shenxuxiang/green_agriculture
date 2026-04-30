@@ -186,6 +186,7 @@ kotlin {
 dependencies {
     // SmartRefreshLayout
     implementation("io.github.scwang90:refresh-layout-kernel:2.1.0")
+    implementation("io.github.scwang90:refresh-header-classics:2.1.0") //经典刷新头
     // retrofit2 + gson
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")

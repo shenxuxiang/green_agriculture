@@ -1,5 +1,6 @@
 package com.example.green_agriculture.pages.home
 
+import android.view.animation.DecelerateInterpolator
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
@@ -10,8 +11,11 @@ import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.PolicyInformationListAdepter
 import com.example.green_agriculture.adapter.PolicyInformationListItemDecoration
 import com.example.green_agriculture.base.BaseFragment
+import com.example.green_agriculture.components.RefreshHeaderWidget
 import com.example.green_agriculture.databinding.FragmentHomeBinding
+import com.example.green_agriculture.extend.dp
 import com.example.green_agriculture.pages.main.MainViewModel
+import com.example.green_agriculture.toolkit.LogUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -32,14 +36,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun initView() {
         super.initView()
         initPolicyInformationList()
-        binding.refreshLayout.setEnableRefresh(true)
+        binding.refreshLayout.apply {
+            setRefreshHeader(RefreshHeaderWidget(requireContext()))
+            // setRefreshHeader(ClassicsHeader(requireContext()))
+            setHeaderHeightPx(60.dp.toInt())
+            setReboundDuration(300)
+            setReboundInterpolator(DecelerateInterpolator())
+            setEnableRefresh(true)
+        }
     }
 
     override fun onEventBinding() {
         super.onEventBinding()
         binding.refreshLayout.setOnRefreshListener {
+            LogUtils.d("=============refreshing")
             it.finishRefresh(2000, true, true)
         }
+
+        binding.refreshLayout.postDelayed({
+            LogUtils.d("=============refreshing start")
+            val result = binding.refreshLayout.autoRefresh()
+            LogUtils.d("=============refreshing end, $result")
+        }, 1000)
     }
 
     override fun onDataObserve() {

@@ -25,38 +25,41 @@ class RefreshHeaderWidget @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr), RefreshHeader {
-    private val headerText: TextView
     private var canRefresh = false
-    private val indicator: CircularProgressIndicator
+    private val radius = 10.dp.toInt()
+    private val thickness = 2.dp.toInt()
+    private val tips: TextView = TextView(context).apply {
+        layoutParams =
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.CENTER
+            }
+
+        text = "刷新成功"
+        setTextColor(context.getColor(R.color.black9))
+        setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
+    }
+
+    private val indicator: CircularProgressIndicator = CircularProgressIndicator(context).apply {
+        layoutParams =
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
+            }
+        progress = 0
+        // 消除 MaterialComponents 样式自带的间隙
+        indicatorInset = 0
+        // 暂停动画
+        isIndeterminate = false
+        indicatorSize = radius * 2
+        trackThickness = thickness
+        trackCornerRadius = thickness / 2
+        // 设置 CircularProgressIndicator 高亮颜色
+        setIndicatorColor(context.getColor(R.color.primary))
+        // 设置轨迹颜色
+        trackColor = context.getColor(R.color.tertiaryPrimary)
+    }
 
     init {
-        headerText = TextView(context).apply {
-            layoutParams =
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.CENTER
-                }
-
-            text = "刷新成功"
-            setTextColor(0xFF999999.toInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
-        }
-
-        addView(headerText)
-        indicator = CircularProgressIndicator(context).apply {
-            layoutParams =
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-                    setMargins(0, 0, 0, 10.dp.toInt())
-                }
-            progress = 0
-            indicatorInset = 0
-            isIndeterminate = false
-            indicatorSize = 20.dp.toInt()
-            trackThickness = 2.dp.toInt()
-            trackCornerRadius = 1.dp.toInt()
-            setIndicatorColor(context.getColor(R.color.primary))
-
-        }
+        addView(tips)
         addView(indicator)
     }
 
@@ -76,15 +79,31 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         maxDragHeight: Int,
     ) {
         canRefresh = percent >= 1
+        /**
+         * offset 表示用户拖拽的距离
+         * Indicator 的展示的位置，应该始终处于可是区域的中间位置
+         */
+        val indicatorLayoutParams = indicator.layoutParams as LayoutParams
+        val marginBottom = if (offset <= radius * 2) {
+            0
+        } else {
+            (offset - radius * 2).coerceAtMost(height - radius * 2) / 2
+        }
+        indicatorLayoutParams.setMargins(0, 0, 0, marginBottom)
+        indicator.layoutParams = indicatorLayoutParams
 
+        /**
+         * 被限定在 PullDownToRefresh 的过程中
+         * 更新 Indicator 的进度、旋转角度、缩放大小
+         */
         if (percent in 0f..1f) {
             val matrix = Matrix()
             val scale = percent.coerceAtMost(1f)
-            matrix.postScale(scale, scale, 10.dp, 10.dp)
             matrix.postRotate(scale * 360f, 10.dp, 10.dp)
+            matrix.postScale(scale, scale, 10.dp, 10.dp + (1 - scale) * 10.dp)
 
-            indicator.progress = (scale * 100).toInt()
             indicator.animationMatrix = matrix
+            indicator.progress = (scale * 100).toInt()
         }
     }
 
@@ -107,24 +126,24 @@ class RefreshHeaderWidget @JvmOverloads constructor(
 
     override fun onFinish(refreshLayout: RefreshLayout, success: Boolean): Int {
         if (success) {
-            headerText.text = "刷新成功"
+            tips.text = "刷新成功"
         } else {
-            headerText.text = "刷新失败"
+            tips.text = "刷新失败"
         }
 
         indicator.visibility = GONE
         indicator.isIndeterminate = false
 
-        val translationY = ObjectAnimator.ofFloat(headerText, "translationY", (-50).dp, 0f)
-        val alpha = ObjectAnimator.ofFloat(headerText, "alpha", 0f, 1f)
-
+        val translationY = ObjectAnimator.ofFloat(tips, "translationY", (-20).dp, 0f)
+        val alpha = ObjectAnimator.ofFloat(tips, "alpha", 0f, 1f)
+        val scaleX = ObjectAnimator.ofFloat(tips, "scaleX", 0.6f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(tips, "scaleY", 0.6f, 1f)
         val animSet = AnimatorSet().apply {
-            play(translationY).with(alpha)
+            play(translationY).with(alpha).with(scaleX).with(scaleY)
             setDuration(300)
         }
 
         animSet.start()
-
         return 1000
     }
 
@@ -132,7 +151,10 @@ class RefreshHeaderWidget @JvmOverloads constructor(
 
     override fun isSupportHorizontalDrag() = false
 
-    override fun autoOpen(p0: Int, p1: Float, p2: Boolean) = true
+    override fun autoOpen(p0: Int, p1: Float, p2: Boolean): Boolean {
+        LogUtils.d("============== autoOpen")
+        return true
+    }
 
     override fun onStateChanged(
         refreshLayout: RefreshLayout,
@@ -140,19 +162,28 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         newState: RefreshState,
     ) {
         when (newState) {
-            RefreshState.None, RefreshState.PullDownToRefresh -> {
+            RefreshState.None -> { // 闲置状态，在 Header 由可见变为不可见后触发。
                 indicator.visibility = VISIBLE
-                headerText.alpha = 0f
+                tips.alpha = 0f
             }
 
-            RefreshState.Refreshing -> {}
+            RefreshState.PullDownToRefresh -> {
+                LogUtils.d("============== PullDownToRefresh")
+
+            }
+
+            RefreshState.Refreshing -> {
+                LogUtils.d("============== Refreshing")
+            }
 
             RefreshState.ReleaseToRefresh -> {
-                LogUtils.d("==================vibrate")
+                LogUtils.d("============== ReleaseToRefresh")
                 VibratorUtils.oneShot()
             }
 
-            RefreshState.RefreshFinish -> {}
+            RefreshState.RefreshFinish -> {
+                LogUtils.d("============== RefreshFinish")
+            }
 
             else -> {}
         }
