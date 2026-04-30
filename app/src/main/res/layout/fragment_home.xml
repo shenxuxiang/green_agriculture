@@ -44,7 +44,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="170dp"
                         app:index="@{0}"
-                        app:interval="@{3000}"
+                        app:interval="@{5000}"
                         app:options="@{viewModel.uiState.swiperList}"
                         app:outer_view_pager="@{outerViewPager}" />
 
@@ -76,7 +76,6 @@
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </com.scwang.smart.refresh.layout.SmartRefreshLayout>
-
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

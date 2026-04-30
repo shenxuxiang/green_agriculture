@@ -35,29 +35,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun initView() {
         super.initView()
+        initSmartRefreshLayout()
         initPolicyInformationList()
-        binding.refreshLayout.apply {
-            setRefreshHeader(RefreshHeaderWidget(requireContext()))
-            // setRefreshHeader(ClassicsHeader(requireContext()))
-            setHeaderHeightPx(60.dp.toInt())
-            setReboundDuration(300)
-            setReboundInterpolator(DecelerateInterpolator())
-            setEnableRefresh(true)
-        }
     }
 
     override fun onEventBinding() {
         super.onEventBinding()
         binding.refreshLayout.setOnRefreshListener {
             LogUtils.d("=============refreshing")
-            it.finishRefresh(2000, true, true)
+            viewModel.pageRefresh {
+                it.finishRefresh(1000, true, false)
+            }
         }
-
-        binding.refreshLayout.postDelayed({
-            LogUtils.d("=============refreshing start")
-            val result = binding.refreshLayout.autoRefresh()
-            LogUtils.d("=============refreshing end, $result")
-        }, 1000)
     }
 
     override fun onDataObserve() {
@@ -86,6 +75,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             addItemDecoration(PolicyInformationListItemDecoration())
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        }
+    }
+
+    /**
+     * 初始化 SmartRefreshLayout 的下拉刷新功能
+     */
+    private fun initSmartRefreshLayout() {
+        binding.refreshLayout.apply {
+            setRefreshHeader(RefreshHeaderWidget(requireContext()))
+            setHeaderHeightPx(60.dp.toInt())
+            setReboundDuration(300)
+            setReboundInterpolator(DecelerateInterpolator())
+            setEnableRefresh(true)
+        }
+        binding.refreshLayout.post {
+            binding.refreshLayout.autoRefresh()
         }
     }
 }

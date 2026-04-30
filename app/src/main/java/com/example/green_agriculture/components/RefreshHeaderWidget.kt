@@ -2,6 +2,7 @@ package com.example.green_agriculture.components
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Matrix
 import android.util.AttributeSet
@@ -26,6 +27,12 @@ class RefreshHeaderWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr), RefreshHeader {
     private var canRefresh = false
+
+    // tips 的透明度
+    private var tipsAlpha = 0f
+
+    // indicator 的 visibility
+    private var indicatorVisibility = VISIBLE
     private val radius = 10.dp.toInt()
     private val thickness = 2.dp.toInt()
     private val tips: TextView = TextView(context).apply {
@@ -67,10 +74,15 @@ class RefreshHeaderWidget @JvmOverloads constructor(
 
     override fun getSpinnerStyle(): SpinnerStyle = SpinnerStyle.Translate
 
-    override fun setPrimaryColors(vararg p0: Int) {}
+    @SuppressLint("RestrictedApi")
+    override fun setPrimaryColors(vararg p0: Int) {
+    }
 
-    override fun onInitialized(p0: RefreshKernel, p1: Int, p2: Int) {}
+    @SuppressLint("RestrictedApi")
+    override fun onInitialized(p0: RefreshKernel, p1: Int, p2: Int) {
+    }
 
+    @SuppressLint("RestrictedApi")
     override fun onMoving(
         isDragging: Boolean,
         percent: Float,
@@ -78,6 +90,7 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         height: Int,
         maxDragHeight: Int,
     ) {
+        LogUtils.d("==============onMoving, $percent, $offset")
         canRefresh = percent >= 1
         /**
          * offset 表示用户拖拽的距离
@@ -107,16 +120,19 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onReleased(
         refreshLayout: RefreshLayout,
         height: Int,
         maxDragHeight: Int,
     ) {
+        LogUtils.d("==============onReleased")
         if (canRefresh) {
             indicator.isIndeterminate = true
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onStartAnimator(
         p0: RefreshLayout,
         p1: Int,
@@ -124,6 +140,7 @@ class RefreshHeaderWidget @JvmOverloads constructor(
     ) {
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onFinish(refreshLayout: RefreshLayout, success: Boolean): Int {
         if (success) {
             tips.text = "刷新成功"
@@ -147,42 +164,37 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         return 1000
     }
 
-    override fun onHorizontalDrag(p0: Float, p1: Int, p2: Int) {}
+    @SuppressLint("RestrictedApi")
+    override fun onHorizontalDrag(p0: Float, p1: Int, p2: Int) {
+    }
 
     override fun isSupportHorizontalDrag() = false
 
-    override fun autoOpen(p0: Int, p1: Float, p2: Boolean): Boolean {
-        LogUtils.d("============== autoOpen")
-        return true
-    }
+    // autoOpen 必须设置为 false，否则调用 autoRefresh() 后不会触发下拉刷新、也不会展示下拉刷新动画
+    override fun autoOpen(p0: Int, p1: Float, p2: Boolean) = false
 
+    @SuppressLint("RestrictedApi")
     override fun onStateChanged(
         refreshLayout: RefreshLayout,
         oldState: RefreshState,
         newState: RefreshState,
     ) {
+        /**
+         * RefreshState.None              闲置状态，在 Header 由可见状态变为不可见状态后触发（并且用户释放了手指）。
+         * RefreshState.PullDownToRefresh 下拉状态，此时还未触发下拉刷新的阈值
+         * RefreshState.ReleaseToRefresh  触发下拉刷新阈值，此时释放手指即可触发刷新
+         * RefreshState.RefreshFinish     刷新完成
+         * 以上所有状态，在流程中只会触发一次，不会持续触发
+         */
         when (newState) {
-            RefreshState.None -> { // 闲置状态，在 Header 由可见变为不可见后触发。
-                indicator.visibility = VISIBLE
+            RefreshState.None, RefreshState.PullDownToRefresh -> {
                 tips.alpha = 0f
-            }
-
-            RefreshState.PullDownToRefresh -> {
-                LogUtils.d("============== PullDownToRefresh")
-
-            }
-
-            RefreshState.Refreshing -> {
-                LogUtils.d("============== Refreshing")
+                indicator.visibility = VISIBLE
             }
 
             RefreshState.ReleaseToRefresh -> {
-                LogUtils.d("============== ReleaseToRefresh")
+                // 振动提示，提示用户可以释放手势
                 VibratorUtils.oneShot()
-            }
-
-            RefreshState.RefreshFinish -> {
-                LogUtils.d("============== RefreshFinish")
             }
 
             else -> {}

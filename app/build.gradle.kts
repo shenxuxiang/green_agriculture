@@ -55,7 +55,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.green_agriculture"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 36
 
 
