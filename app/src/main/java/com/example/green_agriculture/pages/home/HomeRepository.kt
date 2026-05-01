@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Repository @Inject constructor(private val service: HomeServiceApi) {
+class HomeRepository @Inject constructor(private val service: HomeServiceApi) {
     // 获取轮播图列表
     suspend fun queryBannerList(): List<SwiperWidgetItemOption>? {
         return try {

@@ -12,7 +12,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.dp
-import com.example.green_agriculture.toolkit.LogUtils
 import com.example.green_agriculture.toolkit.VibratorUtils
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.scwang.smart.refresh.layout.api.RefreshHeader
@@ -27,12 +26,6 @@ class RefreshHeaderWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr), RefreshHeader {
     private var canRefresh = false
-
-    // tips 的透明度
-    private var tipsAlpha = 0f
-
-    // indicator 的 visibility
-    private var indicatorVisibility = VISIBLE
     private val radius = 10.dp.toInt()
     private val thickness = 2.dp.toInt()
     private val tips: TextView = TextView(context).apply {
@@ -90,7 +83,6 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         height: Int,
         maxDragHeight: Int,
     ) {
-        LogUtils.d("==============onMoving, $percent, $offset")
         canRefresh = percent >= 1
         /**
          * offset 表示用户拖拽的距离
@@ -126,7 +118,6 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         height: Int,
         maxDragHeight: Int,
     ) {
-        LogUtils.d("==============onReleased")
         if (canRefresh) {
             indicator.isIndeterminate = true
         }

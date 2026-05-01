@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(val repository: Repository) : ViewModel() {
+class HomeViewModel @Inject constructor(val repository: HomeRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
     fun updateUIState(block: UiState.() -> UiState) {
@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(val repository: Repository) : ViewModel(
                     policyInformationList = policyInformationList ?: emptyList()
                 )
             }
-
+            // 执行回调
             withContext(Dispatchers.Main) {
                 block()
             }

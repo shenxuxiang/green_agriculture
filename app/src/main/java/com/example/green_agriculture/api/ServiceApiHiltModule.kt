@@ -13,4 +13,8 @@ object ServiceApiHiltModule {
     @Provides
     @Singleton
     fun provideHomeServiceApi() = HttpRequest.create<HomeServiceApi>()
+
+    @Provides
+    @Singleton
+    fun provideMineServiceApi() = HttpRequest.create<MineServiceApi>()
 }

@@ -43,7 +43,7 @@ class PolicyInformationListAdepter() :
                 .transform(corner)
                 .into(binding.avatar)
 
-            binding.title.text = "${option.title}是否合适的回复是地方还是兑换积分"
+            binding.title.text = option.title
             binding.updateTime.text = option.updateTime
         }
 
