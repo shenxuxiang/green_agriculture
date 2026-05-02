@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- ===== 启用默认关闭的实用规则 ===== -->
+    <issue id="IconMissingDensityFolder" severity="error" />
+    <issue id="IconDensities" severity="error" />
+    <issue id="TypographyDashes" severity="warning" />
+    <issue id="TypographyEllipsis" severity="warning" />
+    <issue id="TypographyFractions" severity="warning" />
+    <issue id="TypographyQuotes" severity="warning" />
+    <issue id="RtlHardcoded" severity="error" />
+    <issue id="RtlEnabled" severity="warning" />
+    <issue id="RtlSymmetry" severity="warning" />
+    <issue id="GradleDependency" severity="error" />
+    <issue id="GradlePluginVersion" severity="error" />
+    <issue id="GradleDynamicVersion" severity="error" />
+    <issue id="ObsoleteSdkInt" severity="error" />
+    <issue id="UseCompoundDrawables" severity="warning" />
+    <issue id="UselessParent" severity="warning" />
+    <issue id="UselessLeaf" severity="warning" />
+    <issue id="Overdraw" severity="warning" />
+    <issue id="UnusedIds" severity="warning" />
+    <issue id="ContentDescription" severity="error" />
+    <issue id="HardcodedText" severity="warning" />
+    <issue id="SetTextI18n" severity="error" />
+
+    <!-- ===== 将部分重要规则提升为 error ===== -->
+    <issue id="MissingTranslation" severity="error" />
+    <issue id="ExtraTranslation" severity="error" />
+    <issue id="StringFormatInvalid" severity="error" />
+    <issue id="PluralsCandidate" severity="warning" />
+    <issue id="PrivateResource" severity="error" />
+
+    <!-- ===== 显式忽略不适合项目的规则 ===== -->
+    <issue id="VectorRaster" severity="ignore" /> <!-- 统一使用 webp/png -->
+    <issue id="GoogleAppIndexingWarning" severity="ignore" />
+</lint>
