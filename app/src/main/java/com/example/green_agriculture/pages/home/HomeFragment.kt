@@ -84,7 +84,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             setReboundDuration(300)
             setReboundInterpolator(DecelerateInterpolator())
             setEnableRefresh(true)
-            setHeaderMaxDragRate(1.2f)
         }
         binding.refreshLayout.post {
             binding.refreshLayout.autoRefresh()

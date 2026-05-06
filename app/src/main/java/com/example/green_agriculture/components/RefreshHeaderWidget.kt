@@ -26,8 +26,8 @@ class RefreshHeaderWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr), RefreshHeader {
     private var canRefresh = false
-    private val radius = 10.dp.toInt()
-    private val thickness = 2.dp.toInt()
+    private val radius = 10.dp
+    private val thickness = 2.dp
     private val tips: TextView = TextView(context).apply {
         layoutParams =
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
@@ -49,9 +49,9 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         indicatorInset = 0
         // 暂停动画
         isIndeterminate = false
-        indicatorSize = radius * 2
-        trackThickness = thickness
-        trackCornerRadius = thickness / 2
+        indicatorSize = radius.toInt() * 2
+        trackThickness = thickness.toInt()
+        trackCornerRadius = thickness.toInt() / 2
         // 设置 CircularProgressIndicator 高亮颜色
         setIndicatorColor(context.getColor(R.color.primary))
         // 设置轨迹颜色
@@ -87,15 +87,13 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         /**
          * offset 表示用户拖拽的距离
          * Indicator 的展示的位置，应该始终处于可是区域的中间位置
+         * 这里使用 margin来调整 Indicator 的位置，不使用 translationY
          */
-        val indicatorLayoutParams = indicator.layoutParams as LayoutParams
         val marginBottom = if (offset <= radius * 2) {
             0
         } else {
             (offset - radius * 2).coerceAtMost(height - radius * 2) / 2
         }
-        indicatorLayoutParams.setMargins(0, 0, 0, marginBottom)
-        indicator.layoutParams = indicatorLayoutParams
 
         /**
          * 被限定在 PullDownToRefresh 的过程中
@@ -104,9 +102,9 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         if (percent in 0f..1f) {
             val matrix = Matrix()
             val scale = percent.coerceAtMost(1f)
-            matrix.postRotate(scale * 360f, 10.dp, 10.dp)
-            matrix.postScale(scale, scale, 10.dp, 10.dp + (1 - scale) * 10.dp)
-
+            matrix.postRotate(scale * 360f, radius, radius)
+            matrix.postScale(scale, scale, radius, radius + (1 - scale) * radius)
+            matrix.postTranslate(0f, -marginBottom.toFloat())
             indicator.animationMatrix = matrix
             indicator.progress = (scale * 100).toInt()
         }
@@ -139,9 +137,16 @@ class RefreshHeaderWidget @JvmOverloads constructor(
             tips.text = "刷新失败"
         }
 
+        /**
+         * 隐藏 Indicator
+         */
         indicator.visibility = GONE
         indicator.isIndeterminate = false
 
+        /**
+         * 动画展示提示文案
+         * 动画持续时间 300ms
+         */
         val translationY = ObjectAnimator.ofFloat(tips, "translationY", (-20).dp, 0f)
         val alpha = ObjectAnimator.ofFloat(tips, "alpha", 0f, 1f)
         val scaleX = ObjectAnimator.ofFloat(tips, "scaleX", 0.6f, 1f)
