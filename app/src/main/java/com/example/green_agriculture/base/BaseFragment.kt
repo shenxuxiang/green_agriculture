@@ -60,4 +60,5 @@ abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
         binding.unbind()
     }
 
+
 }

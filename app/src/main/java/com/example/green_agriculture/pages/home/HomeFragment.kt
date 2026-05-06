@@ -8,11 +8,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.PolicyInformationListAdepter
+import com.example.green_agriculture.annotation.BindingProcessor
+import com.example.green_agriculture.annotation.LayoutViewBinding
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.components.RefreshHeaderWidget
 import com.example.green_agriculture.databinding.FragmentHomeBinding
 import com.example.green_agriculture.extend.dp
 import com.example.green_agriculture.pages.main.MainViewModel
+import com.example.green_agriculture.toolkit.LogUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -28,6 +31,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.initData()
         binding.outerViewPager = mainViewModel.uiState.value.viewPager2
         binding.viewModel = viewModel
+
+        BindingProcessor.processBinding(this, requireContext())
+
+        LogUtils.d("=========initData: ${bindingSxx.root}")
     }
 
     override fun initView() {
@@ -89,4 +96,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             binding.refreshLayout.autoRefresh()
         }
     }
+
+
+    @LayoutViewBinding("fragment_home")
+    private lateinit var bindingSxx: FragmentHomeBinding
 }
