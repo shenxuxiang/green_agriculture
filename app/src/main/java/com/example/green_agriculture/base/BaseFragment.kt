@@ -9,7 +9,6 @@ import androidx.annotation.IdRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import com.example.annotation.LayoutViewBinding
 
 abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
     protected lateinit var binding: T
@@ -22,9 +21,12 @@ abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        autoBinding(this, requireContext())
         binding = DataBindingUtil.inflate<T>(inflater, layoutID, container, false)
 
         binding.lifecycleOwner = this
+
+
 
         initData()
         initView()
@@ -62,12 +64,12 @@ abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
         binding.unbind()
     }
 
-    private fun bindingLayout(instance: Any, context: Context) {
+    private fun autoBinding(instance: Any, context: Context) {
         val clazz = instance.javaClass
 
         val fields = clazz.fields
         for (field in fields) {
-            if (field.isAnnotationPresent(LayoutViewBinding::class.java)) {
+            if (field.isAnnotationPresent(AutoBinding::class.java)) {
                 val bindingClass = field.type
                 val inflateMethod = bindingClass.getMethod("inflate", LayoutInflater::class.java)
                 val binding = inflateMethod.invoke(null, LayoutInflater.from(context))
@@ -77,3 +79,7 @@ abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
         }
     }
 }
+
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FIELD)
+annotation class AutoBinding()
