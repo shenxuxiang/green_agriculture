@@ -6,10 +6,10 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.annotation.DebugLog
+import com.example.annotation.LayoutViewBinding
 import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.PolicyInformationListAdepter
-import com.example.green_agriculture.annotation.BindingProcessor
-import com.example.green_agriculture.annotation.LayoutViewBinding
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.components.RefreshHeaderWidget
 import com.example.green_agriculture.databinding.FragmentHomeBinding
@@ -31,14 +31,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.initData()
         binding.outerViewPager = mainViewModel.uiState.value.viewPager2
         binding.viewModel = viewModel
-
-        BindingProcessor.processBinding(this, requireContext())
-
+        HomeFragmentBindingHelper.bind(this, requireContext())
         LogUtils.d("=========initData: ${bindingSxx.root}")
+        addWithLog()
     }
 
     override fun initView() {
         super.initView()
+
         initSmartRefreshLayout()
         initPolicyInformationList()
     }
@@ -97,7 +97,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-
-    @LayoutViewBinding("fragment_home")
+    @LayoutViewBinding
     private lateinit var bindingSxx: FragmentHomeBinding
+
+    @DebugLog("GA_APP")
+    fun add() {
+        LogUtils.d("==================Hello World")
+    }
 }

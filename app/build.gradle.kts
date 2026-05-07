@@ -184,6 +184,9 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":annotation"))
+    ksp(project(":processor"))
+    
     // SmartRefreshLayout
     implementation("io.github.scwang90:refresh-layout-kernel:2.1.0")
     implementation("io.github.scwang90:refresh-header-classics:2.1.0") //经典刷新头

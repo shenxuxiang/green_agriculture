@@ -1,5 +1,6 @@
 package com.example.green_agriculture.base
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.annotation.IdRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import com.example.annotation.LayoutViewBinding
 
 abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
     protected lateinit var binding: T
@@ -60,5 +62,18 @@ abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
         binding.unbind()
     }
 
+    private fun bindingLayout(instance: Any, context: Context) {
+        val clazz = instance.javaClass
 
+        val fields = clazz.fields
+        for (field in fields) {
+            if (field.isAnnotationPresent(LayoutViewBinding::class.java)) {
+                val bindingClass = field.type
+                val inflateMethod = bindingClass.getMethod("inflate", LayoutInflater::class.java)
+                val binding = inflateMethod.invoke(null, LayoutInflater.from(context))
+                field.isAccessible = true
+                field.set(instance, binding)
+            }
+        }
+    }
 }

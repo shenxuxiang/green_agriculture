@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "green_agriculture"
 include(":app")
- 
+include(":annotation")   // 新增
+include(":processor")    // 新增
