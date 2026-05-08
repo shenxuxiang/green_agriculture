@@ -1,14 +1,15 @@
 package com.example.green_agriculture.pages.mine
 
 import androidx.fragment.app.viewModels
-import com.example.green_agriculture.R
+import com.example.annotation.AutoBinding
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.databinding.FragmentMineBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MineFragment : BaseFragment<FragmentMineBinding>() {
-    override val layoutID = R.layout.fragment_mine
+class MineFragment : BaseFragment() {
+    @AutoBinding
+    override lateinit var binding: FragmentMineBinding
 
     private val viewModel by viewModels<MineViewModel>()
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
+import com.example.annotation.AutoBinding
 import com.example.green_agriculture.R
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.databinding.FragmentMainBinding
@@ -14,8 +15,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainFragment : BaseFragment<FragmentMainBinding>() {
-    override val layoutID = R.layout.fragment_main
+class MainFragment : BaseFragment() {
+    @AutoBinding
+    override lateinit var binding: FragmentMainBinding
     private val viewModel by hiltNavGraphViewModels<MainViewModel>(R.id.nav_graph)
 
     override fun initData() {

@@ -184,6 +184,7 @@ kotlin {
 }
 
 dependencies {
+    // 这两项是添加 ksp 插件应用和依赖配置。
     implementation(project(":annotation"))
     ksp(project(":processor"))
     

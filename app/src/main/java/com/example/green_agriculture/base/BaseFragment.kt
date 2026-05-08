@@ -1,32 +1,22 @@
 package com.example.green_agriculture.base
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.IdRes
-import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 
-abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
-    protected lateinit var binding: T
-
-    @get:IdRes
-    protected abstract val layoutID: Int
-
+abstract class BaseFragment() : Fragment() {
+    protected abstract val binding: ViewDataBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        autoBinding(this, requireContext())
-        binding = DataBindingUtil.inflate<T>(inflater, layoutID, container, false)
+        AutoBindingProcessor.bind(this, requireContext())
 
         binding.lifecycleOwner = this
-
-
 
         initData()
         initView()
@@ -63,23 +53,4 @@ abstract class BaseFragment<T : ViewDataBinding>() : Fragment() {
         super.onDestroyView()
         binding.unbind()
     }
-
-    private fun autoBinding(instance: Any, context: Context) {
-        val clazz = instance.javaClass
-
-        val fields = clazz.fields
-        for (field in fields) {
-            if (field.isAnnotationPresent(AutoBinding::class.java)) {
-                val bindingClass = field.type
-                val inflateMethod = bindingClass.getMethod("inflate", LayoutInflater::class.java)
-                val binding = inflateMethod.invoke(null, LayoutInflater.from(context))
-                field.isAccessible = true
-                field.set(instance, binding)
-            }
-        }
-    }
 }
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FIELD)
-annotation class AutoBinding()
