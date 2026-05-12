@@ -210,7 +210,7 @@ class SwiperWidget @JvmOverloads constructor(
 
             val color =
                 ArgbEvaluator().evaluate(fraction, indicatorColor, indicatorHighlightColor) as Int
-
+            
             // 修改背景色
             // drawable.color 返回的是一个 ColorStateList?，需要通过 defaultColor 返回 ColorInt
             if (color != holder.drawable.color?.defaultColor) {

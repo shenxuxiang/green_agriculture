@@ -1,6 +1,5 @@
 package com.example.green_agriculture
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -19,12 +18,8 @@ class MainActivity : AppCompatActivity() {
 
         Toast.initialize(this)
 
-        window.navigationBarColor = Color.BLACK
-        window.statusBarColor = Color.TRANSPARENT
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowCompat.getInsetsController(window, window.decorView).also {
-            it.isAppearanceLightStatusBars = true
-        }
+
 
         // 初始化 Navigator
         val nav = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)

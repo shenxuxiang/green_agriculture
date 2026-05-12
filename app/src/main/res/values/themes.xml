@@ -7,5 +7,9 @@
 
     <style name="Theme.Green_agriculture" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/background_dark</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>

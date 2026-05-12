@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="start|center_vertical"
+    android:orientation="horizontal"
+    android:paddingEnd="8dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingHorizontal="0dp"
+        android:textSize="14sp"
+        app:boxBackgroundColor="@android:color/transparent"
+        app:boxBackgroundMode="outline"
+        app:boxCollapsedPaddingTop="0dp"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:cursorColor="@color/primary"
+        app:expandedHintEnabled="false"
+        app:hintEnabled="false"
+        app:placeholderText="请输入手机号"
+        app:placeholderTextAppearance="@style/LoginInputPlaceholderTextAppearance"
+        app:placeholderTextColor="@color/black9">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="0dp"
+            android:cursorVisible="true"
+            android:ellipsize="end"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:paddingVertical="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="5dp"
+            android:textColor="@color/black3"
+            android:textSelectHandle="@drawable/shape_edit_text_cursor"
+            android:textSelectHandleLeft="@drawable/shape_edit_text_cursor"
+            android:textSelectHandleRight="@drawable/shape_edit_text_cursor"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--  清空按钮  -->
+    <com.example.green_agriculture.components.IconWidget
+        android:id="@+id/clearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:iconColor="@color/black9"
+        app:iconName="@string/icon_clear"
+        app:iconSize="24dp" />
+
+    <!--  密码可视状态切换按钮  -->
+    <com.example.green_agriculture.components.IconWidget
+        android:id="@+id/visiblePasswdButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:iconColor="@color/black9"
+        app:iconName="@string/icon_visible"
+        app:iconSize="24dp" />
+</LinearLayout>

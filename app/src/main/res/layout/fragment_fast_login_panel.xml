@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.green_agriculture.pages.login.LoginViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|center_horizontal"
+        android:orientation="vertical">
+
+        <com.example.green_agriculture.pages.login.components.InputWidget
+            placeholderText="@{`请输入手机号`}"
+            value="@={viewModel.phone}"
+            android:layout_width="266dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="40dp"
+            app:inputType="@{`phone`}"
+            app:maxLength="@{11}" />
+
+        <com.example.green_agriculture.pages.login.components.InputWidget
+            placeholderText="@{`请输入验证码`}"
+            value="@={viewModel.code}"
+            android:layout_width="266dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="26dp"
+            app:allowClear="@{false}"
+            app:inputType="@{`number`}"
+            app:maxLength="@{6}">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="获取验证码"
+                android:textColor="@color/black9"
+                android:textSize="11sp" />
+        </com.example.green_agriculture.pages.login.components.InputWidget>
+    </LinearLayout>
+</layout>

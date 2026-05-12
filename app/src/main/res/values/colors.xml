@@ -3,8 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#FF3AC786</color>
+    <color name="primaryContainer">#FFEBF9F2</color>
     <color name="black3">#FF333333</color>
     <color name="tertiaryPrimary">#333AC786</color>
+
     <color name="black4">#FF4A4A4A</color>
     <color name="black6">#FF666666</color>
     <color name="black9">#FF999999</color>

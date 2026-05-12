@@ -22,7 +22,6 @@ class HomeFragment : BaseFragment() {
     @AutoBinding
     override lateinit var binding: FragmentHomeBinding
 
-
     val viewModel by viewModels<HomeViewModel>()
     val mainViewModel by hiltNavGraphViewModels<MainViewModel>(R.id.nav_graph)
 
@@ -36,9 +35,7 @@ class HomeFragment : BaseFragment() {
 
     override fun initView() {
         super.initView()
-
         initSmartRefreshLayout()
-        initPolicyInformationList()
     }
 
     override fun onEventBinding() {
@@ -65,18 +62,6 @@ class HomeFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    /**
-     * 初始化资讯列表
-     */
-    private fun initPolicyInformationList() {
-//        binding.policyInformationRecyclerView.apply {
-//            adapter = policyInformationAdapter
-//            addItemDecoration(PolicyInformationListItemDecoration())
-//            layoutManager =
-//                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-//        }
     }
 
     /**

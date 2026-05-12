@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="IconView">
+    <declare-styleable name="IconWidget">
         <attr name="iconSize" format="dimension" />
         <attr name="iconName" format="string" />
         <attr name="iconColor" format="color" />

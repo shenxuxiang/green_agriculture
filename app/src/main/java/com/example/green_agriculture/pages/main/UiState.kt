@@ -1,14 +1,22 @@
 package com.example.green_agriculture.pages.main
 
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.green_agriculture.R
+import com.example.green_agriculture.adapter.ViewPager2FragmentItemOption
 import com.example.green_agriculture.pages.agricultural.AgriculturalFragment
 import com.example.green_agriculture.pages.home.HomeFragment
-import com.example.green_agriculture.pages.main.components.BottomNavigationItem
 import com.example.green_agriculture.pages.main.components.TabNavigationItemOption
 import com.example.green_agriculture.pages.mine.MineFragment
 import com.example.green_agriculture.pages.release.ReleaseFragment
 import com.example.green_agriculture.pages.service.ServiceFragment
+
+data class BottomNavigationItem(
+    override val fragment: Fragment,
+    val selectedIcon: Int,
+    val label: String,
+    val icon: Int,
+) : ViewPager2FragmentItemOption()
 
 private val mainViewPagerList = listOf(
     BottomNavigationItem(

@@ -42,20 +42,20 @@ class IconWidget @JvmOverloads constructor(
     init {
         context.withStyledAttributes(
             attrs,
-            R.styleable.IconView,
+            R.styleable.IconWidget,
             defStyleAttr,
             0,
         ) {
 
-            getDimension(R.styleable.IconView_iconSize, -1f).also {
+            getDimension(R.styleable.IconWidget_iconSize, -1f).also {
                 if (it > 0) iconSize = it
             }
 
-            getString(R.styleable.IconView_iconName)?.let {
+            getString(R.styleable.IconWidget_iconName)?.let {
                 iconName = it
             }
 
-            getColor(R.styleable.IconView_iconColor, context.getColor(R.color.black4)).also {
+            getColor(R.styleable.IconWidget_iconColor, context.getColor(R.color.black4)).also {
                 iconColor = it
             }
 

@@ -55,7 +55,7 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         // 设置 CircularProgressIndicator 高亮颜色
         setIndicatorColor(context.getColor(R.color.primary))
         // 设置轨迹颜色
-        trackColor = context.getColor(R.color.tertiaryPrimary)
+        trackColor = context.getColor(R.color.primaryContainer)
     }
 
     init {
@@ -152,7 +152,8 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         val scaleX = ObjectAnimator.ofFloat(tips, "scaleX", 0.6f, 1f)
         val scaleY = ObjectAnimator.ofFloat(tips, "scaleY", 0.6f, 1f)
         val animSet = AnimatorSet().apply {
-            play(translationY).with(alpha).with(scaleX).with(scaleY)
+            playTogether(translationY, alpha, scaleX, scaleY)
+            // play(translationY).with(alpha).with(scaleX).with(scaleY)
             setDuration(300)
         }
 
@@ -176,7 +177,7 @@ class RefreshHeaderWidget @JvmOverloads constructor(
         newState: RefreshState,
     ) {
         /**
-         * RefreshState.None              闲置状态，在 Header 由可见状态变为不可见状态后触发（并且用户释放了手指）。
+         * RefreshState.None              闲置状态，在所有的动作都完成后触发（恢复到最初的位置）。
          * RefreshState.PullDownToRefresh 下拉状态，此时还未触发下拉刷新的阈值
          * RefreshState.ReleaseToRefresh  触发下拉刷新阈值，此时释放手指即可触发刷新
          * RefreshState.RefreshFinish     刷新完成

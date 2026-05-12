@@ -1,12 +1,10 @@
 package com.example.green_agriculture.pages.mine
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,9 +19,9 @@ class MineViewModel @Inject constructor(private val repository: MineRepository) 
     }
 
     init {
-        viewModelScope.launch {
-            //val checkStatus = repository.queryUserCheckStatus()
-            //updateUIState { copy(userCheckStatus = checkStatus) }
-        }
+//        viewModelScope.launch {
+//            val checkStatus = repository.queryUserCheckStatus()
+//            updateUIState { copy(userCheckStatus = checkStatus) }
+//        }
     }
 }

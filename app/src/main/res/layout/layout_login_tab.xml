@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <merge>
+
+        <LinearLayout
+            android:id="@+id/body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/fastLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="38dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="4dp"
+                android:text="快捷登录"
+                android:textColor="@color/primary"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/accountLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="38dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="4dp"
+                android:text="账号登录"
+                android:textColor="@color/black4"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/indicatorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="start"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/indicator"
+                android:layout_width="20dp"
+                android:layout_height="2dp"
+                android:background="@color/primary" />
+        </LinearLayout>
+    </merge>
+</layout>

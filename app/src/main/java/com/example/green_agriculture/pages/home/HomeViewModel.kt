@@ -25,13 +25,13 @@ class HomeViewModel @Inject constructor(val repository: HomeRepository) : ViewMo
             val resp1 = async {
                 repository.queryBannerList()
             }
+
             val resp2 = async {
                 repository.queryPolicyInformationList()
             }
 
             val swiperList = resp1.await()
             val policyInformationList = resp2.await()
-
             updateUIState {
                 copy(
                     swiperList = swiperList ?: emptyList(),
@@ -39,9 +39,7 @@ class HomeViewModel @Inject constructor(val repository: HomeRepository) : ViewMo
                 )
             }
             // 执行回调
-            withContext(Dispatchers.Main) {
-                block()
-            }
+            withContext(Dispatchers.Main) { block() }
         }
     }
 }

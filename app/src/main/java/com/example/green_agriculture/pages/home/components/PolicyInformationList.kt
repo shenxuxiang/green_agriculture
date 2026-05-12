@@ -18,7 +18,7 @@ import com.example.green_agriculture.toolkit.CommonUtils
 class PolicyInformationList @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : LinearLayout(context, attrs, defStyleAttr) {
     var resourceData: List<PolicyInformationItemOption> = emptyList()
         set(value) {
@@ -52,6 +52,9 @@ class PolicyInformationList @JvmOverloads constructor(
         gravity = Gravity.TOP or Gravity.START
     }
 
+    /**
+     * 内容绑定
+     */
     fun bind(binding: LayoutPolicyInformationItemBinding, option: PolicyInformationItemOption) {
         val ctx = binding.root.context
         val corner = RoundedCorners(6.dp.toInt())
@@ -69,7 +72,7 @@ class PolicyInformationList @JvmOverloads constructor(
         @BindingAdapter("resourceData")
         fun bindResourceData(
             view: PolicyInformationList,
-            resourceData: List<PolicyInformationItemOption>
+            resourceData: List<PolicyInformationItemOption>,
         ) {
             view.resourceData = resourceData
         }

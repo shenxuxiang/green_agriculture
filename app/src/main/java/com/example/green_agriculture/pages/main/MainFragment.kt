@@ -8,9 +8,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.example.annotation.AutoBinding
 import com.example.green_agriculture.R
+import com.example.green_agriculture.adapter.ViewPager2FragmentStateAdapter
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.databinding.FragmentMainBinding
-import com.example.green_agriculture.pages.main.components.ViewPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -29,7 +29,10 @@ class MainFragment : BaseFragment() {
     override fun initView() {
         super.onEventBinding()
         binding.viewPager.apply {
-            adapter = ViewPagerAdapter(this@MainFragment, viewModel.uiState.value.viewPagerList)
+            adapter = ViewPager2FragmentStateAdapter(
+                this@MainFragment,
+                viewModel.uiState.value.viewPagerList
+            )
             offscreenPageLimit = adapter!!.itemCount
             viewModel.updateUIState { copy(viewPager2 = this@apply) }
         }
@@ -38,13 +41,13 @@ class MainFragment : BaseFragment() {
     override fun onDataObserve() {
         super.onDataObserve()
 
+        var prevTabIndex = viewModel.uiState.value.tabIndex
         lifecycleScope.launch {
-            var oldTabIndex = viewModel.uiState.value.tabIndex
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 // 监听 tabIndex 数据状态，及时更新 BottomNavigation
                 viewModel.uiState.collect {
-                    if (oldTabIndex != it.tabIndex) {
-                        oldTabIndex = it.tabIndex
+                    if (prevTabIndex != it.tabIndex) {
+                        prevTabIndex = it.tabIndex
                         if (it.tabIndex != binding.viewPager.currentItem) {
                             binding.viewPager.setCurrentItem(it.tabIndex, false)
                         }
