@@ -96,12 +96,15 @@ class InputWidget @JvmOverloads constructor(
             }
         }
 
+
     var maxLength: Int = Int.MAX_VALUE
         set(value) {
             if (value == field) return
             field = value
 
-            inputEditText.filters = arrayOf(InputFilter.LengthFilter(value))
+            inputEditText.filters = arrayOf(
+                InputFilter.LengthFilter(value),
+            )
         }
 
     init {
@@ -213,3 +216,4 @@ class InputWidget @JvmOverloads constructor(
         }
     }
 }
+

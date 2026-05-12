@@ -5,16 +5,13 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.findViewTreeLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.sp
+import com.example.green_agriculture.toolkit.LogUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -33,18 +30,21 @@ class PhoneCodeWidget @JvmOverloads constructor(
             this.text = value
         }
 
-    var enabled: Boolean = false
+    var disabled: Boolean = true
         set(value) {
             if (value == field) return
             field = value
-
-            this.setTextColor(primaryColor)
+            if (value) {
+                this.setTextColor(if (isInProgress) primaryColor else defaultColor)
+            } else {
+                this.setTextColor(primaryColor)
+            }
         }
 
     /**
      * 倒计时进行中
      */
-    var isInProgress = MutableStateFlow(false)
+    var isInProgress = false
 
     val coroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -54,36 +54,35 @@ class PhoneCodeWidget @JvmOverloads constructor(
         setTextSize(TypedValue.COMPLEX_UNIT_PX, 11.sp)
 
         setOnClickListener {
-            if (!enabled || isInProgress.value) return@setOnClickListener
+            if (disabled || isInProgress) return@setOnClickListener
 
-            isInProgress.value = true
+            isInProgress = true
 
             coroutineScope.launch {
                 var count = 60
                 while (count-- > 0) {
                     withContext(Dispatchers.Main) {
                         textValue = "$count S"
+                        LogUtils.d(textValue)
                     }
 
                     delay(1000)
                 }
-                isInProgress.value = false
-                textValue = "获取验证码"
-                setTextColor(defaultColor)
+
+                withContext(Dispatchers.Main) {
+                    isInProgress = false
+                    textValue = "获取验证码"
+                    setTextColor(if (disabled) defaultColor else primaryColor)
+                }
             }
         }
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        findViewTreeLifecycleOwner()?.let {
-            it.lifecycleScope.launch {
-                it.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    isInProgress.collect {
-                        if ()
-                    }
-                }
-            }
+    companion object {
+        @JvmStatic
+        @BindingAdapter("disabled")
+        fun bindDisabled(view: PhoneCodeWidget, disabled: Boolean) {
+            view.disabled = disabled
         }
     }
 }

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="start|center_vertical"
     android:orientation="horizontal"
-    android:paddingEnd="8dp">
+    android:paddingEnd="12dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/inputLayout"
@@ -31,11 +31,10 @@
             android:id="@+id/inputEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="0dp"
             android:cursorVisible="true"
             android:ellipsize="end"
             android:imeOptions="actionDone"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:maxLines="1"
             android:paddingVertical="0dp"
             android:paddingStart="12dp"
