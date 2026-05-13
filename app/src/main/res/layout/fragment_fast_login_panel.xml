@@ -21,6 +21,7 @@
             android:layout_width="266dp"
             android:layout_height="36dp"
             android:layout_marginTop="40dp"
+            app:imeOptions="@{`next`}"
             app:inputType="@{`phone`}"
             app:maxLength="@{11}" />
 
@@ -30,14 +31,24 @@
             android:layout_width="266dp"
             android:layout_height="36dp"
             android:layout_marginTop="26dp"
-            app:allowClear="@{false}"
-            app:inputType="@{`text`}"
-            app:maxLength="@{6}">
+            app:inputType="@{`number`}"
+            app:maxLength="@{6}"
+            app:ref="@{viewModel.phoneCodeEditTextRef}">
 
             <com.example.green_agriculture.pages.login.components.PhoneCodeWidget
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:disabled="@{viewModel.phone.length() != 11}" />
+                android:phone="@{viewModel.phone}"
+                app:sendPhoneCode="@{viewModel.sendPhoneCode}" />
         </com.example.green_agriculture.pages.login.components.InputWidget>
+
+        <com.example.green_agriculture.components.ButtonWidget
+            onClick="@{viewModel.handleLogin}"
+            android:layout_width="266dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="40dp"
+            app:enabled="@{viewModel.uiState.enabledFastLogin}"
+            app:radius="10dp"
+            app:type="primary" />
     </LinearLayout>
 </layout>

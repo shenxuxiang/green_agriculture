@@ -12,4 +12,6 @@ data class UiState(
         PanelItem(fragment = FastLoginPanelFragment()),
         PanelItem(fragment = AccountLoginPanelFragment()),
     ),
+    val enabledFastLogin: Boolean = false,
+    val enabledAccountLogin: Boolean = false,
 )

@@ -56,7 +56,7 @@ class ToastWidget @JvmOverloads constructor(
 
                 "warn" -> {
                     prefixIcon.visibility = VISIBLE
-                    prefixIcon.iconColor = context.getColor(R.color.red)
+                    prefixIcon.iconColor = context.getColor(R.color.error)
                     prefixIcon.iconName = context.getString(R.string.icon_warn)
                 }
 

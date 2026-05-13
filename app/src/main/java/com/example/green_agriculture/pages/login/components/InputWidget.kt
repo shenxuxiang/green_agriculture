@@ -7,6 +7,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -15,6 +16,7 @@ import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import com.example.green_agriculture.R
 import com.example.green_agriculture.components.IconWidget
+import com.example.green_agriculture.entity.HandlerRef
 import com.example.green_agriculture.extend.dp
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
@@ -84,6 +86,22 @@ class InputWidget @JvmOverloads constructor(
             }
         }
 
+    var imeOptions: String = "done"
+        set(value) {
+            if (value == field) return
+            field = value
+
+            inputEditText.imeOptions = when (value) {
+                "go" -> EditorInfo.IME_ACTION_GO
+                "next" -> EditorInfo.IME_ACTION_NEXT
+                "done" -> EditorInfo.IME_ACTION_DONE
+                "send" -> EditorInfo.IME_ACTION_SEND
+                "prev" -> EditorInfo.IME_ACTION_PREVIOUS
+                "search" -> EditorInfo.IME_ACTION_SEARCH
+                else -> EditorInfo.IME_ACTION_DONE
+            }
+        }
+
     var allowClear: Boolean = true
         set(value) {
             if (value == field) return
@@ -96,15 +114,12 @@ class InputWidget @JvmOverloads constructor(
             }
         }
 
-
     var maxLength: Int = Int.MAX_VALUE
         set(value) {
             if (value == field) return
             field = value
 
-            inputEditText.filters = arrayOf(
-                InputFilter.LengthFilter(value),
-            )
+            inputEditText.filters = arrayOf(InputFilter.LengthFilter(value))
         }
 
     init {
@@ -174,6 +189,12 @@ class InputWidget @JvmOverloads constructor(
 
     companion object {
         @JvmStatic
+        @BindingAdapter("imeOptions")
+        fun bindImeOptions(view: InputWidget, imeOptions: String) {
+            view.imeOptions = imeOptions
+        }
+
+        @JvmStatic
         @BindingAdapter("maxLength")
         fun bindMaxLength(view: InputWidget, maxLength: Int) {
             view.maxLength = maxLength
@@ -214,6 +235,13 @@ class InputWidget @JvmOverloads constructor(
         fun bindValueAttrChange(view: InputWidget, onChange: InverseBindingListener) {
             view.onInputChangeListener = onChange
         }
+
+        @JvmStatic
+        @BindingAdapter("ref")
+        fun bindRef(view: InputWidget, ref: HandlerRef) {
+            ref.current = view.inputEditText
+        }
     }
 }
+
 

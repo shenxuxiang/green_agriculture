@@ -8,7 +8,8 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.sp
-import com.example.green_agriculture.toolkit.LogUtils
+import com.example.green_agriculture.toolkit.PatternUtils
+import com.example.green_agriculture.toolkit.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -30,16 +31,26 @@ class PhoneCodeWidget @JvmOverloads constructor(
             this.text = value
         }
 
-    var disabled: Boolean = true
+    var phone: String = ""
+        set(value) {
+            if (value == field) return
+            field = value
+
+            enabledGetPhoneCode = PatternUtils.phonePattern.matches(phone)
+        }
+
+    var enabledGetPhoneCode: Boolean = true
         set(value) {
             if (value == field) return
             field = value
             if (value) {
-                this.setTextColor(if (isInProgress) primaryColor else defaultColor)
-            } else {
                 this.setTextColor(primaryColor)
+            } else {
+                this.setTextColor(if (isInProgress) primaryColor else defaultColor)
             }
         }
+
+    var sendPhoneCode: (suspend (phone: String) -> Boolean)? = null
 
     /**
      * 倒计时进行中
@@ -54,25 +65,28 @@ class PhoneCodeWidget @JvmOverloads constructor(
         setTextSize(TypedValue.COMPLEX_UNIT_PX, 11.sp)
 
         setOnClickListener {
-            if (disabled || isInProgress) return@setOnClickListener
+            if (!enabledGetPhoneCode || isInProgress) return@setOnClickListener
 
             isInProgress = true
 
             coroutineScope.launch {
-                var count = 60
-                while (count-- > 0) {
-                    withContext(Dispatchers.Main) {
-                        textValue = "$count S"
-                        LogUtils.d(textValue)
+                // 发送验证码
+                if (sendPhoneCode?.invoke(phone) ?: false) {
+                    Toast.showSuccess("验证码已发送")
+
+                    // 开始倒计时
+                    var count = 60
+                    while (count > 0) {
+                        withContext(Dispatchers.Main) { textValue = "$count S" }
+                        count--
+                        delay(1000)
                     }
 
-                    delay(1000)
-                }
-
-                withContext(Dispatchers.Main) {
-                    isInProgress = false
-                    textValue = "获取验证码"
-                    setTextColor(if (disabled) defaultColor else primaryColor)
+                    withContext(Dispatchers.Main) {
+                        isInProgress = false
+                        textValue = "获取验证码"
+                        setTextColor(if (enabledGetPhoneCode) primaryColor else defaultColor)
+                    }
                 }
             }
         }
@@ -80,9 +94,18 @@ class PhoneCodeWidget @JvmOverloads constructor(
 
     companion object {
         @JvmStatic
-        @BindingAdapter("disabled")
-        fun bindDisabled(view: PhoneCodeWidget, disabled: Boolean) {
-            view.disabled = disabled
+        @BindingAdapter("phone")
+        fun bindPhone(view: PhoneCodeWidget, phone: String) {
+            view.phone = phone
+        }
+
+        @JvmStatic
+        @BindingAdapter("sendPhoneCode")
+        fun bindSendPhoneCode(
+            view: PhoneCodeWidget,
+            sendPhoneCode: suspend (phone: String) -> Boolean,
+        ) {
+            view.sendPhoneCode = sendPhoneCode
         }
     }
 }
