@@ -8,11 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.withStyledAttributes
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.dp
 import com.google.android.material.button.MaterialButton
 
+/**
+ * ButtonWidget
+ * 为什么要使用 FrameLayout 嵌套一层？？？
+ * 这是因为直接使用 MaterialButton 的话，用户点击时那种涟漪效果始终出不来，这才需要嵌套。
+ */
 class ButtonWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -24,8 +30,8 @@ class ButtonWidget @JvmOverloads constructor(
     private val black4 = ContextCompat.getColor(context, R.color.black4)
     private val white = ContextCompat.getColor(context, R.color.white)
     private var onClick: () -> Unit = {}
-    private val mask: View
     private val button: MaterialButton
+    private val mask: View
 
     var buttonEnabled: Boolean = true
         set(value) {
@@ -52,13 +58,11 @@ class ButtonWidget @JvmOverloads constructor(
             button = findViewById(R.id.button)
         }
 
-        attrs?.let {
-            val typedArray =
-                context.obtainStyledAttributes(attrs, R.styleable.ButtonWidget, defStyleAttr, 0)
+        context.withStyledAttributes(attrs, R.styleable.ButtonWidget, defStyleAttr, 0) {
 
-            val type = typedArray.getInt(R.styleable.ButtonWidget_type, 0)
-            val ghost = typedArray.getBoolean(R.styleable.ButtonWidget_ghost, false)
-            radius = typedArray.getDimension(R.styleable.ButtonWidget_radius, 18.dp)
+            val type = getInt(R.styleable.ButtonWidget_type, 0)
+            val ghost = getBoolean(R.styleable.ButtonWidget_ghost, false)
+            radius = getDimension(R.styleable.ButtonWidget_radius, 18.dp)
 
             val backgroundColor: ColorStateList
             val strokeColor: ColorStateList
@@ -102,7 +106,7 @@ class ButtonWidget @JvmOverloads constructor(
             }
         }
 
-        // 添加一个背景遮罩
+        // 给 Button 添加一个背景遮罩，模拟 disabled 时的样式
         mask = View(context).apply {
             visibility = GONE
             setBackgroundColor(0x66FFFFFF)

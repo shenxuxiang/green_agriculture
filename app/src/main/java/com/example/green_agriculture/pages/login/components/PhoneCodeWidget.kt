@@ -6,6 +6,8 @@ import android.util.TypedValue
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.sp
 import com.example.green_agriculture.toolkit.PatternUtils
@@ -69,23 +71,25 @@ class PhoneCodeWidget @JvmOverloads constructor(
 
             isInProgress = true
 
-            coroutineScope.launch {
-                // 发送验证码
-                if (sendPhoneCode?.invoke(phone) ?: false) {
-                    Toast.showSuccess("验证码已发送")
+            findViewTreeLifecycleOwner()?.let {
+                it.lifecycleScope.launch {
+                    // 发送验证码
+                    if (sendPhoneCode?.invoke(phone) ?: false) {
+                        Toast.showSuccess("验证码已发送")
 
-                    // 开始倒计时
-                    var count = 60
-                    while (count > 0) {
-                        withContext(Dispatchers.Main) { textValue = "$count S" }
-                        count--
-                        delay(1000)
-                    }
+                        // 开始倒计时
+                        var count = 60
+                        while (count > 0) {
+                            withContext(Dispatchers.Main) { textValue = "$count S" }
+                            count--
+                            delay(1000)
+                        }
 
-                    withContext(Dispatchers.Main) {
-                        isInProgress = false
-                        textValue = "获取验证码"
-                        setTextColor(if (enabledGetPhoneCode) primaryColor else defaultColor)
+                        withContext(Dispatchers.Main) {
+                            isInProgress = false
+                            textValue = "获取验证码"
+                            setTextColor(if (enabledGetPhoneCode) primaryColor else defaultColor)
+                        }
                     }
                 }
             }
