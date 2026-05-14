@@ -23,7 +23,7 @@ class LoginFragment : BaseFragment() {
     override fun initView() {
         super.initView()
         binding.panelController.adapter =
-            ViewPager2FragmentStateAdapter(this@LoginFragment, viewModel.uiState.value.panelList)
+            ViewPager2FragmentStateAdapter(this@LoginFragment, viewModel.panelList)
         binding.panelController.isUserInputEnabled = false
     }
 

@@ -1,9 +1,12 @@
 package com.example.green_agriculture.pages.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.green_agriculture.components.AlertWidget
 import com.example.green_agriculture.entity.HandlerRef
-import com.example.green_agriculture.toolkit.LogUtils
+import com.example.green_agriculture.pages.login.components.AccountLoginPanelFragment
+import com.example.green_agriculture.pages.login.components.FastLoginPanelFragment
 import com.example.green_agriculture.toolkit.PatternUtils
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -23,16 +25,29 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
      * @property current TextInputEditText 实例
      */
     val phoneCodeEditTextRef = HandlerRef(null)
-    private val _uiState = MutableStateFlow(UiState())
 
-    val uiState = _uiState.asStateFlow()
-
-    fun updateUIState(block: UiState.() -> UiState) {
-        _uiState.update { it.block() }
-    }
+    /**
+     * 提供的快捷登录、账号登录面板
+     */
+    val panelList = listOf(
+        PanelItem(fragment = FastLoginPanelFragment()),
+        PanelItem(fragment = AccountLoginPanelFragment()),
+    )
 
     val phone = MutableStateFlow("")
     val code = MutableStateFlow("")
+    val account = MutableStateFlow("")
+    val passwd = MutableStateFlow("")
+
+    // 登录按钮是否可用
+    private val _fastLoginButtonEnabled = MutableStateFlow(false)
+    private val _accountLoginButtonEnabled = MutableStateFlow(false)
+    val fastLoginButtonEnabled = _fastLoginButtonEnabled.asStateFlow()
+    val accountLoginButtonEnabled = _accountLoginButtonEnabled.asStateFlow()
+
+    // 是否勾选用户协议
+    val fastLoginCheckedUserAgreement = MutableStateFlow(false)
+    val accountLoginCheckedUserAgreement = MutableStateFlow(false)
 
     /**
      * 发送登录验证码
@@ -48,8 +63,38 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
         result
     }
 
-    val handleLogin: () -> Unit = {
-        LogUtils.d("=================Login")
+    /**
+     * 手机验证码登录
+     */
+    fun handleLoginForPhoneCode(context: Context) {
+        if (!fastLoginCheckedUserAgreement.value) {
+            AlertWidget.show(
+                context,
+                title = "请您阅读并同意《用户协议》和《隐私协议》",
+                onConfirm = {
+                    fastLoginCheckedUserAgreement.value = true
+                }
+            )
+        }
+
+        // 登录逻辑
+    }
+
+    /**
+     * 用户密码登录
+     */
+    fun handleLoginForPasswd(context: Context) {
+        if (!accountLoginCheckedUserAgreement.value) {
+            AlertWidget.show(
+                context,
+                title = "请您阅读并同意《用户协议》和《隐私协议》",
+                onConfirm = {
+                    accountLoginCheckedUserAgreement.value = true
+                }
+            )
+        }
+
+        // 登录逻辑
     }
 
     init {
@@ -61,7 +106,18 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
             combine(phone, code) { v1, v2 ->
                 return@combine PatternUtils.phonePattern.matches(v1) && v2.length >= 6
             }.collect {
-                updateUIState { copy(enabledFastLogin = it) }
+                _fastLoginButtonEnabled.value = it
+            }
+        }
+        /**
+         * 监听：账号 + 密码
+         * 实时验证是否可以登录
+         */
+        viewModelScope.launch {
+            combine(account, passwd) { v1, v2 ->
+                return@combine v1.isNotEmpty() && PatternUtils.passwordPattern.matches(v2)
+            }.collect {
+                _accountLoginButtonEnabled.value = it
             }
         }
     }

@@ -1,14 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.example.green_agriculture.pages.login.LoginViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F8F8F8">
+        android:gravity="top|center_horizontal"
+        android:orientation="vertical">
 
+        <com.example.green_agriculture.pages.login.components.InputWidget
+            placeholderText="@{`请输入账号`}"
+            value="@={viewModel.account}"
+            android:layout_width="266dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="40dp"
+            app:imeOptions="@{`next`}"
+            app:inputType="@{`text`}"
+            app:maxLength="@{20}" />
+
+        <com.example.green_agriculture.pages.login.components.InputWidget
+            placeholderText="@{`请输入密码`}"
+            value="@={viewModel.passwd}"
+            android:layout_width="266dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="26dp"
+            app:inputType="@{`password`}"
+            app:maxLength="@{18}"
+            app:ref="@{viewModel.phoneCodeEditTextRef}" />
+
+        <com.example.green_agriculture.components.ButtonWidget
+            android:layout_width="266dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="40dp"
+            app:enabled="@{viewModel.accountLoginButtonEnabled}"
+            app:onClick="@{() -> viewModel.handleLoginForPasswd(context)}"
+            app:text="@{`登录`}"
+            app:type="primary" />
+
+        <LinearLayout
+            android:layout_width="266dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
+            android:gravity="start|center_vertical"
+            android:orientation="horizontal">
+
+            <com.example.green_agriculture.components.CheckboxWidget
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:checked="@={viewModel.accountLoginCheckedUserAgreement}"
+                app:corner="4dp"
+                app:size="18dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:text="登录代表您已经同意"
+                android:textColor="@color/black6"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="《用户协议》"
+                android:textColor="@color/primary"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="和"
+                android:textColor="@color/black6"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="《隐私协议》"
+                android:textColor="@color/primary"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="37dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="1dp"
+                android:background="#ccc" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:text="注册新账号"
+                android:textColor="@color/black4"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="1dp"
+                android:background="#ccc" />
+        </LinearLayout>
+
+        <com.example.green_agriculture.components.ButtonWidget
+            android:layout_width="266dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="26dp"
+            app:text="@{`注册`}"
+            app:type="normal" />
     </LinearLayout>
 </layout>

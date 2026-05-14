@@ -212,6 +212,9 @@ class InputWidget @JvmOverloads constructor(
             view.placeholderText = placeholderText
         }
 
+        /**
+         * @param inputType: password | number | phone | text
+         */
         @JvmStatic
         @BindingAdapter("inputType")
         fun bindInputType(view: InputWidget, inputType: String) {

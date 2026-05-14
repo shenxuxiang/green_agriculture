@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FastLoginPanelFragment : Fragment() {
-    val viewModel by viewModels<LoginViewModel>(ownerProducer = { requireParentFragment() })
+    private val viewModel by viewModels<LoginViewModel>(ownerProducer = { requireParentFragment() })
 
     override fun onCreateView(
         inflater: LayoutInflater,

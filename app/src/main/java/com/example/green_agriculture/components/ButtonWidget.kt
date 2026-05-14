@@ -126,5 +126,11 @@ class ButtonWidget @JvmOverloads constructor(
         fun bindOnClick(view: ButtonWidget, onClick: () -> Unit) {
             view.onClick = onClick
         }
+
+        @JvmStatic
+        @BindingAdapter("text")
+        fun bindText(view: ButtonWidget, text: String) {
+            view.button.text = text
+        }
     }
 }

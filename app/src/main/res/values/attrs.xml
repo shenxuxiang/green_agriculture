@@ -16,8 +16,8 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="CheckoutWidget">
+    <declare-styleable name="CheckboxWidget">
         <attr name="size" format="dimension" />
-        <attr name="android:radius" />
+        <attr name="corner" format="dimension" />
     </declare-styleable>
 </resources>

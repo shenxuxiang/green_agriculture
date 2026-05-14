@@ -12,7 +12,6 @@ import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.sp
 import com.example.green_agriculture.toolkit.PatternUtils
 import com.example.green_agriculture.toolkit.Toast
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,7 +40,7 @@ class PhoneCodeWidget @JvmOverloads constructor(
             enabledGetPhoneCode = PatternUtils.phonePattern.matches(phone)
         }
 
-    var enabledGetPhoneCode: Boolean = true
+    var enabledGetPhoneCode: Boolean = false
         set(value) {
             if (value == field) return
             field = value
@@ -59,14 +58,13 @@ class PhoneCodeWidget @JvmOverloads constructor(
      */
     var isInProgress = false
 
-    val coroutineScope = CoroutineScope(Dispatchers.Default)
-
     init {
         text = textValue
         setTextColor(defaultColor)
         setTextSize(TypedValue.COMPLEX_UNIT_PX, 11.sp)
 
         setOnClickListener {
+            if (phone.isEmpty()) Toast.showWarn("请输入手机号")
             if (!enabledGetPhoneCode || isInProgress) return@setOnClickListener
 
             isInProgress = true
