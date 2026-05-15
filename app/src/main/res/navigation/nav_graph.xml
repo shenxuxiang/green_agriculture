@@ -26,9 +26,6 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
-        <action
-            android:id="@+id/action_loginFragment_to_registerFragment2"
-            app:destination="@id/registerFragment" />
     </fragment>
 
     <fragment
@@ -36,6 +33,5 @@
         android:name="com.example.green_agriculture.pages.register.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" />
-
 
 </navigation>

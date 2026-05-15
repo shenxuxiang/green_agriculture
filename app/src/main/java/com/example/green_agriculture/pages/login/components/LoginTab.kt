@@ -29,7 +29,6 @@ class LoginTab @JvmOverloads constructor(
             if (value == field) return
             field = value
 
-            VibratorUtils.oneShot()
             if (value == 0) {
                 executeColorAnimation(binding.fastLogin, textColor, textPrimaryColor)
                 executeColorAnimation(binding.accountLogin, textPrimaryColor, textColor)
@@ -47,14 +46,20 @@ class LoginTab @JvmOverloads constructor(
         gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
         indicatorLayoutWidth = (tabItemWidth * 2 + 76.dp) - (tabItemWidth - 20.dp)
 
-        updateIndicatorLayoutWidth()
+        updateIndicatorLayout()
         binding.indicator.background = GradientDrawable().apply {
             cornerRadius = 2.dp
             setColor(textPrimaryColor)
         }
 
-        binding.fastLogin.setOnClickListener { tabIndex = 0 }
-        binding.accountLogin.setOnClickListener { tabIndex = 1 }
+        binding.fastLogin.setOnClickListener {
+            tabIndex = 0
+            VibratorUtils.oneShot()
+        }
+        binding.accountLogin.setOnClickListener {
+            tabIndex = 1
+            VibratorUtils.oneShot()
+        }
     }
 
     private val tabItemWidth: Int
@@ -66,7 +71,7 @@ class LoginTab @JvmOverloads constructor(
     /**
      * 初始化布局，动态计算出 indicatorLayout 元素的实际宽度，并水平居中
      */
-    private fun updateIndicatorLayoutWidth() {
+    private fun updateIndicatorLayout() {
         val indicatorLayoutLP = binding.indicatorLayout.layoutParams
         indicatorLayoutLP.width = indicatorLayoutWidth.toInt()
         binding.indicatorLayout.layoutParams = indicatorLayoutLP
@@ -92,6 +97,12 @@ class LoginTab @JvmOverloads constructor(
     }
 
     companion object {
+        @JvmStatic
+        @BindingAdapter("tabIndex")
+        fun bindTabIndex(view: LoginTab, tabIndex: Int) {
+            view.tabIndex = tabIndex
+        }
+
         @JvmStatic
         @BindingAdapter("onChanged")
         fun bindOnChanged(view: LoginTab, onChanged: (tabIndex: Int) -> Unit) {

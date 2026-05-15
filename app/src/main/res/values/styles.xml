@@ -7,6 +7,13 @@
         <item name="android:windowExitAnimation">@anim/alert_widget_exit_anim</item>
     </style>
 
+
+    <!--  AlertWidget 组件动画定义  -->
+    <style name="BottomSheetMadalAnimation">
+        <item name="android:windowEnterAnimation">@anim/bottom_sheet_modal_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/bottom_sheet_modal_exit_anim</item>
+    </style>
+
     <!--  AlertWidget 自定义主题样式  -->
     <style name="AlertWidgetDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowMinWidthMinor">100%</item>
@@ -20,6 +27,5 @@
 
     <style name="ButtonWidgetTextAppearance" parent="TextAppearance.AppCompat">
         <item name="android:textStyle">normal</item>
-
     </style>
 </resources>

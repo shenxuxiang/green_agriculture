@@ -41,8 +41,7 @@
             android:layout_marginTop="40dp"
             app:enabled="@{viewModel.accountLoginButtonEnabled}"
             app:onClick="@{() -> viewModel.handleLoginForPasswd(context)}"
-            app:text="@{`登录`}"
-            app:type="primary" />
+            app:text="@{`登录`}" />
 
         <LinearLayout
             android:layout_width="266dp"
@@ -54,9 +53,7 @@
             <com.example.green_agriculture.components.CheckboxWidget
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                app:checked="@={viewModel.accountLoginCheckedUserAgreement}"
-                app:corner="4dp"
-                app:size="18dp" />
+                app:checked="@={viewModel.accountLoginCheckedUserAgreement}" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -118,7 +115,8 @@
             android:layout_width="266dp"
             android:layout_height="36dp"
             android:layout_marginTop="26dp"
+            app:onClick="@{viewModel::handleNavToRegisterPage}"
             app:text="@{`注册`}"
-            app:type="normal" />
+            app:type="@{`normal`}" />
     </LinearLayout>
 </layout>

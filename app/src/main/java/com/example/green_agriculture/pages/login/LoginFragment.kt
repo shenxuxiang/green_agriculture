@@ -31,7 +31,8 @@ class LoginFragment : BaseFragment() {
         super.onEventBinding()
     }
 
-    val onTabChanged: (tabIndex: Int) -> Unit = {
+    val onTabChanged: (Int) -> Unit = {
+        viewModel.updatePanelIndex(it)
         binding.panelController.setCurrentItem(it, false)
     }
 }

@@ -3,10 +3,12 @@ package com.example.green_agriculture.pages.login
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.green_agriculture.R
 import com.example.green_agriculture.components.AlertWidget
 import com.example.green_agriculture.entity.HandlerRef
 import com.example.green_agriculture.pages.login.components.AccountLoginPanelFragment
 import com.example.green_agriculture.pages.login.components.FastLoginPanelFragment
+import com.example.green_agriculture.toolkit.Navigator
 import com.example.green_agriculture.toolkit.PatternUtils
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +36,13 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
         PanelItem(fragment = AccountLoginPanelFragment()),
     )
 
+    private val _panelIndex = MutableStateFlow(0)
+    val panelIndex = _panelIndex.asStateFlow()
+
+    fun updatePanelIndex(index: Int) {
+        _panelIndex.value = index
+    }
+
     val phone = MutableStateFlow("")
     val code = MutableStateFlow("")
     val account = MutableStateFlow("")
@@ -53,7 +62,7 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
      * 发送登录验证码
      * @return true-发送成功，false-发送失败
      */
-    val sendPhoneCode: suspend (phone: String) -> Boolean = {
+    val sendPhoneCode: suspend (String) -> Boolean = {
         val result = repository.sendPhoneCode(mapOf("phone" to it, "type" to "1"))
 
         withContext(Dispatchers.Main) {
@@ -76,7 +85,6 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
                 }
             )
         }
-
         // 登录逻辑
     }
 
@@ -93,8 +101,11 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
                 }
             )
         }
-
         // 登录逻辑
+    }
+
+    fun handleNavToRegisterPage() {
+        Navigator.navigate(R.id.action_loginFragment_to_registerFragment)
     }
 
     init {

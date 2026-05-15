@@ -16,7 +16,6 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.withStyledAttributes
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
@@ -30,7 +29,7 @@ class CheckboxWidget @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val innerView: CheckboxWidgetInner = CheckboxWidgetInner(context)
+    private val innerView: CheckboxWidgetInner
 
     var checkedValue: Boolean = false
         set(value) {
@@ -40,21 +39,42 @@ class CheckboxWidget @JvmOverloads constructor(
             innerView.checkedValue = value
         }
 
+    var size: Float = 18.dp
+        set(value) {
+            if (value == field) return
+            field = value
+
+            val lp = innerView.layoutParams
+
+            lp.width = value.toInt()
+            lp.height = value.toInt()
+
+            innerView.size = value
+            innerView.layoutParams = lp
+        }
+
+    var corner: Float = 4.dp
+        set(value) {
+            if (value == field) return
+            field = value
+
+            innerView.corner = value
+        }
+
     var onChangedListener: InverseBindingListener? = null
 
     init {
-        context.withStyledAttributes(attrs, R.styleable.CheckboxWidget, defStyleAttr, 0) {
-            val checkboxSize = getDimension(R.styleable.CheckboxWidget_size, 18.dp)
-            val corner = getDimension(R.styleable.CheckboxWidget_corner, 6.dp)
-            innerView.also { view ->
-                view.corner = corner
-                view.size = checkboxSize
-                view.layoutParams = LayoutParams(checkboxSize.toInt(), checkboxSize.toInt()).apply {
-                    gravity = Gravity.CENTER
-                }
-                addView(view)
+        innerView = CheckboxWidgetInner(context).apply {
+            layoutParams = LayoutParams(
+                this@CheckboxWidget.size.toInt(),
+                this@CheckboxWidget.size.toInt(),
+            ).apply {
+                gravity = Gravity.CENTER
             }
         }
+        innerView.size = size
+        innerView.corner = corner
+        addView(innerView)
 
         setOnClickListener {
             VibratorUtils.oneShot()
@@ -81,6 +101,18 @@ class CheckboxWidget @JvmOverloads constructor(
         fun bindCheckedAttrChanged(view: CheckboxWidget, onChange: InverseBindingListener) {
             view.onChangedListener = onChange
         }
+
+        @JvmStatic
+        @BindingAdapter("size")
+        fun bindSize(view: CheckboxWidget, size: Int) {
+            view.size = size.dp
+        }
+
+        @JvmStatic
+        @BindingAdapter("corner")
+        fun bindCorner(view: CheckboxWidget, corner: Int) {
+            view.corner = corner.dp
+        }
     }
 }
 
@@ -105,6 +137,12 @@ private class CheckboxWidgetInner(context: Context) : View(context) {
             )
         }
     var corner: Float = 4.dp
+        set(value) {
+            if (value == field) return
+            field = value
+
+            invalidate()
+        }
 
     /**
      * 绘制的矩形区域

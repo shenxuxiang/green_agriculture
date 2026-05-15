@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.withStyledAttributes
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.dp
@@ -29,9 +28,10 @@ class ButtonWidget @JvmOverloads constructor(
     private val black9 = ContextCompat.getColor(context, R.color.black9)
     private val black4 = ContextCompat.getColor(context, R.color.black4)
     private val white = ContextCompat.getColor(context, R.color.white)
-    private var onClick: () -> Unit = {}
     private val button: MaterialButton
     private val mask: View
+
+    var onClickListener: (() -> Unit)? = null
 
     var buttonEnabled: Boolean = true
         set(value) {
@@ -53,57 +53,18 @@ class ButtonWidget @JvmOverloads constructor(
             }
         }
 
+    var type: String = "primary"
+
+    var ghost: Boolean = false
+
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_button_widget, this, true).apply {
             button = findViewById(R.id.button)
         }
 
-        context.withStyledAttributes(attrs, R.styleable.ButtonWidget, defStyleAttr, 0) {
-
-            val type = getInt(R.styleable.ButtonWidget_type, 0)
-            val ghost = getBoolean(R.styleable.ButtonWidget_ghost, false)
-            radius = getDimension(R.styleable.ButtonWidget_radius, 18.dp)
-
-            val backgroundColor: ColorStateList
-            val strokeColor: ColorStateList
-            val rippleColor: ColorStateList
-            val strokeWidth: Int
-            val textColor: Int
-
-            when (type) {
-                0 -> { // primary
-                    rippleColor = ColorStateList.valueOf(if (ghost) 0x44DDDDDD else 0x22FFFFFF)
-                    backgroundColor = ColorStateList.valueOf(if (ghost) white else primaryColor)
-                    strokeColor = ColorStateList.valueOf(primaryColor)
-                    textColor = if (ghost) primaryColor else white
-                    strokeWidth = if (ghost) 1.dp.toInt() else 0
-                }
-
-                1 -> { // danger
-                    rippleColor = ColorStateList.valueOf(if (ghost) 0x44DDDDDD else 0x22FFFFFF)
-                    backgroundColor = ColorStateList.valueOf(if (ghost) white else errorColor)
-                    strokeColor = ColorStateList.valueOf(errorColor)
-                    textColor = if (ghost) errorColor else white
-                    strokeWidth = if (ghost) 1.dp.toInt() else 0
-                }
-
-                else -> { // normal
-                    rippleColor = ColorStateList.valueOf(0x44DDDDDD)
-                    backgroundColor = ColorStateList.valueOf(white)
-                    strokeColor = ColorStateList.valueOf(black9)
-                    strokeWidth = 1.dp.toInt()
-                    textColor = black4
-                }
-            }
-
-            button.backgroundTintList = backgroundColor
-            button.strokeColor = strokeColor
-            button.rippleColor = rippleColor
-            button.strokeWidth = strokeWidth
-            button.setTextColor(textColor)
-            button.setOnClickListener {
-                onClick.invoke()
-            }
+        updateButtonStyle()
+        button.setOnClickListener {
+            onClickListener?.invoke()
         }
 
         // 给 Button 添加一个背景遮罩，模拟 disabled 时的样式
@@ -111,7 +72,51 @@ class ButtonWidget @JvmOverloads constructor(
             visibility = GONE
             setBackgroundColor(0x66FFFFFF)
         }
+
         addView(mask)
+    }
+
+    /**
+     * 更新样式
+     */
+    fun updateButtonStyle() {
+        val backgroundColor: ColorStateList
+        val strokeColor: ColorStateList
+        val rippleColor: ColorStateList
+        val strokeWidth: Int
+        val textColor: Int
+
+        when (type) {
+            "primary" -> { // primary
+                rippleColor = ColorStateList.valueOf(if (ghost) 0x44DDDDDD else 0x22FFFFFF)
+                backgroundColor = ColorStateList.valueOf(if (ghost) white else primaryColor)
+                strokeColor = ColorStateList.valueOf(primaryColor)
+                textColor = if (ghost) primaryColor else white
+                strokeWidth = if (ghost) 1.dp.toInt() else 0
+            }
+
+            "danger" -> { //
+                rippleColor = ColorStateList.valueOf(if (ghost) 0x44DDDDDD else 0x22FFFFFF)
+                backgroundColor = ColorStateList.valueOf(if (ghost) white else errorColor)
+                strokeColor = ColorStateList.valueOf(errorColor)
+                textColor = if (ghost) errorColor else white
+                strokeWidth = if (ghost) 1.dp.toInt() else 0
+            }
+
+            else -> { // normal
+                rippleColor = ColorStateList.valueOf(0x44DDDDDD)
+                backgroundColor = ColorStateList.valueOf(white)
+                strokeColor = ColorStateList.valueOf(black9)
+                strokeWidth = 1.dp.toInt()
+                textColor = black4
+            }
+        }
+
+        button.backgroundTintList = backgroundColor
+        button.strokeColor = strokeColor
+        button.rippleColor = rippleColor
+        button.strokeWidth = strokeWidth
+        button.setTextColor(textColor)
     }
 
     companion object {
@@ -124,13 +129,28 @@ class ButtonWidget @JvmOverloads constructor(
         @JvmStatic
         @BindingAdapter("onClick")
         fun bindOnClick(view: ButtonWidget, onClick: () -> Unit) {
-            view.onClick = onClick
+            view.onClickListener = onClick
         }
 
         @JvmStatic
         @BindingAdapter("text")
         fun bindText(view: ButtonWidget, text: String) {
             view.button.text = text
+        }
+
+        @BindingAdapter("radius")
+        fun bindRadius(view: ButtonWidget, radius: Int) {
+            view.radius = radius.dp
+        }
+
+        @JvmStatic
+        @BindingAdapter("type", "ghost", requireAll = false)
+        fun bindTypeOrGhost(view: ButtonWidget, type: String = "primary", ghost: Boolean = false) {
+            if (type != view.type || ghost != view.ghost) {
+                view.type = type
+                view.ghost = ghost
+                view.updateButtonStyle()
+            }
         }
     }
 }

@@ -5,19 +5,4 @@
         <attr name="iconName" format="string" />
         <attr name="iconColor" format="color" />
     </declare-styleable>
-
-    <declare-styleable name="ButtonWidget">
-        <attr name="ghost" format="boolean" />
-        <attr name="radius" format="dimension" />
-        <attr name="type" format="enum">
-            <enum name="primary" value="0" />
-            <enum name="danger" value="1" />
-            <enum name="normal" value="2" />
-        </attr>
-    </declare-styleable>
-
-    <declare-styleable name="CheckboxWidget">
-        <attr name="size" format="dimension" />
-        <attr name="corner" format="dimension" />
-    </declare-styleable>
 </resources>
