@@ -9,7 +9,7 @@
 
 
     <!--  AlertWidget 组件动画定义  -->
-    <style name="BottomSheetMadalAnimation">
+    <style name="BottomMadalAnimation">
         <item name="android:windowEnterAnimation">@anim/bottom_sheet_modal_enter_anim</item>
         <item name="android:windowExitAnimation">@anim/bottom_sheet_modal_exit_anim</item>
     </style>
@@ -27,5 +27,18 @@
 
     <style name="ButtonWidgetTextAppearance" parent="TextAppearance.AppCompat">
         <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="BottomSheetWidgetTheme" parent="Theme.Design.BottomSheetDialog">
+        <!-- 浮动窗口无法独立修改导航栏颜色，所以必须要设置为 false -->
+        <item name="android:windowIsFloating">false</item>
+        <!-- 修改底部状态栏的背景色 -->
+        <item name="android:navigationBarColor">@color/white</item>
+        <!-- 让 BottomSheet 的默认背景透明 -->
+        <item name="bottomSheetStyle">@style/BottomSheetWidgetThemeStyle</item>
+    </style>
+
+    <style name="BottomSheetWidgetThemeStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>

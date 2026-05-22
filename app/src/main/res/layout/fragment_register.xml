@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="event"
+            type="com.example.green_agriculture.pages.register.RegisterFragment" />
+
+        <variable
             name="viewModel"
             type="com.example.green_agriculture.pages.register.RegisterViewModel" />
     </data>
@@ -103,7 +107,15 @@
                                 app:inputType="@{`number`}"
                                 app:label="@{`验证码`}"
                                 app:placeholderText="@{`请输入验证码`}"
-                                app:value="@={viewModel.code}" />
+                                app:ref="@{viewModel.phoneCodeEditTextRef}"
+                                app:value="@={viewModel.code}">
+
+                                <com.example.green_agriculture.pages.login.components.PhoneCodeWidget
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:phone="@{viewModel.phone}"
+                                    app:sendPhoneCode="@{viewModel.sendPhoneCode}" />
+                            </com.example.green_agriculture.pages.register.components.InputBox>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -139,6 +151,7 @@
                                 android:layout_height="36dp"
                                 android:layout_marginHorizontal="13dp"
                                 android:layout_marginTop="11dp"
+                                app:onClick="@{event.handleRegister}"
                                 app:text="@{`注册`}" />
                         </LinearLayout>
                     </androidx.core.widget.NestedScrollView>
@@ -148,8 +161,8 @@
                     android:id="@+id/footerText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="13dp"
-                    android:layout_marginBottom="24dp"
+                    android:paddingTop="13dp"
+                    android:paddingBottom="24dp"
                     android:text="我有账号登录"
                     android:textColor="@color/black4"
                     android:textSize="13sp" />

@@ -3,6 +3,7 @@ package com.example.green_agriculture.toolkit
 import android.content.Context
 import android.os.Bundle
 import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
@@ -67,4 +68,10 @@ object Navigator {
     fun canPop(): Boolean {
         return navController.previousBackStackEntry != null
     }
+
+    /**
+     * 获取 NavHostFragment 中当前活跃的 Fragment（即 NavGraph 中当前显示的目标 Fragment）
+     */
+    val currentNavigationFragment: Fragment?
+        get() = navHostFragment.childFragmentManager.primaryNavigationFragment
 }

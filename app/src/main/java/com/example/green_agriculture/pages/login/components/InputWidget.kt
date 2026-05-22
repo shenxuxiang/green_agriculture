@@ -147,6 +147,9 @@ class InputWidget @JvmOverloads constructor(
         visiblePasswdButton.setOnClickListener {
             val method: Any
             val iconName: String
+            // 记录光标位置
+            val selectionEnd = inputEditText.selectionEnd
+            val selectionStart = inputEditText.selectionStart
 
             if (visiblePasswdFlag) {
                 method = PasswordTransformationMethod.getInstance()
@@ -155,10 +158,14 @@ class InputWidget @JvmOverloads constructor(
                 method = HideReturnsTransformationMethod.getInstance()
                 iconName = ContextCompat.getString(context, R.string.icon_invisible)
             }
-
+            /**
+             * 修改 transformationMethod 后，光标会自动移动到文本起始位置
+             * 所以这里要手动恢复光标的原始位置
+             */
             visiblePasswdFlag = !visiblePasswdFlag
             visiblePasswdButton.iconName = iconName
             inputEditText.transformationMethod = method
+            inputEditText.setSelection(selectionStart, selectionEnd)
         }
 
         /**

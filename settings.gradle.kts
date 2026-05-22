@@ -16,6 +16,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // 添加这一行，否则 com.github.promeg:tinypinyin:2.0.3 无法下载
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
     }
 }
 

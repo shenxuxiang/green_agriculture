@@ -47,7 +47,7 @@
             android:layout_height="36dp"
             android:layout_marginTop="40dp"
             app:enabled="@{viewModel.fastLoginButtonEnabled}"
-            app:onClick="@{() -> viewModel.handleLoginForPhoneCode(context)}"
+            app:onClick="@{viewModel.handleLoginForPhoneCode}"
             app:text="@{`登录`}" />
 
         <LinearLayout
@@ -122,7 +122,7 @@
             android:layout_width="266dp"
             android:layout_height="36dp"
             android:layout_marginTop="26dp"
-            app:onClick="@{viewModel::handleNavToRegisterPage}"
+            app:onClick="@{viewModel.handleNavToRegisterPage}"
             app:text="@{`注册`}"
             app:type="@{`normal`}" />
     </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.green_agriculture.pages.login
 
-import android.content.Context
+import android.view.View
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.green_agriculture.R
@@ -11,6 +12,7 @@ import com.example.green_agriculture.pages.login.components.FastLoginPanelFragme
 import com.example.green_agriculture.toolkit.Navigator
 import com.example.green_agriculture.toolkit.PatternUtils
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,8 +64,12 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
      * 发送登录验证码
      * @return true-发送成功，false-发送失败
      */
-    val sendPhoneCode: suspend (String) -> Boolean = {
-        val result = repository.sendPhoneCode(mapOf("phone" to it, "type" to "1"))
+    val sendPhoneCode: suspend (String) -> Boolean = { phone ->
+        val json = JsonObject().apply {
+            addProperty("type", 1)
+            addProperty("phone", phone)
+        }
+        val result = repository.sendPhoneCode(json)
 
         withContext(Dispatchers.Main) {
             (phoneCodeEditTextRef.current as TextInputEditText).requestFocus()
@@ -75,10 +81,11 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
     /**
      * 手机验证码登录
      */
-    fun handleLoginForPhoneCode(context: Context) {
+    val handleLoginForPhoneCode: (View) -> Unit = { view ->
+        val fragmentManager = FragmentManager.findFragment<LoginFragment>(view).childFragmentManager
         if (!fastLoginCheckedUserAgreement.value) {
             AlertWidget.show(
-                context,
+                fragmentManager,
                 title = "请您阅读并同意《用户协议》和《隐私协议》",
                 onConfirm = {
                     fastLoginCheckedUserAgreement.value = true
@@ -91,10 +98,11 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
     /**
      * 用户密码登录
      */
-    fun handleLoginForPasswd(context: Context) {
+    val handleLoginForPasswd: (View) -> Unit = { view ->
+        val fragmentManager = FragmentManager.findFragment<LoginFragment>(view).childFragmentManager
         if (!accountLoginCheckedUserAgreement.value) {
             AlertWidget.show(
-                context,
+                fragmentManager,
                 title = "请您阅读并同意《用户协议》和《隐私协议》",
                 onConfirm = {
                     accountLoginCheckedUserAgreement.value = true
@@ -104,7 +112,7 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
         // 登录逻辑
     }
 
-    fun handleNavToRegisterPage() {
+    val handleNavToRegisterPage: (View) -> Unit = {
         Navigator.navigate(R.id.action_loginFragment_to_registerFragment)
     }
 

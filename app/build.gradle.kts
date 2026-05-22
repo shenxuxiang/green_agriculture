@@ -184,10 +184,13 @@ kotlin {
 }
 
 dependencies {
+    // 拼音
+    implementation("com.github.promeg:tinypinyin:2.0.3")
+
     // 这两项是添加 ksp 插件应用和依赖配置。
     implementation(project(":annotation"))
     ksp(project(":processor"))
-    
+
     // SmartRefreshLayout
     implementation("io.github.scwang90:refresh-layout-kernel:2.1.0")
     implementation("io.github.scwang90:refresh-header-classics:2.1.0") //经典刷新头

@@ -3,4 +3,5 @@
     <!-- 用于 TabNavigation 的缓存键 -->
     <item name="first_item_width" type="id" />
     <item name="gap_width" type="id" />
+    <item name="child_order" type="id" />
 </resources>

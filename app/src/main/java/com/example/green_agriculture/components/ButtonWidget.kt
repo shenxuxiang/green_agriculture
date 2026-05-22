@@ -28,10 +28,10 @@ class ButtonWidget @JvmOverloads constructor(
     private val black9 = ContextCompat.getColor(context, R.color.black9)
     private val black4 = ContextCompat.getColor(context, R.color.black4)
     private val white = ContextCompat.getColor(context, R.color.white)
-    private val button: MaterialButton
     private val mask: View
+    val button: MaterialButton
 
-    var onClickListener: (() -> Unit)? = null
+    var onClickListener: ((View) -> Unit)? = null
 
     var buttonEnabled: Boolean = true
         set(value) {
@@ -42,7 +42,7 @@ class ButtonWidget @JvmOverloads constructor(
             mask.visibility = if (value) GONE else VISIBLE
         }
 
-    var radius: Float = 0f
+    var corner: Float = 0f
         set(value) {
             if (value == field) return
             field = value
@@ -64,7 +64,7 @@ class ButtonWidget @JvmOverloads constructor(
 
         updateButtonStyle()
         button.setOnClickListener {
-            onClickListener?.invoke()
+            onClickListener?.invoke(this)
         }
 
         // 给 Button 添加一个背景遮罩，模拟 disabled 时的样式
@@ -128,7 +128,7 @@ class ButtonWidget @JvmOverloads constructor(
 
         @JvmStatic
         @BindingAdapter("onClick")
-        fun bindOnClick(view: ButtonWidget, onClick: () -> Unit) {
+        fun bindOnClick(view: ButtonWidget, onClick: (View) -> Unit) {
             view.onClickListener = onClick
         }
 
@@ -138,9 +138,10 @@ class ButtonWidget @JvmOverloads constructor(
             view.button.text = text
         }
 
-        @BindingAdapter("radius")
-        fun bindRadius(view: ButtonWidget, radius: Int) {
-            view.radius = radius.dp
+        @JvmStatic
+        @BindingAdapter("corner")
+        fun bindCorner(view: ButtonWidget, corner: Int) {
+            view.corner = corner.dp
         }
 
         @JvmStatic

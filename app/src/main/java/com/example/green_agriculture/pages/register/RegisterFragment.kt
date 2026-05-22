@@ -1,13 +1,16 @@
 package com.example.green_agriculture.pages.register
 
-import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.annotation.AutoBinding
 import com.example.green_agriculture.base.BaseFragment
+import com.example.green_agriculture.components.RegionSelectModal
 import com.example.green_agriculture.databinding.FragmentRegisterBinding
+import com.example.green_agriculture.pages.main.MainViewModel
 import com.example.green_agriculture.toolkit.CalculateUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,52 +20,55 @@ class RegisterFragment : BaseFragment() {
     override lateinit var binding: FragmentRegisterBinding
 
     private val viewModel by viewModels<RegisterViewModel>()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     /**
-     * 监听键盘状态
+     * 底部导航栏的高度
      */
-    val listener = ViewTreeObserver.OnGlobalLayoutListener {
-        val rect = Rect()
-        val context = requireContext()
-        val activity = requireActivity()
-        val screenH = context.resources.displayMetrics.heightPixels
-
-        // 获取软键盘弹出的高度
-        activity.window.decorView.getWindowVisibleDisplayFrame(rect)
-
-        val marginBottom: Int
-        val keyboardHidden: Boolean
-        val panelLayoutParams = binding.registerPanel.layoutParams as ViewGroup.MarginLayoutParams
-
-        if (screenH - rect.bottom > screenH * 0.15) {
-            keyboardHidden = false
-            marginBottom = screenH - rect.bottom + CalculateUtils.statusBarHeight.toInt()
-        } else {
-            keyboardHidden = true
-            marginBottom = 0
-        }
-
-        panelLayoutParams.setMargins(0, 0, 0, marginBottom)
-        binding.registerPanel.layoutParams = panelLayoutParams
-        binding.footerText.visibility = if (keyboardHidden) View.VISIBLE else View.GONE
-    }
+    private val navigationBarH = CalculateUtils.navigationBarHeight.toInt()
 
     override fun initData() {
         super.initData()
 
+        binding.event = this
         binding.viewModel = viewModel
     }
 
     override fun onEventBinding() {
         super.onEventBinding()
+        /**
+         * 监听键盘状态
+         */
+        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().window.decorView) { v, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            val imeH = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val panelLayoutParams =
+                binding.registerPanel.layoutParams as ViewGroup.MarginLayoutParams
 
-        val activity = requireActivity()
-        activity.window.decorView.viewTreeObserver.addOnGlobalLayoutListener(listener)
+
+            val marginBottom = if (imeVisible) {
+                imeH - navigationBarH
+            } else {
+                0
+            }
+
+            panelLayoutParams.setMargins(0, 0, 0, marginBottom)
+            binding.registerPanel.layoutParams = panelLayoutParams
+            binding.footerText.visibility = if (imeVisible) View.GONE else View.VISIBLE
+
+            ViewCompat.onApplyWindowInsets(v, insets)
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        val activity = requireActivity()
-        activity.window.decorView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        ViewCompat.setOnApplyWindowInsetsListener(requireActivity().window.decorView, null)
+    }
+
+    val handleRegister: (View) -> Unit = {
+        RegionSelectModal.show(
+            regionData = mainViewModel.regionData,
+            fragmentManager = this.childFragmentManager,
+        )
     }
 }

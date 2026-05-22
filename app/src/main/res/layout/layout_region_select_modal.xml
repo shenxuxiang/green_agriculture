@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="modal"
+            type="com.example.green_agriculture.components.RegionSelectModal" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:background="@color/white"
+        android:clipChildren="true"
+        android:clipToOutline="true"
+        android:clipToPadding="true">
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:gravity="top|start"
+            android:orientation="vertical">
+
+            <!-- 头部内容：搜索 + 确认 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp">
+
+                <com.example.green_agriculture.pages.login.components.InputWidget
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_weight="1"
+                    app:placeholderText="@{`请输入您要搜索的内容`}">
+
+                    <com.example.green_agriculture.components.IconWidget
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:iconColor="@color/black9"
+                        app:iconName="@string/icon_search"
+                        app:iconSize="22dp" />
+                </com.example.green_agriculture.pages.login.components.InputWidget>
+
+                <com.example.green_agriculture.components.ButtonWidget
+                    android:layout_width="70dp"
+                    android:layout_height="36dp"
+                    app:corner="@{6}"
+                    app:onClick="@{modal.onConfirm}"
+                    app:text="@{`确定`}" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/hint"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="@{modal.selectedRegionData.isEmpty ? View.VISIBLE : View.GONE}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:gravity="center"
+                    android:paddingHorizontal="12dp"
+                    android:text="请选择所在地区"
+                    android:textColor="@color/black9"
+                    android:textSize="14sp" />
+            </FrameLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/selectedRegionContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingBottom="10dp"
+                android:visibility="@{modal.selectedRegionData.isEmpty ? View.GONE : View.VISIBLE}">
+
+                <androidx.constraintlayout.helper.widget.Flow
+                    android:id="@+id/selectedRegionContainerFlow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:flow_horizontalBias="0"
+                    app:flow_horizontalGap="10dp"
+                    app:flow_horizontalStyle="packed"
+                    app:flow_verticalGap="10dp"
+                    app:flow_wrapMode="chain" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </FrameLayout>
+</layout>

@@ -7,6 +7,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -27,6 +28,7 @@ class InputBox @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
+    val divider: View
     val label: TextView
     val clearButton: IconWidget
     val container: LinearLayout
@@ -126,6 +128,7 @@ class InputBox @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.layout_register_input_box, this, true)
             .apply {
                 label = findViewById(R.id.label)
+                divider = findViewById(R.id.divider)
                 container = findViewById(R.id.container)
                 clearButton = findViewById(R.id.clearButton)
                 inputLayout = findViewById(R.id.inputLayout)
@@ -146,6 +149,9 @@ class InputBox @JvmOverloads constructor(
         visiblePasswdButton.setOnClickListener {
             val method: Any
             val iconName: String
+            // 记录光标位置
+            val selectionEnd = inputEditText.selectionEnd
+            val selectionStart = inputEditText.selectionStart
 
             if (visiblePasswdFlag) {
                 method = PasswordTransformationMethod.getInstance()
@@ -154,10 +160,15 @@ class InputBox @JvmOverloads constructor(
                 method = HideReturnsTransformationMethod.getInstance()
                 iconName = ContextCompat.getString(context, R.string.icon_invisible)
             }
-
+            
+            /**
+             * 修改 transformationMethod 后，光标会自动移动到文本起始位置
+             * 所以这里要手动恢复光标的原始位置
+             */
             visiblePasswdFlag = !visiblePasswdFlag
             visiblePasswdButton.iconName = iconName
             inputEditText.transformationMethod = method
+            inputEditText.setSelection(selectionStart, selectionEnd)
         }
 
         /**
@@ -169,22 +180,27 @@ class InputBox @JvmOverloads constructor(
         }
     }
 
-//    override fun onFinishInflate() {
-//        super.onFinishInflate()
-//
-//        if (childCount > 1) {
-//            val childrenToMove = (1 until childCount).map { getChildAt(it) }
-//            childrenToMove.forEach { child ->
-//                removeView(child)
-//                // 保留原有的宽高
-//                val oldParams = child.layoutParams
-//                container.addView(
-//                    child,
-//                    LinearLayout.LayoutParams(oldParams.width, oldParams.height)
-//                )
-//            }
-//        }
-//    }
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+
+        if (childCount > 1) {
+            val childrenToMove = (1 until childCount).map { getChildAt(it) }
+            // XML 布局文件中自带的节点
+            val childNodes = listOf(container, label, divider)
+            childrenToMove.forEach { child ->
+                // 插件 child 是不是已经存在的节点
+                if (child !in childNodes) {
+                    removeView(child)
+                    // 保留原有的宽高
+                    val oldParams = child.layoutParams
+                    container.addView(
+                        child,
+                        LinearLayout.LayoutParams(oldParams.width, oldParams.height)
+                    )
+                }
+            }
+        }
+    }
 
     companion object {
         @JvmStatic
