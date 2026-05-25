@@ -8,7 +8,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.annotation.AutoBinding
 import com.example.green_agriculture.base.BaseFragment
-import com.example.green_agriculture.components.RegionSelectModal
 import com.example.green_agriculture.databinding.FragmentRegisterBinding
 import com.example.green_agriculture.pages.main.MainViewModel
 import com.example.green_agriculture.toolkit.CalculateUtils
@@ -66,9 +65,6 @@ class RegisterFragment : BaseFragment() {
     }
 
     val handleRegister: (View) -> Unit = {
-        RegionSelectModal.show(
-            regionData = mainViewModel.regionData,
-            fragmentManager = this.childFragmentManager,
-        )
+
     }
 }

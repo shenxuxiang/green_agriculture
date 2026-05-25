@@ -1,5 +1,6 @@
 package com.example.green_agriculture.toolkit
 
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.green_agriculture.components.ToastWidget
@@ -23,14 +24,19 @@ object Toast {
             // 协程作用域和 Activity 的生命周期绑定在一起，在 Activity 销毁时此协程作用域会自动销毁。
             lifecycleScope.launch(Dispatchers.Default) {
                 for (result in channel) {
-                    val view = async(Dispatchers.Main) {
-                        ToastWidget.show(activity, result.message, result.type)
+                    val toast = async(Dispatchers.Main) {
+                        ToastWidget.show(
+                            icon = result.type,
+                            message = result.message,
+                            rootView = result.rootView ?: (activity.window.decorView as ViewGroup),
+                        )
                     }.await()
 
                     delay(result.duration)
 
                     withContext(Dispatchers.Main) {
-                        ToastWidget.hide(activity, view)
+                        val rootView = result.rootView ?: (activity.window.decorView as ViewGroup)
+                        ToastWidget.hide(rootView, toast)
                     }
                     delay(500)
                 }
@@ -44,19 +50,29 @@ object Toast {
      * @param duration Toast 展示的时间
      * @param type     icon 类型
      */
-    fun show(message: String, duration: Long = 2000, type: String = "none") {
+    fun show(
+        message: String,
+        duration: Long = 2000,
+        type: String = "none",
+        rootView: ViewGroup? = null,
+    ) {
         coroutineScope.launch {
-            channel.send(ToastEvent(message, duration, type))
+            channel.send(ToastEvent(message, duration, type, rootView))
         }
     }
 
-    fun showSuccess(message: String, duration: Long = 2000) {
-        show(message, duration, "success")
+    fun showSuccess(message: String, duration: Long = 2000, rootView: ViewGroup? = null) {
+        show(message, duration, "success", rootView)
     }
 
-    fun showWarn(message: String, duration: Long = 2000) {
-        show(message, duration, "warn")
+    fun showWarn(message: String, duration: Long = 2000, rootView: ViewGroup? = null) {
+        show(message, duration, "warn", rootView)
     }
 }
 
-private data class ToastEvent(val message: String, val duration: Long, val type: String)
+private data class ToastEvent(
+    val message: String,
+    val duration: Long,
+    val type: String,
+    val rootView: ViewGroup? = null,
+)

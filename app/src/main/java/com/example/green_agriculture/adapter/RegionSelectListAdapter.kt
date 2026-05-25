@@ -26,7 +26,7 @@ class RegionSelectListAdapter(private val onSelectListener: (RegionData) -> Unit
     /**
      * 当前被选中的值
      */
-    private var selectedValue = ""
+    private var selectedValue: String? = null
 
     /**
      * 用户选中时的回调
@@ -38,13 +38,13 @@ class RegionSelectListAdapter(private val onSelectListener: (RegionData) -> Unit
          * 此处仍需要更新原先被选中的 ViewHolder 的样式
          */
         val prevPosi =
-            if (selectedValue.isEmpty()) {
+            if (selectedValue?.isEmpty() ?: true) {
                 RecyclerView.NO_POSITION
             } else {
                 currentList.indexOfFirst { it?.data?.value == selectedValue }
             }
         if (prevPosi != RecyclerView.NO_POSITION) notifyItemChanged(prevPosi)
-        
+
         selectedValue = regionData.value
         onSelectListener(regionData)
     }
@@ -52,7 +52,7 @@ class RegionSelectListAdapter(private val onSelectListener: (RegionData) -> Unit
     /**
      * 执行更新列表操作
      */
-    fun updateList(list: List<RegionSelectListAdapterData>, selectedValue: String) {
+    fun updateList(list: List<RegionSelectListAdapterData>, selectedValue: String? = null) {
         // 先更新 selectedValue、在执行 submitList()
         this.selectedValue = selectedValue
         this.submitList(list)

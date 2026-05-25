@@ -98,6 +98,13 @@
                                 app:placeholderText="@{`请填写用户名`}"
                                 app:value="@={viewModel.username}" />
 
+                            <com.example.green_agriculture.pages.register.components.RegionSelector
+                                android:layout_width="match_parent"
+                                android:layout_height="59dp"
+                                android:layout_marginHorizontal="13dp"
+                                android:layout_marginTop="20dp"
+                                app:value="@={viewModel.region}" />
+
                             <com.example.green_agriculture.pages.register.components.InputBox
                                 android:layout_width="match_parent"
                                 android:layout_height="59dp"

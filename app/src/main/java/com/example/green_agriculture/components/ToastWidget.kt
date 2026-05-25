@@ -1,6 +1,5 @@
 package com.example.green_agriculture.components
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
@@ -88,9 +87,14 @@ class ToastWidget @JvmOverloads constructor(
         /**
          * 展示 Toast
          */
-        fun show(activity: Activity, message: String, icon: String = "normal"): ToastWidget {
-            val toast = ToastWidget(activity as Context)
-            val top = (activity.resources.displayMetrics.heightPixels * FRACTION).toInt()
+        fun show(
+            message: String,
+            rootView: ViewGroup,
+            icon: String = "normal",
+        ): ToastWidget {
+            val context = rootView.context
+            val toast = ToastWidget(context)
+            val top = (context.resources.displayMetrics.heightPixels * FRACTION).toInt()
 
             // 设置 Toast 的 icon、提示文本
             toast.icon = icon
@@ -106,10 +110,10 @@ class ToastWidget @JvmOverloads constructor(
                 setMargins(0, top, 0, 0)
             }
 
-            (activity.window.decorView as ViewGroup).addView(toast)
+            rootView.addView(toast)
 
             // 添加入场动画
-            val animation = AnimationUtils.loadAnimation(activity, R.anim.toast_widget_enter_anim)
+            val animation = AnimationUtils.loadAnimation(context, R.anim.toast_widget_enter_anim)
             toast.startAnimation(animation)
             return toast
         }
@@ -117,16 +121,16 @@ class ToastWidget @JvmOverloads constructor(
         /**
          * 隐藏 Toast
          */
-        fun hide(activity: Activity, toast: ToastWidget) {
-            if (activity.isDestroyed) return
+        fun hide(rootView: ViewGroup, toast: ToastWidget) {
+            val context = rootView.context
 
             // 添加出场动画
-            val animation = AnimationUtils.loadAnimation(activity, R.anim.toast_widget_exit_anim)
+            val animation = AnimationUtils.loadAnimation(context, R.anim.toast_widget_exit_anim)
 
             // 设置动画监听，在出场动画完成时，立即卸载。
             animation.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationEnd(animation: Animation?) {
-                    (activity.window.decorView as ViewGroup).removeView(toast)
+                    rootView.removeView(toast)
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {}

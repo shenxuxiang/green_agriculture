@@ -2,6 +2,7 @@ package com.example.green_agriculture.pages.register
 
 import androidx.lifecycle.ViewModel
 import com.example.green_agriculture.entity.HandlerRef
+import com.example.green_agriculture.entity.SelectedRegionItemOption
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,8 @@ class RegisterViewModel @Inject constructor(val repository: RegisterRepository) 
     val username = MutableStateFlow("")
 
     val code = MutableStateFlow("")
+
+    val region = MutableStateFlow<List<SelectedRegionItemOption>>(emptyList())
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()

@@ -76,7 +76,7 @@
             </FrameLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/selectedRegionContainer"
+                android:id="@+id/selectedContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="12dp"
@@ -84,7 +84,7 @@
                 android:visibility="@{modal.selectedRegionData.isEmpty ? View.GONE : View.VISIBLE}">
 
                 <androidx.constraintlayout.helper.widget.Flow
-                    android:id="@+id/selectedRegionContainerFlow"
+                    android:id="@+id/selectedContainerFlow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -102,5 +102,31 @@
                 android:layout_weight="1"
                 android:orientation="vertical" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sidebar"
+            android:layout_width="40dp"
+            android:layout_height="200dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginRight="20dp"
+            android:gravity="center" />
+
+        <FrameLayout
+            android:id="@+id/loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#66FFFFFF"
+            android:visibility="@{modal.isLoading ? View.VISIBLE : View.GONE}">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                app:indicatorColor="@color/primary"
+                app:indicatorSize="30dp"
+                app:trackCornerRadius="1dp"
+                app:trackThickness="2dp" />
+        </FrameLayout>
     </FrameLayout>
 </layout>
