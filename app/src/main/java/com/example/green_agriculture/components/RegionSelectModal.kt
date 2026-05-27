@@ -1,17 +1,26 @@
 package com.example.green_agriculture.components
 
 import android.app.Dialog
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.green_agriculture.R
+import com.example.green_agriculture.adapter.RegionSelectItemDecoration
 import com.example.green_agriculture.adapter.RegionSelectListAdapter
 import com.example.green_agriculture.adapter.RegionSelectListAdapterData
 import com.example.green_agriculture.databinding.LayoutRegionSelectModalBinding
@@ -22,9 +31,11 @@ import com.example.green_agriculture.pages.main.MainViewModel
 import com.example.green_agriculture.toolkit.CommonUtils
 import com.example.green_agriculture.toolkit.LogUtils
 import com.example.green_agriculture.toolkit.Toast
+import com.example.green_agriculture.toolkit.VibratorUtils
 import com.github.promeg.pinyinhelper.Pinyin
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -66,7 +77,12 @@ class RegionSelectModal(
     /**
      * 数据加载中
      */
-    var isLoading = MutableStateFlow(true)
+    val isLoading = MutableStateFlow(true)
+
+    /**
+     * 用户点击了 sidebar，200ms 后自动恢复 false
+     */
+    var isUserClickSidebar = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +107,7 @@ class RegionSelectModal(
     ): View {
         binding = LayoutRegionSelectModalBinding.inflate(inflater, container, false)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.addItemDecoration(RegionSelectItemDecoration())
         binding.recyclerView.adapter = regionSelectListAdapter
         binding.lifecycleOwner = this
         binding.modal = this
@@ -98,10 +115,18 @@ class RegionSelectModal(
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.root.background = modalGradientDrawable
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!isUserClickSidebar) handleScrollListener()
+            }
+        })
 
         if (regionData.value.isEmpty()) {
             lifecycleScope.launch {
@@ -122,6 +147,24 @@ class RegionSelectModal(
     }
 
     /**
+     * recyclerView 滚动监听
+     */
+    val handleScrollListener = CommonUtils.throttle(lifecycleScope, 200) {
+        val layoutManager = binding.recyclerView.layoutManager as LinearLayoutManager
+        regionSelectListAdapter.findCurrentHeader(layoutManager.findFirstVisibleItemPosition())
+            ?.let {
+                val char = regionSelectListAdapter.currentList[it].firstChar
+                for (i in 0 until binding.sidebar.childCount) {
+                    val child = binding.sidebar.getChildAt(i) as ViewGroup
+                    val isSelected = child.tag == char
+
+                    child.isSelected = isSelected
+                    child.getChildAt(0).isSelected = isSelected
+                }
+            }
+    }
+
+    /**
      * 判断 recyclerView 展示列表是否需要更新
      * 如果 selectedRegionData.value 为空，则应该展示最顶层的行政区域
      * 如果 selectedRegionData.value 的最后一项的 children 为空，
@@ -135,7 +178,16 @@ class RegionSelectModal(
             if (children != null) computeDisplayGroups(children) else null
         }
 
-        if (regionList != null) regionSelectListAdapter.updateList(regionList)
+        if (regionList != null) {
+            regionSelectListAdapter.updateList(regionList)
+            lifecycleScope.launch {
+                delay(100)
+                (binding.recyclerView.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                    0,
+                    0,
+                )
+            }
+        }
     }
 
     /**
@@ -192,6 +244,8 @@ class RegionSelectModal(
         // 展示分组
         val displayGroups = regions.groupBy { Pinyin.toPinyin(it.label, "").take(1) }.toSortedMap()
 
+        binding.sidebar.removeAllViews()
+        var order = 0
         displayGroups.forEach { (key, value) ->
             regionList.add(
                 RegionSelectListAdapterData(
@@ -200,7 +254,8 @@ class RegionSelectModal(
                     type = RegionSelectListAdapter.HEADER,
                 )
             )
-
+            val child = createSidebarChild(binding.sidebar.context, key, order++)
+            binding.sidebar.addView(child)
             value.forEachIndexed { index, item ->
                 regionList.add(
                     RegionSelectListAdapterData(
@@ -212,6 +267,86 @@ class RegionSelectModal(
             }
         }
         return regionList
+    }
+
+    /**
+     * sidebar 子视图的背景颜色
+     */
+    private val sidebarChildBackgroundColorStateList = ColorStateList(
+        arrayOf(
+            intArrayOf(android.R.attr.state_selected),
+            intArrayOf(),
+        ),
+        intArrayOf(0xFF3AC786.toInt(), Color.TRANSPARENT)
+    )
+
+    /**
+     * sidebar 子视图的文本颜色
+     */
+    private val sidebarChildTextColorStateList = ColorStateList(
+        arrayOf(
+            intArrayOf(android.R.attr.state_selected),
+            intArrayOf(),
+        ),
+        intArrayOf(0xFFFFFFFF.toInt(), 0xFF4A4A4A.toInt())
+    )
+
+    fun createSidebarChild(context: Context, text: String, order: Int): LinearLayout {
+        val textView = TextView(context)
+
+        textView.text = text
+        textView.setTextColor(sidebarChildTextColorStateList)
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+
+        val container = LinearLayout(context).apply {
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(18.dp.toInt(), 18.dp.toInt()).apply {
+                setMargins(0, 5.dp.toInt(), 0, 5.dp.toInt())
+            }
+            background = GradientDrawable().apply {
+                cornerRadius = 9.dp
+                color = sidebarChildBackgroundColorStateList
+            }
+        }
+
+        container.tag = text
+        container.addView(textView)
+        /**
+         * 默认选中第一个
+         */
+        if (order == 0) {
+            textView.isSelected = true
+            container.isSelected = true
+        }
+        container.setOnClickListener { view ->
+            VibratorUtils.oneShot()
+            isUserClickSidebar = true
+            for (i in 0 until binding.sidebar.childCount) {
+                val child = binding.sidebar.getChildAt(i) as ViewGroup
+                val isSelected = child == view
+
+                child.isSelected = isSelected
+                child.getChildAt(0).isSelected = isSelected
+
+                if (isSelected) {
+                    val position = regionSelectListAdapter.currentList.indexOfFirst {
+                        it.firstChar != null && it.firstChar == view!!.tag
+                    }
+
+                    if (position > -1) (binding.recyclerView.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                        position,
+                        0,
+                    )
+                }
+            }
+
+            // 200ms 后自动恢复为 false
+            lifecycleScope.launch {
+                delay(200)
+                isUserClickSidebar = false
+            }
+        }
+        return container
     }
 
     /**

@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.green_agriculture.entity.RegionData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 object CommonUtils {
     /**
@@ -113,5 +118,18 @@ object CommonUtils {
         }
 
         return result.takeIf { it.isNotEmpty() }
+    }
+
+    // 节流
+    fun throttle(scope: CoroutineScope, delayTime: Long, block: () -> Unit): () -> Unit {
+        var job: Job? = null
+        return fun() {
+            if (job?.isActive == true) return
+            job = scope.launch(Dispatchers.Main) {
+                delay(delayTime)
+
+                block.invoke()
+            }
+        }
     }
 }

@@ -1,15 +1,22 @@
 package com.example.green_agriculture.adapter
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.green_agriculture.GAApplication
 import com.example.green_agriculture.R
 import com.example.green_agriculture.databinding.LayoutRegionSelectContentBinding
 import com.example.green_agriculture.databinding.LayoutRegionSelectHeaderBinding
 import com.example.green_agriculture.entity.RegionData
+import com.example.green_agriculture.extend.dp
+import com.example.green_agriculture.extend.sp
 import com.example.green_agriculture.toolkit.VibratorUtils
 
 class RegionSelectListAdapterData(
@@ -153,8 +160,74 @@ class RegionSelectListAdapter(private val onSelectListener: (RegionData) -> Unit
         }
     }
 
+    fun findCurrentHeader(pos: Int): Int? {
+        for (i in pos downTo 0) {
+            if (getItem(i).type == HEADER) {
+                return i
+            }
+        }
+        return null
+    }
+
+    fun findNextHeader(start: Int): Int? {
+        for (i in start until itemCount) {
+            if (getItemViewType(i) == HEADER) {
+                return i
+            }
+        }
+        return null
+    }
+
     companion object {
         const val HEADER = 0
         const val CONTENT = 1
+    }
+}
+
+class RegionSelectItemDecoration : RecyclerView.ItemDecoration() {
+    val paddingStart = 12.dp
+    val stickyHeaderHeight = 36.dp
+    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = 18.sp
+        style = Paint.Style.FILL
+        typeface = Typeface.DEFAULT_BOLD
+        color = GAApplication.context.getColor(R.color.black3)
+    }
+    val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = 0xFFD9D9D9.toInt()
+    }
+
+    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        super.onDrawOver(c, parent, state)
+        val adapter = parent.adapter as RegionSelectListAdapter
+        val layoutManager = parent.layoutManager as LinearLayoutManager
+        val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+        val currentHeaderPos = adapter.findCurrentHeader(firstVisibleItemPosition) ?: return
+
+        val firstChar = adapter.currentList[currentHeaderPos].firstChar!!
+
+        val top = adapter.findNextHeader(firstVisibleItemPosition + 1)?.let { nextHeaderPos ->
+            val nextHeader = layoutManager.findViewByPosition(nextHeaderPos)
+            val scrollTop = (nextHeader?.top ?: Int.MAX_VALUE).toFloat()
+            if (scrollTop >= stickyHeaderHeight) 0f else scrollTop - stickyHeaderHeight
+        } ?: 0f
+
+        val baseLine = top + stickyHeaderHeight / 2 - (textPaint.descent() + textPaint.ascent()) / 2
+
+        c.drawRect(
+            0f,
+            top,
+            parent.width.toFloat(),
+            top + stickyHeaderHeight,
+            bgPaint,
+        )
+        c.drawText(
+            firstChar,
+            paddingStart,
+            baseLine,
+            textPaint,
+        )
     }
 }

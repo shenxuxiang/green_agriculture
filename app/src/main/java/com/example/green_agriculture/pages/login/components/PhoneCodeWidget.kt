@@ -77,9 +77,8 @@ class PhoneCodeWidget @JvmOverloads constructor(
 
                         // 开始倒计时
                         var count = 60
-                        while (count > 0) {
+                        while (count-- > 0) {
                             withContext(Dispatchers.Main) { textValue = "$count S" }
-                            count--
                             delay(1000)
                         }
 

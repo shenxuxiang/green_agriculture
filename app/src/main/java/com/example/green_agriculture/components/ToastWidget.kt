@@ -79,10 +79,12 @@ class ToastWidget @JvmOverloads constructor(
                 cornerRadius = corner
             }
         }
+
+
     }
 
     companion object {
-        private const val FRACTION = 0.4f
+        private const val FRACTION = 0.6f
 
         /**
          * 展示 Toast
@@ -115,6 +117,7 @@ class ToastWidget @JvmOverloads constructor(
             // 添加入场动画
             val animation = AnimationUtils.loadAnimation(context, R.anim.toast_widget_enter_anim)
             toast.startAnimation(animation)
+            
             return toast
         }
 
@@ -130,7 +133,9 @@ class ToastWidget @JvmOverloads constructor(
             // 设置动画监听，在出场动画完成时，立即卸载。
             animation.setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationEnd(animation: Animation?) {
-                    rootView.removeView(toast)
+                    rootView.post {
+                        rootView.removeView(toast)
+                    }
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {}

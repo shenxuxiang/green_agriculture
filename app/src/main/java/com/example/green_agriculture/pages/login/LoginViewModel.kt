@@ -82,7 +82,8 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
      * 手机验证码登录
      */
     val handleLoginForPhoneCode: (View) -> Unit = { view ->
-        val fragmentManager = FragmentManager.findFragment<LoginFragment>(view).childFragmentManager
+        val fragmentManager =
+            FragmentManager.findFragment<FastLoginPanelFragment>(view).parentFragment!!.childFragmentManager
         if (!fastLoginCheckedUserAgreement.value) {
             AlertWidget.show(
                 fragmentManager,

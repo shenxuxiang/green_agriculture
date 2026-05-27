@@ -103,13 +103,26 @@
                 android:orientation="vertical" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/sidebar"
-            android:layout_width="40dp"
-            android:layout_height="200dp"
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="20dp"
-            android:gravity="center" />
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:backgroundTint="#f9f9f9"
+            android:visibility="@{modal.isLoading ? View.GONE : View.VISIBLE}"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:id="@+id/sidebar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="5dp" />
+        </com.google.android.material.card.MaterialCardView>
+
 
         <FrameLayout
             android:id="@+id/loading"
