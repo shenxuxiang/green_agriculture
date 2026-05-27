@@ -100,9 +100,10 @@ class RegisterViewModel @Inject constructor(val repository: RegisterRepository) 
 
             viewModelScope.launch {
                 val success = repository.register(requestBody)
-                if (success) Toast.showSuccess("注册成功")
                 delay(3000)
-                hideLoading(null)
+                hideLoading {
+                    if (success) Toast.showSuccess("注册成功")
+                }
             }
         }
     }
