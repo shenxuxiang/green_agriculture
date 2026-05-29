@@ -57,6 +57,6 @@ data class UiState(
     /**
      *
      */
-    val displayCheckColorResId: Int
+    val displayCheckedColorResId: Int
         get() = if (userCheckStatus?.checkStatus == 3) R.color.primary else R.color.black3
 }

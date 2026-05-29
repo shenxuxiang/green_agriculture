@@ -98,6 +98,7 @@
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- 认证状态 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="49dp"
@@ -117,7 +118,7 @@
                 <com.example.green_agriculture.components.IconWidget
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:iconColor="@{context.getColor(viewModel.uiState.displayCheckColorResId)}"
+                    app:iconColor="@{context.getColor(viewModel.uiState.displayCheckedColorResId)}"
                     app:iconName="@string/icon_confirm"
                     app:iconSize="24dp" />
 
