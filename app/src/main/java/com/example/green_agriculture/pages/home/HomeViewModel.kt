@@ -1,7 +1,10 @@
 package com.example.green_agriculture.pages.home
 
+import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.green_agriculture.R
+import com.example.green_agriculture.toolkit.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -20,8 +23,10 @@ class HomeViewModel @Inject constructor(val repository: HomeRepository) : ViewMo
         _uiState.update { it.block() }
     }
 
+    val swiperIndex = MutableStateFlow(0)
+
     fun pageRefresh(block: () -> Unit) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             val resp1 = async {
                 repository.queryBannerList()
             }
@@ -34,6 +39,7 @@ class HomeViewModel @Inject constructor(val repository: HomeRepository) : ViewMo
             val policyInformationList = resp2.await()
             updateUIState {
                 copy(
+                    isFinishedRefresh = true,
                     swiperList = swiperList ?: emptyList(),
                     policyInformationList = policyInformationList ?: emptyList()
                 )
@@ -41,5 +47,9 @@ class HomeViewModel @Inject constructor(val repository: HomeRepository) : ViewMo
             // 执行回调
             withContext(Dispatchers.Main) { block() }
         }
+    }
+
+    val handleClickMoreText: (View) -> Unit = {
+        Navigator.navigate(R.id.action_mainFragment_to_identityAuthFragment2)
     }
 }

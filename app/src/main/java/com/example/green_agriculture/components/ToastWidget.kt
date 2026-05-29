@@ -84,7 +84,7 @@ class ToastWidget @JvmOverloads constructor(
     }
 
     companion object {
-        private const val FRACTION = 0.6f
+        private const val FRACTION = 0.3f
 
         /**
          * 展示 Toast
@@ -96,7 +96,9 @@ class ToastWidget @JvmOverloads constructor(
         ): ToastWidget {
             val context = rootView.context
             val toast = ToastWidget(context)
-            val top = (context.resources.displayMetrics.heightPixels * FRACTION).toInt()
+            val screenH = context.resources.displayMetrics.heightPixels
+            toast.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+            val top = (screenH - toast.measuredHeight) * FRACTION
 
             // 设置 Toast 的 icon、提示文本
             toast.icon = icon
@@ -109,7 +111,7 @@ class ToastWidget @JvmOverloads constructor(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
             ).apply {
                 gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-                setMargins(0, top, 0, 0)
+                setMargins(0, top.toInt(), 0, 0)
             }
 
             rootView.addView(toast)
@@ -117,7 +119,7 @@ class ToastWidget @JvmOverloads constructor(
             // 添加入场动画
             val animation = AnimationUtils.loadAnimation(context, R.anim.toast_widget_enter_anim)
             toast.startAnimation(animation)
-            
+
             return toast
         }
 

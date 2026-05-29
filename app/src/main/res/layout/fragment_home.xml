@@ -32,6 +32,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -43,7 +44,7 @@
                     <com.example.green_agriculture.components.SwiperWidget
                         android:layout_width="match_parent"
                         android:layout_height="170dp"
-                        app:index="@{0}"
+                        app:index="@={viewModel.swiperIndex}"
                         app:interval="@{5000}"
                         app:options="@{viewModel.uiState.swiperList}"
                         app:outer_view_pager="@{outerViewPager}" />
@@ -64,19 +65,13 @@
                         android:layout_marginHorizontal="12dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="12dp"
+                        app:onClick="@{viewModel.handleClickMoreText}"
                         app:title="@{`农业咨询`}" />
 
                     <com.example.green_agriculture.pages.home.components.PolicyInformationList
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:resourceData="@{viewModel.uiState.policyInformationList}" />
-                    <!--                    <androidx.recyclerview.widget.RecyclerView-->
-                    <!--                        android:id="@+id/policy_information_recycler_view"-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_marginBottom="12dp"-->
-                    <!--                        android:orientation="vertical" />-->
-
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </com.scwang.smart.refresh.layout.SmartRefreshLayout>

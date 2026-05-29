@@ -64,7 +64,9 @@ class LoadingWidget(context: Context) : FrameLayout(context) {
         }
 
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-            val top = context.resources.displayMetrics.heightPixels * ALIGN_FRACTION
+            val screenH = context.resources.displayMetrics.heightPixels
+            val contentH = paddingVertical * 2 + indicatorRadius * 2
+            val top = (screenH - contentH) * ALIGN_FRACTION
 
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             setMargins(0, top.toInt(), 0, 0)
@@ -89,7 +91,7 @@ class LoadingWidget(context: Context) : FrameLayout(context) {
 
     companion object {
         private const val DELAY = 200L
-        private const val ALIGN_FRACTION = 0.35f
+        private const val ALIGN_FRACTION = 0.5f
         private val paddingVertical = 12.dp.toInt()
         private val indicatorRadius = 15.dp.toInt()
         private val paddingHorizontal = 18.dp.toInt()

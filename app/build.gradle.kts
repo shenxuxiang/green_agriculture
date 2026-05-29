@@ -45,6 +45,8 @@ plugins {
 
     // 支持 Safe-Args
     id("androidx.navigation.safeargs")
+
+    id("kotlin-parcelize")
 }
 
 android {

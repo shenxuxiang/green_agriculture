@@ -34,12 +34,12 @@ suspend fun <T> Call<T>.await() = suspendCoroutine { continuation ->
                             continuation.resumeWithException(RuntimeException(message))
                             // 跳转到登录页
                             Navigator.navigate(
-                                resId = R.id.loginFragment,
+                                resId = R.id.login_nav_graph,
                                 navOptions = NavOptions.Builder().run {
                                     setLaunchSingleTop(true)
                                     setPopUpTo(
-                                        destinationId = R.id.loginFragment,
-                                        inclusive = false,
+                                        destinationId = R.id.mainFragment,
+                                        inclusive = true,
                                         saveState = false,
                                     )
                                     build()

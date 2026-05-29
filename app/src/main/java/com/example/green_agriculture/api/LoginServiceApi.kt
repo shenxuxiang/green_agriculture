@@ -11,6 +11,9 @@ interface LoginServiceApi {
     @POST("v1.0/auth/sms/send")
     fun sendPhoneCode(@Body requestBody: JsonObject): Call<ResponseData<Boolean>>
 
-    @POST("/v1.0/auth/login/phoneCode")
+    @POST("v1.0/auth/login/phoneCode")
     fun queryLoginPhoneCode(@Body requestBody: JsonObject): Call<ResponseData<UserInformation>>
+
+    @POST("v1.0/auth/login")
+    fun queryLoginPassword(@Body requestBody: JsonObject): Call<ResponseData<UserInformation>>
 }

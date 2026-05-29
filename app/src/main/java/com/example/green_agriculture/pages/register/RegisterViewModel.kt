@@ -9,7 +9,7 @@ import com.example.green_agriculture.components.AlertWidget
 import com.example.green_agriculture.components.LoadingWidget
 import com.example.green_agriculture.entity.HandlerRef
 import com.example.green_agriculture.entity.SelectedRegionItemOption
-import com.example.green_agriculture.toolkit.Encrypter
+import com.example.green_agriculture.toolkit.EncrypterUtils
 import com.example.green_agriculture.toolkit.PatternUtils
 import com.example.green_agriculture.toolkit.Toast
 import com.google.android.material.textfield.TextInputEditText
@@ -95,7 +95,7 @@ class RegisterViewModel @Inject constructor(val repository: RegisterRepository) 
                 addProperty("username", username.value)
                 addProperty("regionCode", region.value.last().value)
                 addProperty("regionName", region.value.last().label)
-                addProperty("password", Encrypter.encrypt(passwd.value))
+                addProperty("password", EncrypterUtils.encrypt(passwd.value))
             }
 
             viewModelScope.launch {
@@ -113,9 +113,9 @@ class RegisterViewModel @Inject constructor(val repository: RegisterRepository) 
             combine(phone, passwd, username, region, code) {
                 return@combine PatternUtils.phonePattern.matches(phone.value) &&
                         PatternUtils.passwordPattern.matches(passwd.value) &&
+                        PatternUtils.phoneCodePattern.matches(code.value) &&
                         username.value.isNotEmpty() &&
-                        region.value.isNotEmpty() &&
-                        code.value.length == 6
+                        region.value.isNotEmpty()
             }.collect {
                 registerButtonEnabled.value = it
             }

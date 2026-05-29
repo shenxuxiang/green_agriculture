@@ -47,7 +47,7 @@
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
 
-                <com.example.green_agriculture.pages.main.components.TabNavigation
+                <com.example.green_agriculture.pages.main.components.BottomNavigationBar
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#F7F8F8"
@@ -55,8 +55,8 @@
                     android:orientation="horizontal"
                     android:paddingHorizontal="12dp"
                     app:index="@{viewModel.uiState.tabIndex}"
-                    app:onChanged="@{fragment.onTabClick}"
-                    app:options="@{viewModel.uiState.tabList}" />
+                    app:onChanged="@{viewModel.handleTabIndexChanged}"
+                    app:options="@{viewModel.uiState.bottomNavigationBarList}" />
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </FrameLayout>

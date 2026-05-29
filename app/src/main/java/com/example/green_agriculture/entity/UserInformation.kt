@@ -4,6 +4,7 @@ data class UserInformation(
     val sex: String,
     val status: Int, // 状态
     val phone: String,
+    val token: String,
     val userId: String, // 用户id
     val avatar: String, // 头像
     val address: String, // 详细地址

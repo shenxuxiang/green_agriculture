@@ -1,25 +1,34 @@
 package com.example.green_agriculture.pages.login
 
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavOptions
 import com.example.green_agriculture.R
 import com.example.green_agriculture.components.AlertWidget
+import com.example.green_agriculture.components.LoadingWidget
 import com.example.green_agriculture.entity.HandlerRef
+import com.example.green_agriculture.entity.UserInformation
 import com.example.green_agriculture.pages.login.components.AccountLoginPanelFragment
 import com.example.green_agriculture.pages.login.components.FastLoginPanelFragment
+import com.example.green_agriculture.toolkit.ConstantUtils
+import com.example.green_agriculture.toolkit.EncrypterUtils
+import com.example.green_agriculture.toolkit.LocalStorage
 import com.example.green_agriculture.toolkit.Navigator
 import com.example.green_agriculture.toolkit.PatternUtils
+import com.example.green_agriculture.toolkit.Toast
+import com.example.green_agriculture.toolkit.TokenManager
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -65,17 +74,40 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
      * @return true-发送成功，false-发送失败
      */
     val sendPhoneCode: suspend (String) -> Boolean = { phone ->
+        (phoneCodeEditTextRef.current as TextInputEditText).requestFocus()
+
         val json = JsonObject().apply {
             addProperty("type", 1)
             addProperty("phone", phone)
         }
+
         val result = repository.sendPhoneCode(json)
-
-        withContext(Dispatchers.Main) {
-            (phoneCodeEditTextRef.current as TextInputEditText).requestFocus()
-        }
-
         result
+    }
+
+    /**
+     * 登录成功
+     */
+    suspend fun handleLoginSuccess(data: UserInformation) {
+        TokenManager.token = data.token
+        LocalStorage.setItem(ConstantUtils.USER_INFO, Gson().toJson(data))
+        // 等待 Loading 关闭
+        delay(300)
+        Toast.showSuccess("登录成功")
+        // 等待 Toast 关闭
+        delay(2000)
+        Navigator.navigate(
+            resId = R.id.nav_graph,
+            navOptions = NavOptions.Builder().run {
+                setLaunchSingleTop(true)
+                setPopUpTo(
+                    destinationId = R.id.nav_graph,
+                    inclusive = false,
+                    saveState = false,
+                )
+                build()
+            }
+        )
     }
 
     /**
@@ -92,15 +124,33 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
                     fastLoginCheckedUserAgreement.value = true
                 }
             )
+        } else {
+            // 登录逻辑
+            val rootView = view.rootView as ViewGroup
+            val hideLoading = LoadingWidget.show(rootView)
+
+            viewModelScope.launch {
+                val requestBody = JsonObject().apply {
+                    addProperty("code", code.value)
+                    addProperty("phone", phone.value)
+                }
+
+                /**
+                 * 登录成功
+                 */
+                val data = repository.queryLoginPhoneCode(requestBody)
+                hideLoading(null)
+                if (data != null) handleLoginSuccess(data)
+            }
         }
-        // 登录逻辑
     }
 
     /**
      * 用户密码登录
      */
     val handleLoginForPasswd: (View) -> Unit = { view ->
-        val fragmentManager = FragmentManager.findFragment<LoginFragment>(view).childFragmentManager
+        val fragmentManager =
+            FragmentManager.findFragment<AccountLoginPanelFragment>(view).parentFragment!!.childFragmentManager
         if (!accountLoginCheckedUserAgreement.value) {
             AlertWidget.show(
                 fragmentManager,
@@ -109,8 +159,26 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
                     accountLoginCheckedUserAgreement.value = true
                 }
             )
+        } else {
+            // 登录逻辑
+            val rootView = view.rootView as ViewGroup
+            val hideLoading = LoadingWidget.show(rootView)
+
+            viewModelScope.launch {
+                val requestBody = JsonObject().apply {
+                    addProperty("username", account.value)
+                    addProperty("clientType", "app")
+                    addProperty("password", EncrypterUtils.encrypt(passwd.value))
+                }
+
+                /**
+                 * 登录成功
+                 */
+                val data = repository.queryLoginPassword(requestBody)
+                hideLoading(null)
+                if (data != null) handleLoginSuccess(data)
+            }
         }
-        // 登录逻辑
     }
 
     val handleNavToRegisterPage: (View) -> Unit = {
@@ -124,7 +192,8 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
          */
         viewModelScope.launch {
             combine(phone, code) { v1, v2 ->
-                return@combine PatternUtils.phonePattern.matches(v1) && v2.length >= 6
+                return@combine PatternUtils.phonePattern.matches(v1) &&
+                        PatternUtils.phoneCodePattern.matches(v2)
             }.collect {
                 _fastLoginButtonEnabled.value = it
             }

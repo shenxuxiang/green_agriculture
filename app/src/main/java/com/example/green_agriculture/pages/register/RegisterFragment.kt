@@ -26,8 +26,8 @@ class RegisterFragment : BaseFragment() {
      */
     private val navigationBarH = CalculateUtils.navigationBarHeight.toInt()
 
-    override fun initData() {
-        super.initData()
+    override fun initView() {
+        super.initView()
 
         binding.event = this
         binding.viewModel = viewModel

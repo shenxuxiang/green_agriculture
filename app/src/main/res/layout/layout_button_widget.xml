@@ -9,6 +9,7 @@
     android:elevation="0dp"
     android:insetTop="0dp"
     android:insetBottom="0dp"
+    android:paddingHorizontal="0dp"
     android:stateListAnimator="@null"
     android:textAppearance="@style/ButtonWidgetTextAppearance"
     android:textColor="@color/white"

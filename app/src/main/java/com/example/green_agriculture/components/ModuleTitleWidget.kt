@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -37,6 +38,8 @@ class ModuleTitleWidget @JvmOverloads constructor(
             moreView.visibility = if (value) VISIBLE else GONE
         }
 
+    var handleClickMoreText: (View) -> Unit = {}
+
     init {
         orientation = HORIZONTAL
         gravity = Gravity.START or Gravity.CENTER_VERTICAL
@@ -55,11 +58,16 @@ class ModuleTitleWidget @JvmOverloads constructor(
         addView(titleView)
     }
 
+
     private fun createMoreView() {
         moreView = LinearLayout(context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             gravity = Gravity.CENTER_VERTICAL
             orientation = HORIZONTAL
+
+            setOnClickListener {
+                handleClickMoreText.invoke(it)
+            }
         }
 
         val loadMoreText = TextView(context).apply {
@@ -92,6 +100,12 @@ class ModuleTitleWidget @JvmOverloads constructor(
         @BindingAdapter("showMore")
         fun bindShowMore(view: ModuleTitleWidget, showMore: Boolean) {
             view.showMore = showMore
+        }
+
+        @JvmStatic
+        @BindingAdapter("onClick")
+        fun bindOnClick(view: ModuleTitleWidget, onClick: (View) -> Unit) {
+            view.handleClickMoreText = onClick
         }
     }
 }

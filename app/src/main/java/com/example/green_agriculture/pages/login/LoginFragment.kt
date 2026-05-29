@@ -14,21 +14,13 @@ class LoginFragment : BaseFragment() {
 
     val viewModel by viewModels<LoginViewModel>()
 
-    override fun initData() {
-        super.initData()
-        binding.event = this
-        binding.viewModel = viewModel
-    }
-
     override fun initView() {
         super.initView()
+        binding.event = this
+        binding.viewModel = viewModel
+        binding.panelController.isUserInputEnabled = false
         binding.panelController.adapter =
             ViewPager2FragmentStateAdapter(this@LoginFragment, viewModel.panelList)
-        binding.panelController.isUserInputEnabled = false
-    }
-
-    override fun onEventBinding() {
-        super.onEventBinding()
     }
 
     val onTabChanged: (Int) -> Unit = {

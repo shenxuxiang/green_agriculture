@@ -9,13 +9,13 @@ import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
 import com.example.green_agriculture.toolkit.VibratorUtils
 
-data class TabNavigationItemOption(
+data class BottomNavigationBarItemOption(
     val icon: Int,
     val label: String,
     val selectedIcon: Int,
 )
 
-class TabNavigation @JvmOverloads constructor(
+class BottomNavigationBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -23,13 +23,13 @@ class TabNavigation @JvmOverloads constructor(
 
     var onClickListener: ((Int) -> Unit)? = null
 
-    private fun onTabItemClick(option: TabNavigationItemOption) {
+    private fun onTabItemClick(option: BottomNavigationBarItemOption) {
         val index = tabOptions.indexOf(option)
         onClickListener?.invoke(index)
     }
 
-    var tabOptions: List<TabNavigationItemOption> = emptyList()
-        set(value: List<TabNavigationItemOption>) {
+    var tabOptions: List<BottomNavigationBarItemOption> = emptyList()
+        set(value) {
             if (value == field) return
             field = value
 
@@ -47,12 +47,12 @@ class TabNavigation @JvmOverloads constructor(
         }
 
     var tabIndex: Int = 0
-        set(value: Int) {
+        set(value) {
             if (value == field) return
             field = value
             for (index in 0 until childCount) {
                 val view = getChildAt(index)
-                if (view is TabNavigationItem) {
+                if (view is BottomNavigationBarItem) {
                     val tabIndex = index / 2
                     val option = tabOptions[tabIndex]
                     val isSelected = tabIndex == value
@@ -77,10 +77,10 @@ class TabNavigation @JvmOverloads constructor(
      * 创建 TabItemView
      */
     private fun createTabItemView(
-        option: TabNavigationItemOption,
+        option: BottomNavigationBarItemOption,
         isSelected: Boolean,
-    ): TabNavigationItem {
-        return TabNavigationItem(context).apply {
+    ): BottomNavigationBarItem {
+        return BottomNavigationBarItem(context).apply {
             title = option.label
             tabSelected = isSelected
             icon = context.getString(if (isSelected) option.selectedIcon else option.icon)
@@ -95,20 +95,19 @@ class TabNavigation @JvmOverloads constructor(
 
     companion object {
         @JvmStatic
-        @BindingAdapter("options")
-        fun setOptionsAttr(view: TabNavigation, options: List<TabNavigationItemOption>) {
+        @BindingAdapter("options", "index")
+        fun setOptionsAttr(
+            view: BottomNavigationBar,
+            options: List<BottomNavigationBarItemOption>,
+            index: Int,
+        ) {
             view.tabOptions = options
-        }
-
-        @JvmStatic
-        @BindingAdapter("index")
-        fun setIndexAttr(view: TabNavigation, index: Int) {
             view.tabIndex = index
         }
 
         @JvmStatic
         @BindingAdapter("onChanged")
-        fun setOnClickAttr(view: TabNavigation, onChanged: (Int) -> Unit) {
+        fun setOnClickAttr(view: BottomNavigationBar, onChanged: (Int) -> Unit) {
             view.onClickListener = onChanged
         }
     }

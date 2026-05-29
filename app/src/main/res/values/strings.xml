@@ -18,4 +18,8 @@
     <string name="icon_clear">&#xe601;</string>
     <string name="icon_visible">&#xe606;</string>
     <string name="icon_invisible">&#xe604;</string>
+    <string name="icon_phone">&#xe621;</string>
+    <string name="icon_location">&#xe620;</string>
+    <string name="icon_confirm">&#xe60e;</string>
+
 </resources>

@@ -11,7 +11,7 @@ import androidx.annotation.ColorInt
 import com.example.green_agriculture.R
 import com.example.green_agriculture.components.IconWidget
 
-class TabNavigationItem @JvmOverloads constructor(
+class BottomNavigationBarItem @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -19,7 +19,7 @@ class TabNavigationItem @JvmOverloads constructor(
     private val tabIcon: IconWidget
     private val tabName: TextView
     var tabSelected: Boolean = false
-        set(value: Boolean) {
+        set(value) {
             if (value == field) return
             field = value
 
@@ -39,7 +39,7 @@ class TabNavigationItem @JvmOverloads constructor(
 
     @ColorInt
     var color: Int = context.getColor(R.color.black4)
-        set(value: Int) {
+        set(value) {
             if (value == field) return
             field = value
             tabIcon.iconColor = value
@@ -47,14 +47,14 @@ class TabNavigationItem @JvmOverloads constructor(
         }
 
     var icon: String = ""
-        set(value: String) {
+        set(value) {
             if (value == field) return
             field = value
             tabIcon.iconName = value
         }
 
     var title: String = ""
-        set(value: String) {
+        set(value) {
             if (value == field) return
             field = value
             tabName.text = value

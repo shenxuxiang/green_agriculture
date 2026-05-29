@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
@@ -11,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.example.green_agriculture.R
 import com.example.green_agriculture.extend.dp
+import com.example.green_agriculture.extend.sp
 import com.google.android.material.button.MaterialButton
 
 /**
@@ -51,6 +53,14 @@ class ButtonWidget @JvmOverloads constructor(
             background = GradientDrawable().apply {
                 cornerRadius = value
             }
+        }
+
+    var textSize: Float = 16.sp
+        set(value) {
+            if (value == field) return
+            field = value
+
+            button.setTextSize(TypedValue.COMPLEX_UNIT_PX, value)
         }
 
     var type: String = "primary"
@@ -152,6 +162,12 @@ class ButtonWidget @JvmOverloads constructor(
                 view.ghost = ghost
                 view.updateButtonStyle()
             }
+        }
+
+        @JvmStatic
+        @BindingAdapter("textSize")
+        fun bindTextSize(view: ButtonWidget, textSize: Int) {
+            view.textSize = textSize.dp
         }
     }
 }

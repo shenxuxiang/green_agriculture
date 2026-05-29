@@ -6,10 +6,10 @@ import com.example.green_agriculture.entity.PolicyInformationItemOption
 import com.example.green_agriculture.entity.SwiperWidgetItemOption
 
 data class UiState(
-    val logo: Int = R.mipmap.logo,
+    val pageScrollYOffset: Int = 0,
+    val isFinishedRefresh: Boolean = false,
     val swiperList: List<SwiperWidgetItemOption> = emptyList(),
     val policyInformationList: List<PolicyInformationItemOption> = emptyList(),
-
     val menuOptions: List<MenuItemOption> = listOf(
         MenuItemOption(resId = R.mipmap.home_1, title = "测量宝"),
         MenuItemOption(resId = R.mipmap.home_2, title = "农机作业"),

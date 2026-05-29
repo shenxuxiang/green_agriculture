@@ -18,7 +18,6 @@ abstract class BaseFragment() : Fragment() {
 
         binding.lifecycleOwner = this
 
-        initData()
         initView()
         onDataObserve()
         onEventBinding()
@@ -30,11 +29,6 @@ abstract class BaseFragment() : Fragment() {
      * 页面初始化设置
      */
     open fun initView() {}
-
-    /**
-     * 数据初始化、数据绑定，例如：绑定 ViewModel
-     */
-    open fun initData() {}
 
     /**
      * 数据监听，例如：对某个状态进行监听
@@ -51,6 +45,5 @@ abstract class BaseFragment() : Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        binding.unbind()
     }
 }

@@ -17,22 +17,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
+    /**
+     * 省、市、区、
+     */
     private val _regionData = MutableStateFlow<List<RegionData>>(emptyList())
-
     val regionData = _regionData.asStateFlow()
 
     /**
      * 加载 RegionData 的状态，true-正在加载，false-加载完成、或未开始
      */
     private var _loadingStatusForRegionData = false
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.asStateFlow()
-
-    fun updateUIState(block: UiState.() -> UiState) {
-        _uiState.update {
-            it.block()
-        }
-    }
 
     /**
      * 加载省、市、区、数据
@@ -58,5 +52,17 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 _loadingStatusForRegionData = false
             }
         }
+    }
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState = _uiState.asStateFlow()
+    fun updateUIState(block: UiState.() -> UiState) {
+        _uiState.update {
+            it.block()
+        }
+    }
+
+    val handleTabIndexChanged: (Int) -> Unit = {
+        updateUIState { copy(tabIndex = it) }
     }
 }

@@ -1,13 +1,12 @@
 package com.example.green_agriculture.pages.home
 
 import android.view.animation.DecelerateInterpolator
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.annotation.AutoBinding
-import com.example.green_agriculture.R
 import com.example.green_agriculture.adapter.PolicyInformationListAdepter
 import com.example.green_agriculture.base.BaseFragment
 import com.example.green_agriculture.components.RefreshHeaderWidget
@@ -22,29 +21,16 @@ class HomeFragment : BaseFragment() {
     @AutoBinding
     override lateinit var binding: FragmentHomeBinding
 
-    val viewModel by viewModels<HomeViewModel>()
-    val mainViewModel by hiltNavGraphViewModels<MainViewModel>(R.id.nav_graph)
-
+    val viewModel: HomeViewModel by viewModels()
+    val mainViewModel: MainViewModel by activityViewModels()
     val policyInformationAdapter = PolicyInformationListAdepter()
-
-    override fun initData() {
-        super.initData()
-        binding.outerViewPager = mainViewModel.uiState.value.viewPager2
-        binding.viewModel = viewModel
-    }
 
     override fun initView() {
         super.initView()
-        initSmartRefreshLayout()
-    }
-
-    override fun onEventBinding() {
-        super.onEventBinding()
-        binding.refreshLayout.setOnRefreshListener {
-            viewModel.pageRefresh {
-                it.finishRefresh(1000, true, false)
-            }
-        }
+        binding.nestedScrollView.scrollY = viewModel.uiState.value.pageScrollYOffset
+        binding.outerViewPager = mainViewModel.uiState.value.viewPager2
+        binding.viewModel = viewModel
+        initRefreshLayout()
     }
 
     override fun onDataObserve() {
@@ -67,16 +53,33 @@ class HomeFragment : BaseFragment() {
     /**
      * 初始化 SmartRefreshLayout 的下拉刷新功能
      */
-    private fun initSmartRefreshLayout() {
+    private fun initRefreshLayout() {
         binding.refreshLayout.apply {
             setRefreshHeader(RefreshHeaderWidget(requireContext()))
+            setReboundInterpolator(DecelerateInterpolator())
             setHeaderHeightPx(60.dp.toInt())
             setReboundDuration(300)
-            setReboundInterpolator(DecelerateInterpolator())
             setEnableRefresh(true)
+
+            setOnRefreshListener {
+                viewModel.pageRefresh {
+                    it.finishRefresh(1000, true, false)
+                }
+            }
         }
-        binding.refreshLayout.post {
-            binding.refreshLayout.autoRefresh()
+
+        // 如果已经刷新过了，就不要重复的刷新了。
+        if (!viewModel.uiState.value.isFinishedRefresh) {
+            binding.refreshLayout.post {
+                binding.refreshLayout.autoRefresh()
+            }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // 记录页面滚动位置
+        viewModel.updateUIState { copy(pageScrollYOffset = binding.nestedScrollView.scrollY) }
     }
 }
