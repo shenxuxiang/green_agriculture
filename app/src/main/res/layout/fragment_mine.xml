@@ -18,12 +18,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- 用户信息 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="62dp"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="52dp">
-
+            <!-- 用户头像 -->
             <com.example.green_agriculture.components.ImageWidget
                 android:id="@+id/userAvatar"
                 android:layout_width="54dp"
@@ -36,6 +37,7 @@
                 app:placeholder="@{viewModel.uiState.defaultAvatar}"
                 app:shapeCorner="@{27}" />
 
+            <!-- 用户姓名 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -46,6 +48,7 @@
                 app:layout_constraintStart_toEndOf="@id/userAvatar"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- 用户手机号 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -72,6 +75,7 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
+            <!-- 用户地址 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -118,7 +122,7 @@
                 <com.example.green_agriculture.components.IconWidget
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:iconColor="@{context.getColor(viewModel.uiState.displayCheckedColorResId)}"
+                    app:iconColor="@{context.getColor(viewModel.uiState.displayCheckIconColorResId)}"
                     app:iconName="@string/icon_confirm"
                     app:iconSize="24dp" />
 
@@ -137,6 +141,52 @@
                     app:text="@{viewModel.uiState.displayCheckButtonText}"
                     app:textSize="@{13}"
                     app:type="@{`primary`}" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/white"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.example.green_agriculture.components.ShadowLayoutWidget
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:elevation="3dp"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="15dp"
+                    app:cornerRadius="0dp"
+                    app:shadowAlpha="0.5"
+                    app:shadowColor="@color/primary">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|center_vertical"
+                        android:text="我的订单"
+                        android:textColor="@color/black3"
+                        android:textSize="14sp" />
+
+                </com.example.green_agriculture.components.ShadowLayoutWidget>
+
+                <com.example.green_agriculture.pages.mine.components.ServiceMenu
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:columnCount="4"
+                    android:paddingHorizontal="13dp"
+                    android:paddingBottom="24dp"
+                    app:menus="@{viewModel.uiState.mineServiceMenus}" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

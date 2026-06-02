@@ -105,7 +105,7 @@ class ButtonWidget @JvmOverloads constructor(
                 strokeWidth = if (ghost) 1.dp.toInt() else 0
             }
 
-            "danger" -> { //
+            "danger" -> { // danger
                 rippleColor = ColorStateList.valueOf(if (ghost) 0x44DDDDDD else 0x22FFFFFF)
                 backgroundColor = ColorStateList.valueOf(if (ghost) white else errorColor)
                 strokeColor = ColorStateList.valueOf(errorColor)

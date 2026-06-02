@@ -5,4 +5,14 @@
         <attr name="iconName" format="string" />
         <attr name="iconColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="ShadowLayoutWidget">
+        <attr name="cornerRadius" format="dimension" />
+        <attr name="topLeftCornerRadius" format="dimension" />
+        <attr name="topRightCornerRadius" format="dimension" />
+        <attr name="bottomLeftCornerRadius" format="dimension" />
+        <attr name="bottomRightCornerRadius" format="dimension" />
+        <attr name="shadowColor" format="color|reference" />
+        <attr name="shadowAlpha" format="float" />
+    </declare-styleable>
 </resources>

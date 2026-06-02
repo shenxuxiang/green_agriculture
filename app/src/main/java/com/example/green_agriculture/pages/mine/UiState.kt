@@ -10,7 +10,7 @@ data class UiState(
     val userInformation: UserInformation? = null,
     val userCheckStatus: UserCheckStatus? = null,
     val mineServiceMenus: List<MenuItemOption> = listOf(
-        MenuItemOption(title = "我的菜单", resId = R.mipmap.mine_service_1),
+        MenuItemOption(title = "我的订单", resId = R.mipmap.mine_service_1),
         MenuItemOption(title = "我的需求", resId = R.mipmap.mine_service_2),
         MenuItemOption(title = "我的提问", resId = R.mipmap.mine_service_3),
         MenuItemOption(title = "我的农场", resId = R.mipmap.mine_service_4),
@@ -55,8 +55,8 @@ data class UiState(
         }
 
     /**
-     *
+     * 认证状态 Icon
      */
-    val displayCheckedColorResId: Int
+    val displayCheckIconColorResId: Int
         get() = if (userCheckStatus?.checkStatus == 3) R.color.primary else R.color.black3
 }
