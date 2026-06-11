@@ -189,5 +189,41 @@
                     app:menus="@{viewModel.uiState.mineServiceMenus}" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="10dp"
+            android:alignmentMode="alignMargins"
+            android:background="#ccc"
+            android:orientation="horizontal"
+            android:useDefaultMargins="false">
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_columnWeight="1"
+                android:background="#ff9900" />
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_columnWeight="1"
+                android:background="#ff7700" />
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_columnWeight="1"
+                android:background="#ff5500" />
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_columnWeight="1"
+                android:background="#ff3300" />
+
+        </GridLayout>
     </LinearLayout>
 </layout>

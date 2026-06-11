@@ -27,7 +27,6 @@ class HomeFragment : BaseFragment() {
 
     override fun initView() {
         super.initView()
-        binding.nestedScrollView.scrollY = viewModel.uiState.value.pageScrollYOffset
         binding.outerViewPager = mainViewModel.uiState.value.viewPager2
         binding.viewModel = viewModel
         initRefreshLayout()
@@ -74,12 +73,5 @@ class HomeFragment : BaseFragment() {
                 binding.refreshLayout.autoRefresh()
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        // 记录页面滚动位置
-        viewModel.updateUIState { copy(pageScrollYOffset = binding.nestedScrollView.scrollY) }
     }
 }

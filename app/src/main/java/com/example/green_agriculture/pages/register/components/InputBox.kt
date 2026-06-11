@@ -160,7 +160,7 @@ class InputBox @JvmOverloads constructor(
                 method = HideReturnsTransformationMethod.getInstance()
                 iconName = ContextCompat.getString(context, R.string.icon_invisible)
             }
-            
+
             /**
              * 修改 transformationMethod 后，光标会自动移动到文本起始位置
              * 所以这里要手动恢复光标的原始位置
@@ -182,6 +182,7 @@ class InputBox @JvmOverloads constructor(
 
     override fun onFinishInflate() {
         super.onFinishInflate()
+
 
         if (childCount > 1) {
             val childrenToMove = (1 until childCount).map { getChildAt(it) }

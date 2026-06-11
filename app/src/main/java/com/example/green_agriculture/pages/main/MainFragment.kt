@@ -81,7 +81,7 @@ class MainFragment : BaseFragment() {
         binding.viewPager.apply {
             setCurrentItem(viewModel.uiState.value.tabIndex, false)
             adapter = ViewPager2FragmentStateAdapter(this@MainFragment, fragmentList)
-            offscreenPageLimit = fragmentList.size
+            // offscreenPageLimit = fragmentList.size
         }
     }
 
