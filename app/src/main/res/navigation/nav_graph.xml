@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/choiceAuthFragment">
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.green_agriculture.pages.main.MainFragment"
@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_mainFragment_to_identityAuthFragment2"
             app:destination="@id/identityAuthFragment2" />
+        <action
+            android:id="@+id/action_mainFragment_to_choiceAuthFragment"
+            app:destination="@id/choiceAuthFragment" />
     </fragment>
 
     <include app:graph="@navigation/login_nav_graph" />
@@ -23,4 +26,20 @@
         android:name="com.example.green_agriculture.pages.identity_auth.IdentityAuthFragment"
         android:label="IdentityAuthFragment"
         tools:layout="@layout/fragment_identity_auth" />
+
+    <fragment
+        android:id="@+id/choiceAuthFragment"
+        android:name="com.example.green_agriculture.pages.choice_auth.ChoiceAuthFragment"
+        android:label="ChoiceAuthFragment"
+        tools:layout="@layout/fragment_choice_auth">
+        <action
+            android:id="@+id/action_choiceAuthFragment_to_nongHuFragment"
+            app:destination="@id/nongHuFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nongHuFragment"
+        android:name="com.example.green_agriculture.pages.nong_hu_auth.NongHuAuthFragment"
+        android:label="NongHuFragment"
+        tools:layout="@layout/fragment_nong_hu_auth" />
 </navigation>
