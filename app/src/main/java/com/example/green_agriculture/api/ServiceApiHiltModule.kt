@@ -25,4 +25,8 @@ object ServiceApiHiltModule {
     @Provides
     @Singleton
     fun provideRegisterServiceApi() = HttpRequest.create<RegisterServiceApi>()
+
+    @Provides
+    @Singleton
+    fun provideUserAddressServiceApi() = HttpRequest.create<UserAddressServiceApi>()
 }

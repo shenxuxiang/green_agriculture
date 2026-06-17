@@ -182,6 +182,8 @@ kotlin {
 }
 
 dependencies {
+    implementation("androidx.paging:paging-runtime-ktx:3.2.0")
+    
     // 拼音
     implementation("com.github.promeg:tinypinyin:2.0.3")
 

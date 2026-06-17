@@ -30,6 +30,7 @@ class MineFragment : BaseFragment() {
             .transform(CircleCrop())
             .transition(DrawableTransitionOptions.withCrossFade(300))
             .into(binding.userAvatar)
+
     }
 
     override fun onResume() {

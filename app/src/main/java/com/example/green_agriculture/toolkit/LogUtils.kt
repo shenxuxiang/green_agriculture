@@ -14,4 +14,8 @@ object LogUtils {
     fun d(t: Throwable) {
         if (isDev) Log.d(TAG, t.stackTraceToString())
     }
+
+    fun e(t: Throwable) {
+        if (isDev) Log.e(TAG, t.stackTraceToString())
+    }
 }

@@ -15,7 +15,7 @@ import com.example.green_agriculture.toolkit.CommonUtils
  * SwiperView 的适配器
  */
 class SwiperWidgetAdapter() :
-    ListAdapter<SwiperWidgetItemOption, SwiperWidgetAdapter.SwiperItemViewHolder>(DiffItemCallback()) {
+    ListAdapter<SwiperWidgetItemOption, SwiperWidgetAdapter.SwiperItemViewHolder>(Diff()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwiperItemViewHolder {
         val binding = LayoutSwiperViewItemBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -39,7 +39,7 @@ class SwiperWidgetAdapter() :
         val image = binding.image
     }
 
-    class DiffItemCallback : DiffUtil.ItemCallback<SwiperWidgetItemOption>() {
+    class Diff : DiffUtil.ItemCallback<SwiperWidgetItemOption>() {
         override fun areItemsTheSame(
             oldItem: SwiperWidgetItemOption,
             newItem: SwiperWidgetItemOption,
