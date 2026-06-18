@@ -28,12 +28,18 @@
                 android:layout_height="wrap_content"
                 app:title="@{`地址管理`}" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/user_address_list"
+            <com.scwang.smart.refresh.layout.SmartRefreshLayout
+                android:id="@+id/smart_refresh_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/user_address_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
+            </com.scwang.smart.refresh.layout.SmartRefreshLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </FrameLayout>

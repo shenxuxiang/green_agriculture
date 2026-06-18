@@ -30,11 +30,14 @@ class UserAddressViewModel @Inject constructor(val repository: UserAddressReposi
     @OptIn(ExperimentalCoroutinesApi::class)
     val pagingDataFlow = Pager(
         config = PagingConfig(
-            pageSize = 4,
-            prefetchDistance = 2,
+            pageSize = 20,
+            prefetchDistance = 5,
+            initialLoadSize = 20,
             enablePlaceholders = false,
         ),
-        pagingSourceFactory = { AddressPagingSource { repository.queryUserAddressList(it) } }
+        pagingSourceFactory = {
+            AddressPagingSource { repository.queryUserAddressList(it) }
+        }
     ).flow.cachedIn(viewModelScope)
 
     val displayFlow =
@@ -42,7 +45,7 @@ class UserAddressViewModel @Inject constructor(val repository: UserAddressReposi
             // 对 pagingData 进行遍历，返回一个新的 pagingData 数据
             pagingData.map { item ->
                 val defaultFlag =
-                    if (defaultAddressId == -1L) item.defaultFlag else item.addressId == defaultAddressId
+                    if (defaultAddressId < 0) item.defaultFlag else item.addressId == defaultAddressId
                 item.copy(defaultFlag = defaultFlag)
             }
         }.cachedIn(viewModelScope)
@@ -100,4 +103,5 @@ class AddressPagingSource(private val onLoad: suspend (JsonObject) -> Pagination
             LoadResult.Error(t)
         }
     }
+
 }

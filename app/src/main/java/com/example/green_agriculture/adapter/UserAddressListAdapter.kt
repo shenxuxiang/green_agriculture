@@ -36,7 +36,7 @@ class UserAddressListAdapter(private val onCheckedItem: (UserAddressItemOption) 
             binding.checkbox.onCheckedChange = {
                 onChecked(data)
             }
-            binding.checkbox.isClickable = !data.defaultFlag
+            binding.checkbox.isEnabled = !data.defaultFlag
         }
     }
 
